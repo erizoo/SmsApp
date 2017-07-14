@@ -1,18 +1,15 @@
-package erizo.by.smsapp;
+package erizo.by.smsapp.activity;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.IOException;
 import java.util.List;
 
+import erizo.by.smsapp.R;
 import erizo.by.smsapp.model.User;
 import erizo.by.smsapp.service.APIService;
 import retrofit2.Call;
@@ -23,12 +20,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "myLogs";
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String BASE_HOST = "https://user-app-team.herokuapp.com/api/";
     private Button startButton;
-    List<User> posts;
     private Retrofit retrofit = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://user-app-team.herokuapp.com/api/")
+            .baseUrl(BASE_HOST)
             .build();
     private APIService service = retrofit.create(APIService.class);
 
@@ -41,19 +38,22 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                service.loadSms().enqueue(new Callback<User>() {
+                service.getUser(11).enqueue(new Callback<User>() {
 
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
-                        User user = new User();
-                        user.setFirstName(response.body().getFirstName());
-                        System.out.println(user.getFirstName());
-
+                        if (response.body() != null) {
+                            Log.d(TAG, response.body().toString());
+                            final TextView textView = (TextView) findViewById(R.id.textView);
+                            textView.setText(response.body().toString());
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<User> call, Throwable t) {
-
+                        Log.e(TAG, "Something went wrong " + t.getMessage());
+                        final TextView textView = (TextView) findViewById(R.id.textView);
+                        textView.setText(t.getMessage());
                     }
                 });
             }

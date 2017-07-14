@@ -120,4 +120,19 @@ public class User {
     public void setModifiedTimestamp(String modifiedTimestamp) {
         this.modifiedTimestamp = modifiedTimestamp;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", lastName='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", age=" + age +
+                ", sex='" + sex + '\'' +
+                ", city='" + city + '\'' +
+                ", income=" + income +
+                ", createdTimestamp='" + createdTimestamp + '\'' +
+                ", modifiedTimestamp='" + modifiedTimestamp + '\'' +
+                '}';
+    }
 }
