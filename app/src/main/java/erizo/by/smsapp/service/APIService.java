@@ -1,8 +1,5 @@
 package erizo.by.smsapp.service;
 
-import java.util.List;
-
-import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.MessageWrapper;
 import retrofit2.Call;
 import retrofit2.http.GET;

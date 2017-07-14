@@ -12,9 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import erizo.by.smsapp.R;
-import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.MessageWrapper;
-import erizo.by.smsapp.model.User;
 import erizo.by.smsapp.service.APIService;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -72,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.e(TAG, e.getMessage());
                             Log.e(TAG, String.valueOf(counter));
                         }
-
                     }
 
                     @Override
