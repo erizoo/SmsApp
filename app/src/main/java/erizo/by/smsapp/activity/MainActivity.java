@@ -7,12 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.List;
-
 import erizo.by.smsapp.R;
-import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.MessageWrapper;
-import erizo.by.smsapp.model.User;
 import erizo.by.smsapp.service.APIService;
 import retrofit2.Call;
 import retrofit2.Callback;
