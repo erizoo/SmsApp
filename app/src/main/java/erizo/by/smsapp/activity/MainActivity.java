@@ -10,6 +10,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import erizo.by.smsapp.R;
+import erizo.by.smsapp.model.Message;
+import erizo.by.smsapp.model.MessageWrapper;
 import erizo.by.smsapp.model.User;
 import erizo.by.smsapp.service.APIService;
 import retrofit2.Call;
@@ -21,7 +23,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String BASE_HOST = "https://user-app-team.herokuapp.com/api/";
+    private static final String BASE_HOST = "https://con24.ru/testapi/";
+    private static final String GET_ALL_MESSAGES_TASK = "getAllMessages";
+    private static final String DEVICE_ID = "1";
+    private static final String SIM_ID = "1";
+    private static final String SECRET_KEY = "T687G798UHO7867H";
+
     private Button startButton;
     private Retrofit retrofit = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
@@ -38,10 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                service.getUser(11).enqueue(new Callback<User>() {
-
+                service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
                     @Override
-                    public void onResponse(Call<User> call, Response<User> response) {
+                    public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
                         if (response.body() != null) {
                             Log.d(TAG, response.body().toString());
                             final TextView textView = (TextView) findViewById(R.id.textView);
@@ -50,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<User> call, Throwable t) {
+                    public void onFailure(Call<MessageWrapper> call, Throwable t) {
                         Log.e(TAG, "Something went wrong " + t.getMessage());
                         final TextView textView = (TextView) findViewById(R.id.textView);
                         textView.setText(t.getMessage());
