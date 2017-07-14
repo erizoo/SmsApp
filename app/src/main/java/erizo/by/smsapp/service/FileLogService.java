@@ -1,5 +1,7 @@
 package erizo.by.smsapp.service;
 
+import android.os.Environment;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,7 +14,8 @@ import java.io.IOException;
 public class FileLogService {
 
     public void appendLog(String text) {
-        File logFile = new File("sdcard/log.file");
+        File logDir = Environment.getExternalStorageDirectory();
+        File logFile = new File(logDir.getAbsolutePath() + "/", "log.txt");
         if (!logFile.exists()) {
             try {
                 logFile.createNewFile();
