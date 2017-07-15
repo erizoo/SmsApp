@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import erizo.by.smsapp.R;
@@ -72,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.e(TAG, e.getMessage());
                             Log.e(TAG, String.valueOf(counter));
                         }
-
                     }
 
                     @Override
