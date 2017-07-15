@@ -27,6 +27,7 @@ import erizo.by.smsapp.R;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.MessageWrapper;
 import erizo.by.smsapp.service.APIService;
+import erizo.by.smsapp.service.FileLogService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     Intent deliverIntent = new Intent();
 
     PendingIntent sentPi, deliverPi ;
+
 
 
     BroadcastReceiver sentReceiver = new BroadcastReceiver() {
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
         sentPi = PendingIntent.getBroadcast(this, 0, sentIntent, 0);
         deliverPi = PendingIntent.getBroadcast(this, 0, deliverIntent, 0);
         startButton = (Button) findViewById(R.id.start_button);
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         sendSms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SmsManager  smsManager = SmsManager.getDefault();
+                SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage(adress.getText().toString(), null,  text.getText().toString(), sentPi, deliverPi);
             }
         });
@@ -139,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                                     counter = 0;
                                 }else {
                                     Log.e(TAG, "No new messages");
+                                    new FileLogService().appendLog("Hello world");
                                 }
                                 Log.e(TAG, String.valueOf(counter));
                             }else {

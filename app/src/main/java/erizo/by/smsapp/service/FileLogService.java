@@ -8,10 +8,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-/**
- * Created by valera on 14.7.17.
- */
-
 public class FileLogService {
 
     public void appendLog(String text) {
