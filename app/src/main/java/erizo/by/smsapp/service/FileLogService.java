@@ -1,10 +1,8 @@
 package erizo.by.smsapp.service;
 
-<<<<<<< HEAD
+
 import android.os.Environment;
 
-=======
->>>>>>> origin/get_sms
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

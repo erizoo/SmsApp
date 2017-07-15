@@ -17,4 +17,26 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/adress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Получатель" />
+
+    <EditText
+        android:id="@+id/text_sms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Текст сообщения" />
+
+    <Button
+        android:id="@+id/send_sms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Отправить" />
 </LinearLayout>
