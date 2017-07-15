@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import erizo.by.smsapp.R;
@@ -53,12 +55,14 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             if (response.body() != null) {
                                 Log.d(TAG, response.body().toString());
-                                final TextView textView = (TextView) findViewById(R.id.textView);
-                                textView.setText(response.body().getMessages().get(0).getMessageID());
-                                for (Message list: response.body().getMessages()) {
-                                    mes.add(list);
+                                if (!response.body().getMessages().isEmpty()) {
+                                    for (Message list : response.body().getMessages()) {
+                                        mes.add(list);
+                                    }
+                                    counter = 0;
+                                }else {
+                                    Log.e(TAG, "No new messages");
                                 }
-                                counter = 0;
                                 Log.e(TAG, String.valueOf(counter));
                             }else {
                                 Log.e(TAG, "Response body = NULL");
@@ -70,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.e(TAG, e.getMessage());
                             Log.e(TAG, String.valueOf(counter));
                         }
+
                     }
 
                     @Override
