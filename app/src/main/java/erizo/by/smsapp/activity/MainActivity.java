@@ -2,6 +2,7 @@ package erizo.by.smsapp.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.model.Message;
@@ -45,9 +48,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String SIM_ID = "1";
     private static final String SECRET_KEY = "T687G798UHO7867H";
     private int counter = 0;
+    private int i = 0;
+    private long periodicity = 10L * 1000;
 
-    private Button startButton, sendSms;
-    private EditText text, adress;
+    private Button startButton;
+    private AlarmManager am;
     private Retrofit retrofit = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_HOST)
@@ -112,58 +117,67 @@ public class MainActivity extends AppCompatActivity {
         sentPi = PendingIntent.getBroadcast(this, 0, sentIntent, 0);
         deliverPi = PendingIntent.getBroadcast(this, 0, deliverIntent, 0);
         startButton = (Button) findViewById(R.id.start_button);
-        text = (EditText) findViewById(R.id.text_sms);
-        adress = (EditText) findViewById(R.id.adress);
-        sendSms = (Button) findViewById(R.id.send_sms);
-        sendSms.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage(adress.getText().toString(), null,  text.getText().toString(), sentPi, deliverPi);
-            }
-        });
-
-
         startButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
                     @Override
-                    public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
-                        try {
-                            if (response.body() != null) {
-                                Log.d(TAG, response.body().toString());
-                                if (!response.body().getMessages().isEmpty()) {
-                                    for (Message list : response.body().getMessages()) {
-                                        mes.add(list);
+                    public void run() {
+                        service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
+                            @Override
+                            public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
+                                try {
+                                    if (response.body() != null) {
+                                        Log.d(TAG, response.body().toString());
+                                        if (!response.body().getMessages().isEmpty()) {
+                                            for (Message list : response.body().getMessages()) {
+                                                mes.add(list);
+                                            }
+                                            final SmsManager smsManager = SmsManager.getDefault();
+                                            Timer timer = new Timer();
+                                            timer.schedule(new TimerTask() {
+                                                @Override
+                                                public void run() {
+                                                    if (!mes.isEmpty()){
+                                                        smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessageID(), sentPi, deliverPi);
+                                                        i++;
+                                                    }else {
+                                                        i = 0;
+                                                    }
+                                                }
+                                            },  0L, periodicity);
+                                            i = 0;
+                                            counter = 0;
+                                        }else {
+                                            Log.e(TAG, "No new messages");
+                                            new FileLogService().appendLog("Hello world");
+                                        }
+                                        Log.e(TAG, String.valueOf(counter));
+                                    }else {
+                                        Log.e(TAG, "Response body = NULL");
+                                        Log.e(TAG, String.valueOf(counter));
+                                        counter = 0;
                                     }
-                                    counter = 0;
-                                }else {
-                                    Log.e(TAG, "No new messages");
-                                    new FileLogService().appendLog("Hello world");
+                                }catch (Exception e){
+                                    counter++;
+                                    Log.e(TAG, e.getMessage());
+                                    Log.e(TAG, String.valueOf(counter));
                                 }
-                                Log.e(TAG, String.valueOf(counter));
-                            }else {
-                                Log.e(TAG, "Response body = NULL");
-                                Log.e(TAG, String.valueOf(counter));
-                                counter = 0;
+
                             }
-                        }catch (Exception e){
-                            counter++;
-                            Log.e(TAG, e.getMessage());
-                            Log.e(TAG, String.valueOf(counter));
-                        }
 
+                            @Override
+                            public void onFailure(Call<MessageWrapper> call, Throwable t) {
+                                Log.e(TAG, "Something went wrong " + t.getMessage());
+                                final TextView textView = (TextView) findViewById(R.id.textView);
+                                textView.setText(t.getMessage());
+                            }
+                        });
                     }
+                },0L, 20L * 1000 );
 
-                    @Override
-                    public void onFailure(Call<MessageWrapper> call, Throwable t) {
-                        Log.e(TAG, "Something went wrong " + t.getMessage());
-                        final TextView textView = (TextView) findViewById(R.id.textView);
-                        textView.setText(t.getMessage());
-                    }
-                });
 
             }
         });
