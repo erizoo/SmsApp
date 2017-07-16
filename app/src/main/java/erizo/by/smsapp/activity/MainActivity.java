@@ -29,6 +29,7 @@ import java.util.TimerTask;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.MessageWrapper;
+import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
 import erizo.by.smsapp.service.FileLogService;
 import retrofit2.Call;
@@ -44,9 +45,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String BASE_HOST = "https://con24.ru/testapi/";
     private static final String GET_ALL_MESSAGES_TASK = "getAllMessages";
+    private static final String SET_MESSAGES_STATUS = "setMessageStatus";
     private static final String DEVICE_ID = "1";
     private static final String SIM_ID = "1";
     private static final String SECRET_KEY = "T687G798UHO7867H";
+    private static final String STATUS_PENDING = "pending";
+    private static final String STATUS_SENT = "sent";
     private int counter = 0;
     private int i = 0;
     private long periodicity = 10L * 1000;
@@ -135,20 +139,6 @@ public class MainActivity extends AppCompatActivity {
                                             for (Message list : response.body().getMessages()) {
                                                 mes.add(list);
                                             }
-                                            final SmsManager smsManager = SmsManager.getDefault();
-                                            Timer timer = new Timer();
-                                            timer.schedule(new TimerTask() {
-                                                @Override
-                                                public void run() {
-                                                    if (!mes.isEmpty()){
-                                                        smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessageID(), sentPi, deliverPi);
-                                                        i++;
-                                                    }else {
-                                                        i = 0;
-                                                    }
-                                                }
-                                            },  0L, periodicity);
-                                            i = 0;
                                             counter = 0;
                                         }else {
                                             Log.e(TAG, "No new messages");
@@ -170,15 +160,56 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(Call<MessageWrapper> call, Throwable t) {
+                                counter++;
                                 Log.e(TAG, "Something went wrong " + t.getMessage());
-                                final TextView textView = (TextView) findViewById(R.id.textView);
-                                textView.setText(t.getMessage());
                             }
                         });
                     }
                 },0L, 20L * 1000 );
+                final SmsManager smsManager = SmsManager.getDefault();
+                Timer timerTwo = new Timer();
+                timerTwo.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (!mes.isEmpty()){
+                            if(i <= mes.size()-1){
+                                service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, "GT7643G667IF6GG367FF", STATUS_PENDING ).enqueue(new Callback<Status>() {
+                                    @Override
+                                    public void onResponse(Call<Status> call, Response<Status> response) {
+                                        if (response.body() != null) {
+                                            Log.e(TAG, "Message status: " + response.body().getStatus());
+                                        }
+                                        counter = 0;
+                                    }
+                                    @Override
+                                    public void onFailure(Call<Status> call, Throwable t) {
+                                        counter++;
+                                        Log.e(TAG, "Error get status pending " + t.getMessage());
+                                    }});
+                                    smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessageID(), sentPi, deliverPi);
 
-
+                                service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, "GT7643G667IF6GG367FF", STATUS_SENT).enqueue(new Callback<Status>() {
+                                    @Override
+                                    public void onResponse(Call<Status> call, Response<Status> response) {
+                                        if (response.body() != null) {
+                                            Log.e(TAG, "Message status: " + response.body().getStatus());
+                                        }
+                                        counter = 0;
+                                    }
+                                    @Override
+                                    public void onFailure(Call<Status> call, Throwable t) {
+                                        counter++;
+                                        Log.e(TAG, "Error get status sent " + t.getMessage());
+                                    }
+                                });
+                                i++;
+                            }else {
+                                mes.clear();
+                                i = 0;
+                            }
+                        }
+                    }
+                },  0L, periodicity);
             }
         });
     }
