@@ -1,40 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:orientation="vertical" >
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
 
     <Button
-        android:id="@+id/start_button"
+        android:id="@+id/sim_one_button"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="35dp"
         android:background="@android:color/holo_blue_light"
-        android:text="start"
+        android:text="SIM1"
         android:textColor="@android:color/background_light" />
 
     <Button
-        android:id="@+id/stop_button"
+        android:id="@+id/sim_two_button"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="45dp"
         android:background="@android:color/holo_blue_light"
-        android:text="Stop"
+        android:text="SIM2"
         android:textColor="@android:color/background_light" />
 
-    <Button
-        android:id="@+id/settings_button"
-        android:layout_width="170dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="55dp"
-        android:background="@android:color/holo_blue_light"
-        android:text="Settings"
-        android:textColor="@android:color/background_light" />
 
 </LinearLayout>
