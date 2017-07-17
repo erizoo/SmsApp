@@ -26,9 +26,9 @@ public class SettingsFirstSim extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_first_sim_activity);
         aSwitch = (Switch) findViewById(R.id.switch_first_sim);
-        simId = (EditText) findViewById(R.id.id_sim_first_edit_text);
-        url = (EditText) findViewById(R.id.url_sim_first_edit_text);
-        secretKey = (EditText) findViewById(R.id.secret_key_first_sim_edit_text);
+//        simId = (EditText) findViewById(R.id.id_sim_first_edit_text);
+//        url = (EditText) findViewById(R.id.url_sim_first_edit_text);
+//        secretKey = (EditText) findViewById(R.id.secret_key_first_sim_edit_text);
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_first_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_first_sim_edit_text);
         saveSettings = (Button) findViewById(R.id.save_button_settings_first_sim);
@@ -49,16 +49,22 @@ public class SettingsFirstSim extends AppCompatActivity {
         saveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsFirstSims.put("simId", String.valueOf(simId.getText()));
-                Log.d(TAG, settingsFirstSims.get("simId"));
-                settingsFirstSims.put("url", url.getText().toString());
-                Log.d(TAG, settingsFirstSims.get("url"));
-                settingsFirstSims.put("secretKey", secretKey.getText().toString());
-                Log.d(TAG, settingsFirstSims.get("secretKey"));
+//                settingsFirstSims.put("simId", String.valueOf(simId.getText()));
+//                Log.d(TAG, settingsFirstSims.get("simId"));
+//                settingsFirstSims.put("url", url.getText().toString());
+//                Log.d(TAG, settingsFirstSims.get("url"));
+//                settingsFirstSims.put("secretKey", secretKey.getText().toString());
+//                Log.d(TAG, settingsFirstSims.get("secretKey"));
                 settingsFirstSims.put("frequencyOfRequests", frequencyOfRequests.getText().toString());
                 Log.d(TAG, settingsFirstSims.get("frequencyOfRequests"));
                 settingsFirstSims.put("frequencyOfSmsSending", frequencyOfSmsSending.getText().toString());
                 Log.d(TAG, settingsFirstSims.get("frequencyOfSmsSending"));
+                if(frequencyOfRequests.getText().toString().equals("")){
+                    settingsFirstSims.put("frequencyOfRequests", "60");
+                }
+                if(frequencyOfSmsSending.getText().toString().equals("")){
+                    settingsFirstSims.put("frequencyOfSmsSending", "60");
+                }
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
             }

@@ -8,15 +8,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -49,10 +55,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String SECRET_KEY = "T687G798UHO7867H";
     private static final String STATUS_PENDING = "pending";
     private static final String STATUS_SENT = "sent";
+    private static final String STATUS_INDELIVERED = "undelivered";
+    private static final String STATUS_DELIVERED = "delivered";
     private int counter = 0;
     private int i = 0;
-    private long periodicity = 10L * 1000;
-
     private Button startButton, stopButton, settings;
     private Retrofit retrofit = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
@@ -73,10 +79,19 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             switch (getResultCode()){
                 case Activity.RESULT_OK:
-                    Toast.makeText(context, "Sented", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "SMS sent ");
                     break;
-                default:
-                    Toast.makeText(context, "Error sent", Toast.LENGTH_LONG).show();
+                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                    Log.d(TAG, "Generic failure ");
+                    break;
+                case SmsManager.RESULT_ERROR_NO_SERVICE:
+                    Log.d(TAG, "No service ");
+                    break;
+                case SmsManager.RESULT_ERROR_NULL_PDU:
+                    Log.d(TAG, "Null PDU ");
+                    break;
+                case SmsManager.RESULT_ERROR_RADIO_OFF:
+                    Log.d(TAG, "Radio off ");
                     break;
             }
         }
@@ -87,14 +102,16 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             switch (getResultCode()){
                 case Activity.RESULT_OK:
-                    Toast.makeText(context, "Delivered", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "SMS delivered ");
                     break;
-                default:
-                    Toast.makeText(context, "Error deliver", Toast.LENGTH_LONG).show();
+                case Activity.RESULT_CANCELED:
+                    Log.d(TAG, "SMS not delivered ");
                     break;
             }
         }
     };
+
+
 
     @Override
     protected void onResume() {
@@ -119,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         deliverPi = PendingIntent.getBroadcast(this, 0, deliverIntent, 0);
         startButton = (Button) findViewById(R.id.start_button);
         settings = (Button) findViewById(R.id.settings_button);
-        final Timer timer = new Timer();
+        final Timer[] timer = {new Timer()};
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,9 +149,9 @@ public class MainActivity extends AppCompatActivity {
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timer.cancel();
-                Log.d(TAG, "Приложение остановлено");
-                Toast.makeText(getApplicationContext(), "Приложение остановлено ", Toast.LENGTH_SHORT).show();
+                timer[0].cancel();
+                Log.d(TAG, "App stopped ");
+                Toast.makeText(getApplicationContext(), "App stopped ", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -147,59 +164,103 @@ public class MainActivity extends AppCompatActivity {
                 if (settingsFirstSims.get("status") == null){
                     Toast.makeText(getApplicationContext(), "Активируйте SIM-карту ", Toast.LENGTH_SHORT).show();
                 }else {
-                    Log.d(TAG, "Приложение запущено ");
+                    Log.d(TAG, "App started ");
                     if (settingsFirstSims.get("status").equals("true")){
-                        Toast.makeText(getApplicationContext(), "Приложение запущено ", Toast.LENGTH_SHORT).show();
-                        timer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-
-                                service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
-                                    @Override
-                                    public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
-                                        try {
-                                            if (response.body() != null) {
-                                                Log.d(TAG, response.body().toString());
-                                                if (!response.body().getMessages().isEmpty()) {
-                                                    for (Message list : response.body().getMessages()) {
-                                                        mes.add(list);
+                        Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
+                        try{
+                            timer[0].schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
+                                        @Override
+                                        public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
+                                            try {
+                                                if (response.body() != null) {
+                                                    Log.d(TAG, response.body().toString());
+                                                    if (!response.body().getMessages().isEmpty()) {
+                                                        for (Message list : response.body().getMessages()) {
+                                                            mes.add(list);
+                                                        }
+                                                        counter = 0;
+                                                    }else {
+                                                        Log.d(TAG, "No new messages");
+                                                        new FileLogService().appendLog("Hello world");
                                                     }
-                                                    counter = 0;
+                                                    Log.d(TAG, String.valueOf(counter));
                                                 }else {
-                                                    Log.d(TAG, "No new messages");
-                                                    new FileLogService().appendLog("Hello world");
+                                                    Log.d(TAG, "Response body = NULL");
+                                                    Log.d(TAG, String.valueOf(counter));
+                                                    counter = 0;
                                                 }
-                                                Log.d(TAG, String.valueOf(counter));
-                                            }else {
-                                                Log.d(TAG, "Response body = NULL");
-                                                Log.d(TAG, String.valueOf(counter));
-                                                counter = 0;
+                                            }catch (Exception e){
+                                                counter++;
+                                                Log.e(TAG, e.getMessage());
+                                                Log.e(TAG, String.valueOf(counter));
                                             }
-                                        }catch (Exception e){
-                                            counter++;
-                                            Log.e(TAG, e.getMessage());
-                                            Log.e(TAG, String.valueOf(counter));
+
                                         }
 
-                                    }
+                                        @Override
+                                        public void onFailure(Call<MessageWrapper> call, Throwable t) {
+                                            counter++;
+                                            Log.e(TAG, "Something went wrong " + t.getMessage());
+                                        }
+                                    });
+                                }
+                            },0L, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000 );
+                        } catch (Exception e){
+                            timer[0] = new Timer();
+                            timer[0].schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
+                                        @Override
+                                        public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
+                                            try {
+                                                if (response.body() != null) {
+                                                    Log.d(TAG, response.body().toString());
+                                                    if (!response.body().getMessages().isEmpty()) {
+                                                        for (Message list : response.body().getMessages()) {
+                                                            mes.add(list);
+                                                        }
+                                                        counter = 0;
+                                                    }else {
+                                                        Log.d(TAG, "No new messages");
+                                                        new FileLogService().appendLog("Hello world");
+                                                    }
+                                                    Log.d(TAG, String.valueOf(counter));
+                                                }else {
+                                                    Log.d(TAG, "Response body = NULL");
+                                                    Log.d(TAG, String.valueOf(counter));
+                                                    counter = 0;
+                                                }
+                                            }catch (Exception e){
+                                                counter++;
+                                                Log.e(TAG, e.getMessage());
+                                                Log.e(TAG, String.valueOf(counter));
+                                            }
 
-                                    @Override
-                                    public void onFailure(Call<MessageWrapper> call, Throwable t) {
-                                        counter++;
-                                        Log.e(TAG, "Something went wrong " + t.getMessage());
-                                    }
-                                });
-                            }
-                        },0L, 20L * 1000 );
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<MessageWrapper> call, Throwable t) {
+                                            counter++;
+                                            Log.e(TAG, "Something went wrong " + t.getMessage());
+                                        }
+                                    });
+                                }
+                            },0L, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000 );
+                        }
                         final SmsManager smsManager = SmsManager.getDefault();
+                        final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
                         Timer timerTwo = new Timer();
                         timerTwo.schedule(new TimerTask() {
+                            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
                             @Override
                             public void run() {
                                 if (!mes.isEmpty()){
                                     if(i <= mes.size()-1){
-                                        smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessageID(), sentPi, deliverPi);
-                                        service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, "GT7643G667IF6GG367FF", STATUS_SENT).enqueue(new Callback<Status>() {
+                                        service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_PENDING).enqueue(new Callback<Status>() {
                                             @Override
                                             public void onResponse(Call<Status> call, Response<Status> response) {
                                                 if (response.body() != null) {
@@ -210,9 +271,11 @@ public class MainActivity extends AppCompatActivity {
                                             @Override
                                             public void onFailure(Call<Status> call, Throwable t) {
                                                 counter++;
-                                                Log.d(TAG, "Error get status sent " + t.getMessage());
+                                                Log.d(TAG, "Error get status pending " + t.getMessage());
                                             }
                                         });
+                                        smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessage(), sentPi, deliverPi);
+                                        Log.d(TAG, "Result: " + sentReceiver.getResultCode());
                                         i++;
                                     }else {
                                         mes.clear();
@@ -220,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-                        },  0L, periodicity);
+                        },  0L, Long.parseLong(settingsFirstSims.get("frequencyOfSmsSending"), 10) * 1000);
                     }else {
                         Toast.makeText(getApplicationContext(), "Активируйте SIM-карту ", Toast.LENGTH_SHORT).show();
                     }
