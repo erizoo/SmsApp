@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -263,76 +264,27 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         });
                                         smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessage(), sentPi, deliverPi);
-                                        if(sentReceiver.getResultCode() == Activity.RESULT_OK){ //TODO Переписать условия со статусами
-                                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_SENT).enqueue(new Callback<Status>() {
-                                                @Override
-                                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                                    if (response.body() != null) {
-                                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                                    }
-                                                    counter = 0;
+                                        service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
+                                            @Override
+                                            public void onResponse(Call<Status> call, Response<Status> response) {
+                                                if (response.body() != null) {
+                                                    Log.d(TAG, "Message status: " + response.body().getStatus());
                                                 }
-                                                @Override
-                                                public void onFailure(Call<Status> call, Throwable t) {
-                                                    counter++;
-                                                    Log.d(TAG, "Error get status pending " + t.getMessage());
-                                                }
-                                            });
-                                        }else {
-                                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
-                                                @Override
-                                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                                    if (response.body() != null) {
-                                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                                    }
-                                                    counter = 0;
-                                                }
-                                                @Override
-                                                public void onFailure(Call<Status> call, Throwable t) {
-                                                    counter++;
-                                                    Log.d(TAG, "Error get status pending " + t.getMessage());
-                                                }
-                                            });
-                                            if (deliverReceiver.getResultCode() != Activity.RESULT_OK){
-                                                service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_INDELIVERED).enqueue(new Callback<Status>() {
-                                                    @Override
-                                                    public void onResponse(Call<Status> call, Response<Status> response) {
-                                                        if (response.body() != null) {
-                                                            Log.d(TAG, "Message status: " + response.body().getStatus());
-                                                        }
-                                                        counter = 0;
-                                                    }
-                                                    @Override
-                                                    public void onFailure(Call<Status> call, Throwable t) {
-                                                        counter++;
-                                                        Log.d(TAG, "Error get status pending " + t.getMessage());
-                                                    }
-                                                });
+                                                counter = 0;
                                             }
-                                        }
-                                        if(deliverReceiver.getResultCode() == Activity.RESULT_OK) {
-                                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
-                                                @Override
-                                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                                    if (response.body() != null) {
-                                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                                    }
-                                                    counter = 0;
-                                                }
-
-                                                @Override
-                                                public void onFailure(Call<Status> call, Throwable t) {
-                                                    counter++;
-                                                    Log.d(TAG, "Error get status pending " + t.getMessage());
-                                                }
-                                            });
-                                        }
+                                            @Override
+                                            public void onFailure(Call<Status> call, Throwable t) {
+                                                counter++;
+                                                Log.d(TAG, "Error get status pending " + t.getMessage());
+                                            }
+                                        });
                                         i++;
                                     }else {
                                         mes.clear();
                                         i = 0;
                                     }
                                 }
+
                             }
                         },  0L, Long.parseLong(settingsFirstSims.get("frequencyOfSmsSending"), 10) * 1000);
                     }else {
