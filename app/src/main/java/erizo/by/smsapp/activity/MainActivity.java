@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String STATUS_UNSENT = "unsent";
     private static final String STATUS_INDELIVERED = "undelivered";
     private static final String STATUS_DELIVERED = "delivered";
+    private int sentStatus;
+    private int deliverStatus;
     private int counter = 0;
     private int i = 0;
     private Button startButton, stopButton, settings;
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             switch (getResultCode()){
                 case Activity.RESULT_OK:
+                    sentStatus = 1;
                     Log.d(TAG, "SMS sent ");
                     break;
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
@@ -102,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
             switch (getResultCode()){
                 case Activity.RESULT_OK:
                     Log.d(TAG, "SMS delivered ");
+                    deliverStatus = 1;
                     break;
                 case Activity.RESULT_CANCELED:
                     Log.d(TAG, "SMS not delivered ");
@@ -264,27 +268,28 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         });
                                         smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessage(), sentPi, deliverPi);
-                                        service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
-                                            @Override
-                                            public void onResponse(Call<Status> call, Response<Status> response) {
-                                                if (response.body() != null) {
-                                                    Log.d(TAG, "Message status: " + response.body().getStatus());
-                                                }
-                                                counter = 0;
-                                            }
-                                            @Override
-                                            public void onFailure(Call<Status> call, Throwable t) {
-                                                counter++;
-                                                Log.d(TAG, "Error get status pending " + t.getMessage());
-                                            }
-                                        });
                                         i++;
                                     }else {
                                         mes.clear();
                                         i = 0;
                                     }
                                 }
-
+                                if(deliverStatus == 1){
+                                    service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
+                                        @Override
+                                        public void onResponse(Call<Status> call, Response<Status> response) {
+                                            if (response.body() != null) {
+                                                Log.d(TAG, "Message status: " + response.body().getStatus());
+                                            }
+                                            counter = 0;
+                                        }
+                                        @Override
+                                        public void onFailure(Call<Status> call, Throwable t) {
+                                            counter++;
+                                            Log.d(TAG, "Error get status pending " + t.getMessage());
+                                        }
+                                    });
+                                }
                             }
                         },  0L, Long.parseLong(settingsFirstSims.get("frequencyOfSmsSending"), 10) * 1000);
                     }else {
