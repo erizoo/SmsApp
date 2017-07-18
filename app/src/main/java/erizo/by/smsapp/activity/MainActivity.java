@@ -44,8 +44,8 @@ import static erizo.by.smsapp.activity.SettingsFirstSim.settingsFirstSims;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String SENT_SMS = "SENT_SMS";
-    private String DELIVER_SMS = "DELIVER_SMS";
+    String SENT_SMS = "SENT_SMS";
+    String DELIVER_SMS = "DELIVER_SMS";
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String BASE_HOST = "https://con24.ru/testapi/";
     private static final String GET_ALL_MESSAGES_TASK = "getAllMessages";
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String SECRET_KEY = "T687G798UHO7867H";
     private static final String STATUS_PENDING = "pending";
     private static final String STATUS_SENT = "sent";
+    private static final String STATUS_UNSENT = "unsent";
     private static final String STATUS_INDELIVERED = "undelivered";
     private static final String STATUS_DELIVERED = "delivered";
     private int counter = 0;
@@ -67,12 +68,9 @@ public class MainActivity extends AppCompatActivity {
     private APIService service = retrofit.create(APIService.class);
     private List<Message> mes = new LinkedList<>();
 
-    Intent sentIntent = new Intent();
-    Intent deliverIntent = new Intent();
-
+    Intent sentIntent = new Intent(SENT_SMS);
+    Intent deliverIntent = new Intent(DELIVER_SMS);
     PendingIntent sentPi, deliverPi ;
-
-
 
     BroadcastReceiver sentReceiver = new BroadcastReceiver() {
         @Override
@@ -111,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -144,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         stopButton = (Button) findViewById(R.id.stop_button);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,8 +150,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
         startButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -197,9 +190,7 @@ public class MainActivity extends AppCompatActivity {
                                                 Log.e(TAG, e.getMessage());
                                                 Log.e(TAG, String.valueOf(counter));
                                             }
-
                                         }
-
                                         @Override
                                         public void onFailure(Call<MessageWrapper> call, Throwable t) {
                                             counter++;
@@ -239,9 +230,7 @@ public class MainActivity extends AppCompatActivity {
                                                 Log.e(TAG, e.getMessage());
                                                 Log.e(TAG, String.valueOf(counter));
                                             }
-
                                         }
-
                                         @Override
                                         public void onFailure(Call<MessageWrapper> call, Throwable t) {
                                             counter++;
@@ -252,7 +241,6 @@ public class MainActivity extends AppCompatActivity {
                             },0L, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000 );
                         }
                         final SmsManager smsManager = SmsManager.getDefault();
-                        final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
                         Timer timerTwo = new Timer();
                         timerTwo.schedule(new TimerTask() {
                             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
@@ -275,7 +263,70 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         });
                                         smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessage(), sentPi, deliverPi);
-                                        Log.d(TAG, "Result: " + sentReceiver.getResultCode());
+                                        if(sentReceiver.getResultCode() == Activity.RESULT_OK){ //TODO Переписать условия со статусами
+                                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_SENT).enqueue(new Callback<Status>() {
+                                                @Override
+                                                public void onResponse(Call<Status> call, Response<Status> response) {
+                                                    if (response.body() != null) {
+                                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+                                                    }
+                                                    counter = 0;
+                                                }
+                                                @Override
+                                                public void onFailure(Call<Status> call, Throwable t) {
+                                                    counter++;
+                                                    Log.d(TAG, "Error get status pending " + t.getMessage());
+                                                }
+                                            });
+                                        }else {
+                                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
+                                                @Override
+                                                public void onResponse(Call<Status> call, Response<Status> response) {
+                                                    if (response.body() != null) {
+                                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+                                                    }
+                                                    counter = 0;
+                                                }
+                                                @Override
+                                                public void onFailure(Call<Status> call, Throwable t) {
+                                                    counter++;
+                                                    Log.d(TAG, "Error get status pending " + t.getMessage());
+                                                }
+                                            });
+                                            if (deliverReceiver.getResultCode() != Activity.RESULT_OK){
+                                                service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_INDELIVERED).enqueue(new Callback<Status>() {
+                                                    @Override
+                                                    public void onResponse(Call<Status> call, Response<Status> response) {
+                                                        if (response.body() != null) {
+                                                            Log.d(TAG, "Message status: " + response.body().getStatus());
+                                                        }
+                                                        counter = 0;
+                                                    }
+                                                    @Override
+                                                    public void onFailure(Call<Status> call, Throwable t) {
+                                                        counter++;
+                                                        Log.d(TAG, "Error get status pending " + t.getMessage());
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        if(deliverReceiver.getResultCode() == Activity.RESULT_OK) {
+                                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
+                                                @Override
+                                                public void onResponse(Call<Status> call, Response<Status> response) {
+                                                    if (response.body() != null) {
+                                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+                                                    }
+                                                    counter = 0;
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Status> call, Throwable t) {
+                                                    counter++;
+                                                    Log.d(TAG, "Error get status pending " + t.getMessage());
+                                                }
+                                            });
+                                        }
                                         i++;
                                     }else {
                                         mes.clear();

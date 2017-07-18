@@ -32,7 +32,7 @@ public class SettingsFirstSim extends AppCompatActivity {
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_first_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_first_sim_edit_text);
         saveSettings = (Button) findViewById(R.id.save_button_settings_first_sim);
-        aSwitch.setChecked(false);
+        aSwitch.setChecked(false);//TODO Ползунок пофиксить
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
