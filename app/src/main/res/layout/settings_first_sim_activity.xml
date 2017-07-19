@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <Switch
+        android:id="@+id/switch_first_sim"
+        android:layout_width="135dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="43dp"
+        android:text="Статус" />
+
+    <!--<TextView-->
+        <!--android:id="@+id/id_sim_first"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignLeft="@+id/switch_first_sim"-->
+        <!--android:layout_alignStart="@+id/switch_first_sim"-->
+        <!--android:layout_below="@+id/switch_first_sim"-->
+        <!--android:layout_marginTop="33dp"-->
+        <!--android:text="SIM ID" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/id_sim_first_edit_text"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:ems="10"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:layout_alignBaseline="@+id/id_sim_first"-->
+        <!--android:layout_alignBottom="@+id/id_sim_first"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_marginRight="24dp"-->
+        <!--android:layout_marginEnd="24dp" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/url_sim_first"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="URL"-->
+        <!--android:layout_above="@+id/secret_key_first_sim_edit_text"-->
+        <!--android:layout_alignLeft="@+id/secret_key_first_sim"-->
+        <!--android:layout_alignStart="@+id/secret_key_first_sim"-->
+        <!--android:layout_marginBottom="42dp" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/url_sim_first_edit_text"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:ems="10"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:layout_alignBaseline="@+id/url_sim_first"-->
+        <!--android:layout_alignBottom="@+id/url_sim_first"-->
+        <!--android:layout_alignLeft="@+id/id_sim_first_edit_text"-->
+        <!--android:layout_alignStart="@+id/id_sim_first_edit_text" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/secret_key_first_sim"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="SecretKey "-->
+        <!--android:layout_centerVertical="true" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/secret_key_first_sim_edit_text"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:ems="10"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:layout_centerVertical="true" />-->
+
+    <TextView
+        android:id="@+id/frequency_requests_first_sim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="27dp"
+        android:text="Частота запросов "
+        android:layout_below="@+id/switch_first_sim"
+        android:layout_alignLeft="@+id/switch_first_sim"
+        android:layout_alignStart="@+id/switch_first_sim" />
+
+    <EditText
+        android:id="@+id/frequency_requests_first_sim_edit_text"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_alignBottom="@+id/frequency_requests_first_sim"
+        android:layout_toRightOf="@+id/frequency_sent_sms_first_sim"
+        android:layout_toEndOf="@+id/frequency_sent_sms_first_sim"
+        android:layout_marginLeft="44dp"
+        android:layout_marginStart="44dp" />
+
+    <TextView
+        android:id="@+id/frequency_sent_sms_first_sim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Периодичность отправки "
+        android:textSize="14sp"
+        android:layout_alignBottom="@+id/frequency_sent_sms_first_sim_edit_text"
+        android:layout_alignLeft="@+id/frequency_requests_first_sim"
+        android:layout_alignStart="@+id/frequency_requests_first_sim" />
+
+    <EditText
+        android:id="@+id/frequency_sent_sms_first_sim_edit_text"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_below="@+id/frequency_requests_first_sim_edit_text"
+        android:layout_alignLeft="@+id/frequency_requests_first_sim_edit_text"
+        android:layout_alignStart="@+id/frequency_requests_first_sim_edit_text" />
+
+    <Button
+        android:id="@+id/save_button_settings_first_sim"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="74dp"
+        android:background="@android:color/holo_blue_light"
+        android:text="Сохранить"
+        android:textAlignment="center"
+        android:textColor="@android:color/background_light"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

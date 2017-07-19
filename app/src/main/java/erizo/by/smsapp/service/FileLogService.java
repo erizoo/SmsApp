@@ -1,15 +1,12 @@
 package erizo.by.smsapp.service;
 
+
 import android.os.Environment;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
-/**
- * Created by valera on 14.7.17.
- */
 
 public class FileLogService {
 
