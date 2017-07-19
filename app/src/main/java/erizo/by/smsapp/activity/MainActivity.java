@@ -2,7 +2,6 @@ package erizo.by.smsapp.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,16 +13,13 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
-import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -45,10 +41,10 @@ import static erizo.by.smsapp.activity.SettingsFirstSim.settingsFirstSims;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
-    String SENT_SMS = "SENT_SMS";
-    String DELIVER_SMS = "DELIVER_SMS";
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
+    private static final String SENT_SMS = "SENT_SMS";
+    private static final String DELIVER_SMS = "DELIVER_SMS";
     private static final String BASE_HOST = "https://con24.ru/testapi/";
     private static final String GET_ALL_MESSAGES_TASK = "getAllMessages";
     private static final String SET_MESSAGES_STATUS = "setMessageStatus";
@@ -60,23 +56,29 @@ public class MainActivity extends AppCompatActivity {
     private static final String STATUS_UNSENT = "unsent";
     private static final String STATUS_INDELIVERED = "undelivered";
     private static final String STATUS_DELIVERED = "delivered";
-    private int counter = 0;
-    private int i = 0;
-    private Button startButton, stopButton, settings;
+
+    private Button startButton, stopButton, settingsButton;
+
     private Retrofit retrofit = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_HOST)
             .build();
     private APIService service = retrofit.create(APIService.class);
+
     private List<Message> mes = new LinkedList<>();
 
     Intent sentIntent = new Intent(SENT_SMS);
     Intent deliverIntent = new Intent(DELIVER_SMS);
 
+    private int counter = 0;
+    private int i = 0;
+
     ArrayList<PendingIntent> sentIntents  = new ArrayList<>();
     ArrayList<PendingIntent> deliveryIntents = new ArrayList<>();
-    PendingIntent sentPi, deliverPi ;
 
+    List smsList;
+
+    PendingIntent sentPi, deliverPi;
 
     BroadcastReceiver sentReceiver = new BroadcastReceiver() {
         @Override
@@ -229,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        smsList = getSimCardList();
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.RECEIVE_SMS},
                 MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
@@ -236,17 +239,17 @@ public class MainActivity extends AppCompatActivity {
         sentPi = PendingIntent.getBroadcast(this, 0, sentIntent, 0);
         deliverPi = PendingIntent.getBroadcast(this, 0, deliverIntent, 0);
         startButton = (Button) findViewById(R.id.start_button);
-        settings = (Button) findViewById(R.id.settings_button);
+        settingsButton = (Button) findViewById(R.id.settings_button);
         final Timer[] timer = {new Timer()};
-        settings.setClickable(true);
-        settings.setOnClickListener(new View.OnClickListener() {
+        settingsButton.setClickable(true);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (settings.isEnabled()){
+                if (settingsButton.isEnabled()){
                     Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
                     startActivity(intent);
 
-                }else {
+                } else {
                     Toast.makeText(getApplicationContext(), "You must app stop ", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -258,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                 timer[0].cancel();
                 Log.d(TAG, "App stopped ");
                 Toast.makeText(getApplicationContext(), "App stopped ", Toast.LENGTH_SHORT).show();
-                settings.setClickable(true);
+                settingsButton.setClickable(true);
             }
         });
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -267,8 +270,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (settingsFirstSims.get("status") == null){
                     Toast.makeText(getApplicationContext(), "Активируйте SIM-карту ", Toast.LENGTH_SHORT).show();
-                }else {
-                    settings.setClickable(false);
+                } else {
+                    settingsButton.setClickable(false);
                     Log.d(TAG, "App started ");
                     if (settingsFirstSims.get("status").equals("true")){
                         Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
@@ -287,12 +290,12 @@ public class MainActivity extends AppCompatActivity {
                                                             mes.add(list);
                                                         }
                                                         counter = 0;
-                                                    }else {
+                                                    } else {
                                                         Log.d(TAG, "No new messages");
                                                         new FileLogService().appendLog("Hello world");
                                                     }
                                                     Log.d(TAG, String.valueOf(counter));
-                                                }else {
+                                                } else {
                                                     Log.d(TAG, "Response body = NULL");
                                                     Log.d(TAG, String.valueOf(counter));
                                                     counter = 0;
@@ -327,12 +330,12 @@ public class MainActivity extends AppCompatActivity {
                                                             mes.add(list);
                                                         }
                                                         counter = 0;
-                                                    }else {
+                                                    } else {
                                                         Log.d(TAG, "No new messages");
                                                         new FileLogService().appendLog("Hello world");
                                                     }
                                                     Log.d(TAG, String.valueOf(counter));
-                                                }else {
+                                                } else {
                                                     Log.d(TAG, "Response body = NULL");
                                                     Log.d(TAG, String.valueOf(counter));
                                                     counter = 0;
@@ -383,12 +386,12 @@ public class MainActivity extends AppCompatActivity {
                                                 deliveryIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, deliverIntent, 0));
                                             }
                                             smsManager.sendMultipartTextMessage(mes.get(i).getPhone(), null, parts , sentIntents, deliveryIntents);
-                                        }else {
+                                        } else {
                                             smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessage(), sentPi, deliverPi);
 
                                         }
                                         i++;
-                                    }else {
+                                    } else {
                                         mes.clear();
                                         i = 0;
                                     }
@@ -396,11 +399,24 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                         },  0L, Long.parseLong(settingsFirstSims.get("frequencyOfSmsSending"), 10) * 1000);
-                    }else {
+                    } else {
                         Toast.makeText(getApplicationContext(), "Активируйте SIM-карту ", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         });
+    }
+
+    private List getSimCardList() {
+        final ArrayList<Integer> simCardList = new ArrayList<>();
+        SubscriptionManager subscriptionManager;
+//        subscriptionManager = SubscriptionManager.from(this);
+//        final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
+//                .getActiveSubscriptionInfoList();
+//        for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+//            int subscriptionId = subscriptionInfo.getSubscriptionId();
+//            simCardList.add(subscriptionId);
+//        }
+        return simCardList;
     }
 }

@@ -11,20 +11,39 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.util.HashMap;
+import java.util.Map;
 
 import erizo.by.smsapp.R;
+import erizo.by.smsapp.service.TinyDb;
 
 public class SettingsFirstSim extends AppCompatActivity {
 
     private static final String TAG = SettingsFirstSim.class.getSimpleName();
+    private static final String SETTINGS = "settings";
     private Switch aSwitch;
     private EditText simId, url, secretKey,frequencyOfRequests,frequencyOfSmsSending;
     private Button saveSettings;
-    static HashMap<String, String> settingsFirstSims = new HashMap<>();
+    static Map<String, String> settingsFirstSims;
+
+    private TinyDb tinyDb;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_first_sim_activity);
+        tinyDb = new TinyDb(this);
+        if (tinyDb.keyContaints("settings")) {
+            Log.d(TAG, "settings contains. set them to view");
+            String serializedSettings = tinyDb.getString(SETTINGS);
+            Gson gson = new Gson();
+            settingsFirstSims = gson.fromJson(serializedSettings, new TypeToken<Map<String, String>>(){}.getType());
+        } else {
+            settingsFirstSims = new HashMap<>();
+        }
         aSwitch = (Switch) findViewById(R.id.switch_first_sim);
 //        simId = (EditText) findViewById(R.id.id_sim_first_edit_text);
 //        url = (EditText) findViewById(R.id.url_sim_first_edit_text);
@@ -49,10 +68,10 @@ public class SettingsFirstSim extends AppCompatActivity {
         try {
             if (settingsFirstSims.get("status").equals("false")){
                 aSwitch.setChecked(false);
-            }else {
+            } else {
                 aSwitch.setChecked(true);
             }
-        }catch (Exception e){
+        } catch (Exception e){
             Log.e(TAG, e.getMessage());
         }
 
@@ -77,6 +96,9 @@ public class SettingsFirstSim extends AppCompatActivity {
                 }
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
+                Gson gson = new Gson();
+                String serializedSettings = gson.toJson(settingsFirstSims);
+                tinyDb.putString(SETTINGS, serializedSettings);
             }
         });
     }
