@@ -31,8 +31,9 @@ public class SettingsFirstSim extends AppCompatActivity {
 //        secretKey = (EditText) findViewById(R.id.secret_key_first_sim_edit_text);
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_first_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_first_sim_edit_text);
+        frequencyOfRequests.setText(settingsFirstSims.get("frequencyOfRequests"));
+        frequencyOfSmsSending.setText(settingsFirstSims.get("frequencyOfSmsSending"));
         saveSettings = (Button) findViewById(R.id.save_button_settings_first_sim);
-        aSwitch.setChecked(false);//TODO Ползунок пофиксить
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -45,6 +46,15 @@ public class SettingsFirstSim extends AppCompatActivity {
                 }
             }
         });
+        try {
+            if (settingsFirstSims.get("status").equals("false")){
+                aSwitch.setChecked(false);
+            }else {
+                aSwitch.setChecked(true);
+            }
+        }catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
 
         saveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
