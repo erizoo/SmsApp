@@ -52,13 +52,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String GET_ALL_MESSAGES_TASK = "getAllMessages";
     private static final String SET_MESSAGES_STATUS = "setMessageStatus";
     private static final String DEVICE_ID = "1";
-    private static final String SIM_ID = "1";
+    private static final String SIM_ID = "10";
     private static final String SECRET_KEY = "T687G798UHO7867H";
     private static final String STATUS_PENDING = "pending";
     private static final String STATUS_SENT = "sent";
     private static final String STATUS_UNSENT = "unsent";
     private static final String STATUS_INDELIVERED = "undelivered";
     private static final String STATUS_DELIVERED = "delivered";
+    private List<String> parts = new ArrayList<>();
     private int sentStatus;
     private int deliverStatus;
     private int counter = 0;
@@ -73,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
 
     Intent sentIntent = new Intent(SENT_SMS);
     Intent deliverIntent = new Intent(DELIVER_SMS);
+
+    ArrayList<PendingIntent> sentIntents  = new ArrayList<>();
+    ArrayList<PendingIntent> deliveryIntents = new ArrayList<>();
     PendingIntent sentPi, deliverPi ;
 
     BroadcastReceiver sentReceiver = new BroadcastReceiver() {
@@ -80,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             switch (getResultCode()){
                 case Activity.RESULT_OK:
-                    sentStatus = 1;
                     Log.d(TAG, "SMS sent ");
                     break;
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
@@ -105,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
             switch (getResultCode()){
                 case Activity.RESULT_OK:
                     Log.d(TAG, "SMS delivered ");
-                    deliverStatus = 1;
                     break;
                 case Activity.RESULT_CANCELED:
                     Log.d(TAG, "SMS not delivered ");
@@ -267,7 +269,18 @@ public class MainActivity extends AppCompatActivity {
                                                 Log.d(TAG, "Error get status pending " + t.getMessage());
                                             }
                                         });
-                                        smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessage(), sentPi, deliverPi);
+
+                                        if (mes.get(i).getMessage().length() > 160){
+                                            ArrayList<String> parts = smsManager.divideMessage(mes.get(i).getMessage());
+                                            int numParts = parts.size();
+                                            for (int i = 0; i < numParts; i++) {
+                                                sentIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, sentIntent, 0));
+                                                deliveryIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, deliverIntent, 0));
+                                            }
+                                            smsManager.sendMultipartTextMessage(mes.get(i).getPhone(), null, parts , sentIntents, deliveryIntents);
+                                        }else {
+                                            smsManager.sendTextMessage(mes.get(i).getPhone(), null,  mes.get(i).getMessage(), sentPi, deliverPi);
+                                        }
                                         i++;
                                     }else {
                                         mes.clear();
