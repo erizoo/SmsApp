@@ -15,22 +15,13 @@
         android:text="Статус" />
 
     <TextView
-        android:id="@+id/first_sim_id_text_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:text="SIM 1 ID"
-        android:layout_below="@+id/switch_first_sim"
-        android:layout_alignStart="@+id/switch_first_sim" />
-
-    <TextView
         android:id="@+id/frequency_requests_first_sim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Частота запросов "
-        android:layout_marginTop="56dp"
-        android:layout_below="@+id/first_sim_id_text_edit"
-        android:layout_alignStart="@+id/first_sim_id_text_edit" />
+        android:layout_marginBottom="47dp"
+        android:layout_above="@+id/frequency_sent_sms_first_sim"
+        android:layout_alignStart="@+id/frequency_sent_sms_first_sim" />
 
     <EditText
         android:id="@+id/frequency_requests_first_sim_edit_text"
@@ -44,26 +35,14 @@
         android:layout_marginLeft="44dp"
         android:layout_marginStart="44dp" />
 
-    <EditText
-        android:id="@+id/first_sim_id_text_edit"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/first_sim_id_text_edit"
-        android:layout_alignBottom="@+id/first_sim_id_text_edit"
-        android:layout_alignStart="@+id/frequency_requests_first_sim_edit_text"
-        android:layout_marginLeft="44dp"
-        android:ems="10"
-        android:inputType="textPersonName" />
-
     <TextView
         android:id="@+id/frequency_sent_sms_first_sim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Периодичность отправки "
         android:textSize="14sp"
-        android:layout_alignBottom="@+id/frequency_sent_sms_first_sim_edit_text"
-        android:layout_alignLeft="@+id/frequency_requests_first_sim"
-        android:layout_alignStart="@+id/frequency_requests_first_sim" />
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/switch_first_sim" />
 
     <EditText
         android:id="@+id/frequency_sent_sms_first_sim_edit_text"
