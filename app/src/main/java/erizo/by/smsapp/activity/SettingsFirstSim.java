@@ -28,7 +28,6 @@ public class SettingsFirstSim extends Activity {
     private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
     private Button saveSettings;
     static Map<String, String> settingsFirstSims;
-
     private TinyDb tinyDb;
 
     @Override
@@ -44,12 +43,15 @@ public class SettingsFirstSim extends Activity {
         } else {
             settingsFirstSims = new HashMap<>();
         }
-        aSwitch = (Switch) findViewById(R.id.switch_first_sim);
-        frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_first_sim_edit_text);
-        frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_first_sim_edit_text);
+        aSwitch = (Switch) findViewById(R.id.switch_second_sim);
+        simId = (EditText) findViewById(R.id.first_sim_id_text_edit);
+        url = (EditText) findViewById(R.id.url_first_sim_edit);
+        secretKey = (EditText) findViewById(R.id.secret_key_first_sim_edit);
+        frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_second_sim_edit_text);
+        frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_second_sim_edit_text);
         frequencyOfRequests.setText(settingsFirstSims.get("frequencyOfRequests"));
         frequencyOfSmsSending.setText(settingsFirstSims.get("frequencyOfSmsSending"));
-        saveSettings = (Button) findViewById(R.id.save_button_settings_first_sim);
+        saveSettings = (Button) findViewById(R.id.save_button_settings_second_sim);
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

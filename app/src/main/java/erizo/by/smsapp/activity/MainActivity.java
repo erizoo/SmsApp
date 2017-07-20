@@ -7,8 +7,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,8 +22,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,6 +35,8 @@ import erizo.by.smsapp.model.MessageWrapper;
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
 import erizo.by.smsapp.service.FileLogService;
+import me.everything.providers.android.telephony.Sms;
+import me.everything.providers.android.telephony.TelephonyProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String BASE_HOST = "https://con24.ru/testapi/";
     private static final String GET_ALL_MESSAGES_TASK = "getAllMessages";
+    private static final String NEW_INCOME_MESSAGE = "newIncomeMessage";
     private static final String SET_MESSAGES_STATUS = "setMessageStatus";
     private static final String DEVICE_ID = "1";
     private static final String SIM_ID = "1";
@@ -61,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private int i = 0;
     private int k = 0;
     private int j = 0;
+    private int n = 0;
     private int status;
     private Button startButton, stopButton, settings;
     private Retrofit retrofit = new Retrofit.Builder()
@@ -71,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Message> mes = new LinkedList<>();
     private List<Message> mesStatus = new LinkedList<>();
     private List<Message> mesStatusDelivered = new LinkedList<>();
+    private Timer timerGetSmsFromPhone = new Timer();
     Intent sentIntent = new Intent(SENT_SMS);
     Intent deliverIntent = new Intent(DELIVER_SMS);
 
@@ -82,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver sentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (!mesStatus.isEmpty()){
-                if (k <= mesStatus.size()-1){
+            if (!mesStatus.isEmpty()) {
+                if (k <= mesStatus.size() - 1) {
                     switch (getResultCode()) {
                         case Activity.RESULT_OK:
                             service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mesStatus.get(k).getMessageID(), STATUS_SENT).enqueue(new Callback<Status>() {
@@ -93,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d(TAG, "Message status: " + response.body().getStatus());
                                     }
                                     k++;
-                                    if (k == mesStatus.size()){
+                                    if (k == mesStatus.size()) {
                                         k = 0;
                                     }
                                     counter = 0;
@@ -115,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d(TAG, "Message status: " + response.body().getStatus());
                                     }
                                     k++;
-                                    if (k == mesStatus.size()){
+                                    if (k == mesStatus.size()) {
                                         k = 0;
                                     }
                                     counter = 0;
@@ -137,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d(TAG, "Message status: " + response.body().getStatus());
                                     }
                                     k++;
-                                    if (k == mesStatus.size()){
+                                    if (k == mesStatus.size()) {
                                         k = 0;
                                     }
                                     counter = 0;
@@ -159,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d(TAG, "Message status: " + response.body().getStatus());
                                     }
                                     k++;
-                                    if (k == mesStatus.size()){
+                                    if (k == mesStatus.size()) {
                                         k = 0;
                                     }
                                     counter = 0;
@@ -181,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d(TAG, "Message status: " + response.body().getStatus());
                                     }
                                     k++;
-                                    if (k == mesStatus.size()){
+                                    if (k == mesStatus.size()) {
                                         k = 0;
                                     }
                                     counter = 0;
@@ -196,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                             break;
                     }
                     mesStatusDelivered = mesStatus;
-                }else {
+                } else {
                     mesStatus.clear();
                     k = 0;
                 }
@@ -208,8 +217,8 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver deliverReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (!mesStatusDelivered.isEmpty()){
-                if (j <= mesStatusDelivered.size()-1) {
+            if (!mesStatusDelivered.isEmpty()) {
+                if (j <= mesStatusDelivered.size() - 1) {
                     switch (getResultCode()) {
                         case Activity.RESULT_OK:
                             service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mesStatusDelivered.get(j).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
@@ -254,9 +263,9 @@ public class MainActivity extends AppCompatActivity {
                             });
                             break;
                     }
-                }else {
+                } else {
                     mesStatusDelivered.clear();
-                    j= 0;
+                    j = 0;
                 }
             }
         }
@@ -307,16 +316,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 timer[0].cancel();
+                timerGetSmsFromPhone.cancel();
                 Log.d(TAG, "App stopped ");
                 Toast.makeText(getApplicationContext(), "App stopped ", Toast.LENGTH_SHORT).show();
                 settings.setClickable(true);
             }
         });
+
         startButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if (settingsFirstSims.get("status") == null) {
+                timerGetSmsFromPhone = new Timer();
+                if (settingsFirstSims.get("status").equals("")) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM-карту ", Toast.LENGTH_SHORT).show();
                 } else {
                     settings.setClickable(false);
@@ -441,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
                                             smsManager.sendTextMessage(mes.get(i).getPhone(), null, mes.get(i).getMessage(), sentPi, deliverPi);
 
                                         }
-                                            i++;
+                                        i++;
                                     } else {
                                         mesStatus = mes;
                                         mes.clear();
@@ -455,20 +467,48 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Активируйте SIM-карту ", Toast.LENGTH_SHORT).show();
                     }
                 }
+                TelephonyProvider telephonyProvider = new TelephonyProvider(getBaseContext());
+                List<Sms> smses = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
+                timerGetSmsFromPhone.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        TelephonyProvider telephonyProvider = new TelephonyProvider(getBaseContext());
+                        final List<Sms> smses = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
+                        Log.d(TAG, "List size: " + smses.size());
+                        if (!smses.isEmpty()) {
+                            for (n = 0; n <= smses.size() - 1; n++) {
+                                if (n == smses.size() - 1) {
+                                    getContentResolver().delete(Uri.parse("content://sms"), null, null);
+                                    smses.clear();
+                                    n = 0;
+                                }
+                                try {
+                                    service.sendSms(NEW_INCOME_MESSAGE, DEVICE_ID, SIM_ID, SECRET_KEY, smses.get(n).subject, smses.get(n).body, "78R934RYYIUTWE67T3T6RU").enqueue(new Callback<Status>() {
+                                        @Override
+                                        public void onResponse(Call<Status> call, Response<Status> response) {
+                                            if (response.body() != null) {
+                                                Log.d(TAG, "Message status: " + response.body().getStatus());
+                                            }
+                                            counter = 0;
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Status> call, Throwable t) {
+                                            counter++;
+                                            Log.d(TAG, "Error get status pending " + t.getMessage());
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    Log.d(TAG, "No new sms ");
+                                }
+                            }
+                        } else {
+                            Log.d(TAG, "No new sms ");
+                        }
+
+                    }
+                }, 0L, 10L * 1000);
             }
         });
-    }
-
-    private List getSimCardList() {
-        final ArrayList<Integer> simCardList = new ArrayList<>();
-        SubscriptionManager subscriptionManager;
-//        subscriptionManager = SubscriptionManager.from(this);
-//        final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
-//                .getActiveSubscriptionInfoList();
-//        for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
-//            int subscriptionId = subscriptionInfo.getSubscriptionId();
-//            simCardList.add(subscriptionId);
-//        }
-        return simCardList;
     }
 }

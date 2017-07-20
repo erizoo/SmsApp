@@ -25,7 +25,7 @@ public class SettingsSecondSim extends Activity {
     private static final String TAG = SettingsSecondSim.class.getSimpleName();
     private static final String SETTINGS = "second_sim_settings";
     private Switch aSwitch;
-    private EditText frequencyOfRequests, frequencyOfSmsSending;
+    private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
     private Button saveSettings;
     static Map<String, String> settingsSecondSims;
 
@@ -45,6 +45,9 @@ public class SettingsSecondSim extends Activity {
             settingsSecondSims = new HashMap<>();
         }
         aSwitch = (Switch) findViewById(R.id.switch_second_sim);
+        simId = (EditText) findViewById(R.id.sim_second_id_edit);
+        url = (EditText) findViewById(R.id.url_second_sim_edit);
+        secretKey = (EditText) findViewById(R.id.secret_key_second_sim_edit);
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_second_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_second_sim_edit_text);
         frequencyOfRequests.setText(settingsSecondSims.get("frequencyOfRequests"));

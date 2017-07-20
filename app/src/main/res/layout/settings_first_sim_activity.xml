@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Частота запросов "
-        android:layout_marginBottom="47dp"
+        android:layout_marginBottom="26dp"
         android:layout_above="@+id/frequency_sent_sms_first_sim"
         android:layout_alignStart="@+id/frequency_sent_sms_first_sim" />
 
@@ -41,18 +41,17 @@
         android:layout_height="wrap_content"
         android:text="Периодичность отправки "
         android:textSize="14sp"
-        android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/switch_first_sim" />
+        android:layout_above="@+id/save_button_settings_first_sim"
+        android:layout_alignStart="@+id/sim_first_id"
+        android:layout_marginBottom="95dp" />
 
     <EditText
         android:id="@+id/frequency_sent_sms_first_sim_edit_text"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:layout_below="@+id/frequency_requests_first_sim_edit_text"
-        android:layout_alignLeft="@+id/frequency_requests_first_sim_edit_text"
+        android:layout_alignBottom="@+id/frequency_sent_sms_first_sim"
         android:layout_alignStart="@+id/frequency_requests_first_sim_edit_text" />
 
     <Button
@@ -68,4 +67,55 @@
         android:textStyle="bold"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/sim_first_id_edit"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_below="@+id/switch_first_sim"
+        android:layout_alignStart="@+id/frequency_requests_first_sim_edit_text" />
+
+    <TextView
+        android:id="@+id/sim_first_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/sim_first_id_edit"
+        android:layout_alignStart="@+id/switch_first_sim"
+        android:text="SIM ID" />
+
+    <TextView
+        android:id="@+id/secret_key_first_sim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/frequency_requests_first_sim_edit_text"
+        android:layout_alignStart="@+id/frequency_requests_first_sim"
+        android:text="SecretKey" />
+
+    <EditText
+        android:id="@+id/secret_key_first_sim_edit"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_above="@+id/frequency_requests_first_sim_edit_text"
+        android:layout_toEndOf="@+id/frequency_requests_first_sim" />
+
+    <TextView
+        android:id="@+id/url_first_sim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/secret_key_first_sim_edit"
+        android:layout_alignStart="@+id/secret_key_first_sim"
+        android:text="URL" />
+
+    <EditText
+        android:id="@+id/url_first_sim_edit"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_above="@+id/secret_key_first_sim_edit"
+        android:layout_toEndOf="@+id/secret_key_first_sim" />
 </RelativeLayout>
