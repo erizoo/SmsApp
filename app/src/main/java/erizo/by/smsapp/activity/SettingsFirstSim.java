@@ -1,8 +1,8 @@
 package erizo.by.smsapp.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,12 +20,12 @@ import java.util.Map;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.service.TinyDb;
 
-public class SettingsFirstSim extends AppCompatActivity {
+public class SettingsFirstSim extends Activity {
 
     private static final String TAG = SettingsFirstSim.class.getSimpleName();
-    private static final String SETTINGS = "settings";
+    private static final String SETTINGS = "first_sim_settings";
     private Switch aSwitch;
-    private EditText simId, url, secretKey,frequencyOfRequests,frequencyOfSmsSending;
+    private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
     private Button saveSettings;
     static Map<String, String> settingsFirstSims;
 
@@ -36,7 +36,7 @@ public class SettingsFirstSim extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_first_sim_activity);
         tinyDb = new TinyDb(this);
-        if (tinyDb.keyContaints("settings")) {
+        if (tinyDb.keyContaints(SETTINGS)) {
             Log.d(TAG, "settings contains. set them to view");
             String serializedSettings = tinyDb.getString(SETTINGS);
             Gson gson = new Gson();
@@ -45,9 +45,6 @@ public class SettingsFirstSim extends AppCompatActivity {
             settingsFirstSims = new HashMap<>();
         }
         aSwitch = (Switch) findViewById(R.id.switch_first_sim);
-//        simId = (EditText) findViewById(R.id.id_sim_first_edit_text);
-//        url = (EditText) findViewById(R.id.url_sim_first_edit_text);
-//        secretKey = (EditText) findViewById(R.id.secret_key_first_sim_edit_text);
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_first_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_first_sim_edit_text);
         frequencyOfRequests.setText(settingsFirstSims.get("frequencyOfRequests"));
@@ -78,12 +75,6 @@ public class SettingsFirstSim extends AppCompatActivity {
         saveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                settingsFirstSims.put("simId", String.valueOf(simId.getText()));
-//                Log.d(TAG, settingsFirstSims.get("simId"));
-//                settingsFirstSims.put("url", url.getText().toString());
-//                Log.d(TAG, settingsFirstSims.get("url"));
-//                settingsFirstSims.put("secretKey", secretKey.getText().toString());
-//                Log.d(TAG, settingsFirstSims.get("secretKey"));
                 settingsFirstSims.put("frequencyOfRequests", frequencyOfRequests.getText().toString());
                 Log.d(TAG, settingsFirstSims.get("frequencyOfRequests"));
                 settingsFirstSims.put("frequencyOfSmsSending", frequencyOfSmsSending.getText().toString());
