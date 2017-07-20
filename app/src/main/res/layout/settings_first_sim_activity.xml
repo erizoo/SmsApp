@@ -14,65 +14,6 @@
         android:layout_marginTop="43dp"
         android:text="Статус" />
 
-    <!--<TextView-->
-        <!--android:id="@+id/id_sim_first"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignLeft="@+id/switch_first_sim"-->
-        <!--android:layout_alignStart="@+id/switch_first_sim"-->
-        <!--android:layout_below="@+id/switch_first_sim"-->
-        <!--android:layout_marginTop="33dp"-->
-        <!--android:text="SIM ID" />-->
-
-    <!--<EditText-->
-        <!--android:id="@+id/id_sim_first_edit_text"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:ems="10"-->
-        <!--android:inputType="textPersonName"-->
-        <!--android:layout_alignBaseline="@+id/id_sim_first"-->
-        <!--android:layout_alignBottom="@+id/id_sim_first"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:layout_marginRight="24dp"-->
-        <!--android:layout_marginEnd="24dp" />-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/url_sim_first"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="URL"-->
-        <!--android:layout_above="@+id/secret_key_first_sim_edit_text"-->
-        <!--android:layout_alignLeft="@+id/secret_key_first_sim"-->
-        <!--android:layout_alignStart="@+id/secret_key_first_sim"-->
-        <!--android:layout_marginBottom="42dp" />-->
-
-    <!--<EditText-->
-        <!--android:id="@+id/url_sim_first_edit_text"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:ems="10"-->
-        <!--android:inputType="textPersonName"-->
-        <!--android:layout_alignBaseline="@+id/url_sim_first"-->
-        <!--android:layout_alignBottom="@+id/url_sim_first"-->
-        <!--android:layout_alignLeft="@+id/id_sim_first_edit_text"-->
-        <!--android:layout_alignStart="@+id/id_sim_first_edit_text" />-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/secret_key_first_sim"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="SecretKey "-->
-        <!--android:layout_centerVertical="true" />-->
-
-    <!--<EditText-->
-        <!--android:id="@+id/secret_key_first_sim_edit_text"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:ems="10"-->
-        <!--android:inputType="textPersonName"-->
-        <!--android:layout_centerVertical="true" />-->
-
     <TextView
         android:id="@+id/frequency_requests_first_sim"
         android:layout_width="wrap_content"
