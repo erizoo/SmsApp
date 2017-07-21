@@ -26,7 +26,7 @@ public class SettingsSecondSim extends Activity {
     private static final String SETTINGS = "second_sim_settings";
     private Switch aSwitch;
     private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
-    private Button saveSettings;
+    private Button saveSettings, nextSettings;
     static Map<String, String> settingsSecondSims;
 
     private TinyDb tinyDb;
@@ -51,6 +51,7 @@ public class SettingsSecondSim extends Activity {
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_second_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_second_sim_edit_text);
         saveSettings = (Button) findViewById(R.id.save_button_settings_second_sim);
+        nextSettings = (Button) findViewById(R.id.test_button_second_sim);
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -72,6 +73,14 @@ public class SettingsSecondSim extends Activity {
         } catch (Exception e){
             Log.e(TAG, e.getMessage());
         }
+
+        nextSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), AdditionalSettingsSecondSim.class);
+                startActivity(intent);
+            }
+        });
 
         saveSettings.setOnClickListener(new View.OnClickListener() {
             @Override

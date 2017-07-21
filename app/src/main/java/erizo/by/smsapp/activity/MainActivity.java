@@ -22,7 +22,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -49,8 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
     private static final String MES = "MES";
-    String SENT_SMS = "SENT_SMS";
-    String DELIVER_SMS = "DELIVER_SMS";
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String BASE_HOST = "https://con24.ru/testapi/";
     private static final String GET_ALL_MESSAGES_TASK = "getAllMessages";
@@ -64,6 +67,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String STATUS_UNSENT = "unsent";
     private static final String STATUS_INDELIVERED = "undelivered";
     private static final String STATUS_DELIVERED = "delivered";
+    String SENT_SMS = "SENT_SMS";
+    String DELIVER_SMS = "DELIVER_SMS";
+    Intent sentIntent = new Intent(SENT_SMS);
+    Intent deliverIntent = new Intent(DELIVER_SMS);
+    ArrayList<PendingIntent> sentIntents = new ArrayList<>();
+    ArrayList<PendingIntent> deliveryIntents = new ArrayList<>();
+    PendingIntent sentPi, deliverPi;
+    List<Integer> simList;
     private int counter = 0;
     private int i = 0;
     private int k = 0;
@@ -79,16 +90,6 @@ public class MainActivity extends AppCompatActivity {
     private List<Message> mes = new LinkedList<>();
     private List<Message> mesStatus = new LinkedList<>();
     private List<Message> mesStatusDelivered = new LinkedList<>();
-    private Timer timerGetSmsFromPhone = new Timer();
-    Intent sentIntent = new Intent(SENT_SMS);
-    Intent deliverIntent = new Intent(DELIVER_SMS);
-
-    ArrayList<PendingIntent> sentIntents = new ArrayList<>();
-    ArrayList<PendingIntent> deliveryIntents = new ArrayList<>();
-    PendingIntent sentPi, deliverPi;
-
-    List<Integer> simList;
-
     BroadcastReceiver sentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -96,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 if (k <= mesStatus.size() - 1) {
                     switch (getResultCode()) {
                         case Activity.RESULT_OK:
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mesStatus.get(k).getMessageID(), STATUS_SENT).enqueue(new Callback<Status>() {
+                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+                                    mesStatus.get(k).getMessageID(), STATUS_SENT).enqueue(new Callback<Status>() {
                                 @Override
                                 public void onResponse(Call<Status> call, Response<Status> response) {
                                     if (response.body() != null) {
@@ -118,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                             Log.d(TAG, "Generic failure ");
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
+                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
                                 @Override
                                 public void onResponse(Call<Status> call, Response<Status> response) {
                                     if (response.body() != null) {
@@ -140,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case SmsManager.RESULT_ERROR_NO_SERVICE:
                             Log.d(TAG, "No service ");
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
+                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
                                 @Override
                                 public void onResponse(Call<Status> call, Response<Status> response) {
                                     if (response.body() != null) {
@@ -162,7 +166,8 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case SmsManager.RESULT_ERROR_NULL_PDU:
                             Log.d(TAG, "Null PDU ");
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
+                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
                                 @Override
                                 public void onResponse(Call<Status> call, Response<Status> response) {
                                     if (response.body() != null) {
@@ -184,7 +189,8 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case SmsManager.RESULT_ERROR_RADIO_OFF:
                             Log.d(TAG, "Radio off ");
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
+                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
                                 @Override
                                 public void onResponse(Call<Status> call, Response<Status> response) {
                                     if (response.body() != null) {
@@ -214,7 +220,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
-
     BroadcastReceiver deliverReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -222,7 +227,8 @@ public class MainActivity extends AppCompatActivity {
                 if (j <= mesStatusDelivered.size() - 1) {
                     switch (getResultCode()) {
                         case Activity.RESULT_OK:
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mesStatusDelivered.get(j).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
+                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+                                    mesStatusDelivered.get(j).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
                                 @Override
                                 public void onResponse(Call<Status> call, Response<Status> response) {
                                     if (response.body() != null) {
@@ -243,7 +249,8 @@ public class MainActivity extends AppCompatActivity {
                             });
                             break;
                         case Activity.RESULT_CANCELED:
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mesStatusDelivered.get(j).getMessageID(), STATUS_INDELIVERED).enqueue(new Callback<Status>() {
+                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+                                    mesStatusDelivered.get(j).getMessageID(), STATUS_INDELIVERED).enqueue(new Callback<Status>() {
                                 @Override
                                 public void onResponse(Call<Status> call, Response<Status> response) {
                                     if (response.body() != null) {
@@ -271,6 +278,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    private Timer timerGetSmsFromPhone = new Timer();
 
     @Override
     protected void onResume() {
@@ -346,7 +354,8 @@ public class MainActivity extends AppCompatActivity {
                             timer[0].schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
+                                    service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, settingsFirstSims.get("simId"),
+                                            settingsFirstSims.get("secretKey")).enqueue(new Callback<MessageWrapper>() {
                                         @Override
                                         public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
                                             try {
@@ -387,7 +396,8 @@ public class MainActivity extends AppCompatActivity {
                             timer[0].schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
+                                    service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, settingsFirstSims.get("simId"),
+                                            settingsFirstSims.get("secretKey")).enqueue(new Callback<MessageWrapper>() {
                                         @Override
                                         public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
                                             try {
@@ -432,7 +442,8 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             if (!mes.isEmpty()) {
                                 if (i <= mes.size() - 1) {
-                                    service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_PENDING).enqueue(new Callback<Status>() {
+                                    service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"),
+                                            settingsFirstSims.get("secretKey"), mes.get(i).getMessageID(), STATUS_PENDING).enqueue(new Callback<Status>() {
                                         @Override
                                         public void onResponse(Call<Status> call, Response<Status> response) {
                                             if (response.body() != null) {
@@ -494,7 +505,8 @@ public class MainActivity extends AppCompatActivity {
                                     n = 0;
                                 }
                                 try {
-                                    service.sendSms(NEW_INCOME_MESSAGE, DEVICE_ID, SIM_ID, SECRET_KEY, smses.get(n).address, smses.get(n).body, "78R934RYYIUTWE67T3T6RU").enqueue(new Callback<Status>() {
+                                    service.sendSms(NEW_INCOME_MESSAGE, DEVICE_ID, SIM_ID, settingsFirstSims.get("secretKey"),
+                                            smses.get(n).address, smses.get(n).body, getMessageIdForSms(smses.get(n).address,smses.get(n).body)).enqueue(new Callback<Status>() {
                                         @Override
                                         public void onResponse(Call<Status> call, Response<Status> response) {
                                             if (response.body() != null) {
@@ -522,6 +534,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public String getMessageIdForSms(String phone, String message){
+        Calendar c = Calendar.getInstance();
+        System.out.println("Current time => "+c.getTime());
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = df.format(c.getTime());
+        String[] item = formattedDate.split(" ");
+        String[] itemOne = item[0].split("-");
+        String[] itemTwo = item[1].split(":");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(itemOne[0]).append(itemOne[1]).append(itemOne[2]).append(itemTwo[0]).append(itemTwo[1]).append(itemTwo[2])
+                .append("00001").append("00001").append(MD5_Hash(phone + message));
+        Log.d(TAG, String.valueOf(stringBuilder).toUpperCase());
+        return String.valueOf(stringBuilder).toUpperCase();
+    }
+
+
+
+    public static String MD5_Hash(String s) {
+        MessageDigest m = null;
+
+        try {
+            m = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        m.update(s.getBytes(),0,s.length());
+        String hash = new BigInteger(1, m.digest()).toString(16);
+        return hash;
+    }
+
+
 
     @TargetApi(LOLLIPOP_MR1)
     private List<Integer> getSimList() {

@@ -30,7 +30,7 @@ public class SettingsFirstSim extends Activity {
     private static final String SETTINGS = "first_sim_settings";
     private Switch aSwitch;
     private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
-    private Button saveSettings;
+    private Button saveSettings, nextSettings;
 //    static Map<String, String> settingsFirstSims;
     private TinyDb tinyDb;
 
@@ -54,6 +54,7 @@ public class SettingsFirstSim extends Activity {
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_first_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_first_sim_edit_text);
         saveSettings = (Button) findViewById(R.id.save_button_settings_first_sim);
+        nextSettings = (Button) findViewById(R.id.test_button);
         simId.setText(settingsFirstSims.get("simId"));
         url.setText(settingsFirstSims.get("url"));
         secretKey.setText(settingsFirstSims.get("secretKey"));
@@ -81,6 +82,14 @@ public class SettingsFirstSim extends Activity {
         } catch (Exception e){
             Log.e(TAG, e.getMessage());
         }
+
+        nextSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), AdditionalSettingsFirstSim.class );
+                startActivity(intent);
+            }
+        });
 
         saveSettings.setOnClickListener(new View.OnClickListener() {
             @Override

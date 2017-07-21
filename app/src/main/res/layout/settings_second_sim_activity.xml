@@ -120,4 +120,17 @@
         android:layout_above="@+id/secret_key_second_sim_edit"
         android:layout_toEndOf="@+id/secret_key_second_sim" />
 
+    <Button
+        android:id="@+id/test_button_second_sim"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="14dp"
+        android:background="@android:color/holo_blue_light"
+        android:text="Самотестирование"
+        android:textColor="@android:color/background_light"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
 </RelativeLayout>
