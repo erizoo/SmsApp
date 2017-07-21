@@ -49,6 +49,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import static erizo.by.smsapp.App.settingsFirstSims;
+import static erizo.by.smsapp.App.settingsSecondSims;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
             .baseUrl(BASE_HOST)
             .build();
     private APIService service = retrofit.create(APIService.class);
-    private List<Message> mes = new LinkedList<>();
+    private List<Message> messageListFirstSim = new LinkedList<>();
+    private List<Message> messageListSecondSim = new LinkedList<>();
     private List<Message> mesStatus = new LinkedList<>();
     private List<Message> mesStatusDelivered = new LinkedList<>();
     BroadcastReceiver sentReceiver = new BroadcastReceiver() {
@@ -350,100 +352,92 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "App started ");
                     if (settingsFirstSims.get("status").equals("true")) {
                         Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
-                        try {
-                            timer[0].schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, settingsFirstSims.get("simId"),
-                                            settingsFirstSims.get("secretKey")).enqueue(new Callback<MessageWrapper>() {
-                                        @Override
-                                        public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
-                                            try {
-                                                if (response.body() != null) {
-                                                    Log.d(TAG, response.body().toString());
-                                                    if (!response.body().getMessages().isEmpty()) {
-                                                        for (Message list : response.body().getMessages()) {
-                                                            mes.add(list);
-                                                        }
-                                                        counter = 0;
-                                                    } else {
-                                                        Log.d(TAG, "No new messages");
-                                                        new FileLogService().appendLog("Hello world");
+                        timer[0] = new Timer();
+                        timer[0].schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, settingsFirstSims.get("simId"),
+                                        settingsFirstSims.get("secretKey")).enqueue(new Callback<MessageWrapper>() {
+                                    @Override
+                                    public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
+                                        try {
+                                            if (response.body() != null) {
+                                                Log.d(TAG, response.body().toString());
+                                                if (!response.body().getMessages().isEmpty()) {
+                                                    for (Message list : response.body().getMessages()) {
+                                                        messageListFirstSim.add(list);
                                                     }
-                                                    Log.d(TAG, String.valueOf(counter));
-                                                } else {
-                                                    Log.d(TAG, "Response body = NULL");
-                                                    Log.d(TAG, String.valueOf(counter));
                                                     counter = 0;
+                                                } else {
+                                                    Log.d(TAG, "No new messages");
+                                                    new FileLogService().appendLog("Hello world");
                                                 }
-                                            } catch (Exception e) {
-                                                counter++;
-                                                Log.e(TAG, e.getMessage());
-                                                Log.e(TAG, String.valueOf(counter));
+                                                Log.d(TAG, String.valueOf(counter));
+                                            } else {
+                                                Log.d(TAG, "Response body = NULL");
+                                                Log.d(TAG, String.valueOf(counter));
+                                                counter = 0;
                                             }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<MessageWrapper> call, Throwable t) {
+                                        } catch (Exception e) {
                                             counter++;
-                                            Log.e(TAG, "Something went wrong " + t.getMessage());
+                                            Log.e(TAG, e.getMessage());
+                                            Log.e(TAG, String.valueOf(counter));
                                         }
-                                    });
-                                }
-                            }, 0L, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000);
-                        } catch (Exception e) {
-                            timer[0] = new Timer();
-                            timer[0].schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, settingsFirstSims.get("simId"),
-                                            settingsFirstSims.get("secretKey")).enqueue(new Callback<MessageWrapper>() {
-                                        @Override
-                                        public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
-                                            try {
-                                                if (response.body() != null) {
-                                                    Log.d(TAG, response.body().toString());
-                                                    if (!response.body().getMessages().isEmpty()) {
-                                                        for (Message list : response.body().getMessages()) {
-                                                            mes.add(list);
-                                                        }
-                                                        counter = 0;
-                                                    } else {
-                                                        Log.d(TAG, "No new messages");
-                                                        new FileLogService().appendLog("Hello world");
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<MessageWrapper> call, Throwable t) {
+                                        counter++;
+                                        Log.e(TAG, "Something went wrong " + t.getMessage());
+                                    }
+                                });
+                                service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, settingsSecondSims.get("simId"),
+                                        settingsFirstSims.get("secretKey")).enqueue(new Callback<MessageWrapper>() {
+                                    @Override
+                                    public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
+                                        try {
+                                            if (response.body() != null) {
+                                                Log.d(TAG, response.body().toString());
+                                                if (!response.body().getMessages().isEmpty()) {
+                                                    for (Message list : response.body().getMessages()) {
+                                                        messageListSecondSim.add(list);
                                                     }
-                                                    Log.d(TAG, String.valueOf(counter));
-                                                } else {
-                                                    Log.d(TAG, "Response body = NULL");
-                                                    Log.d(TAG, String.valueOf(counter));
                                                     counter = 0;
+                                                } else {
+                                                    Log.d(TAG, "No new messages");
+                                                    new FileLogService().appendLog("Hello world");
                                                 }
-                                            } catch (Exception e) {
-                                                counter++;
-                                                Log.e(TAG, e.getMessage());
-                                                Log.e(TAG, String.valueOf(counter));
+                                                Log.d(TAG, String.valueOf(counter));
+                                            } else {
+                                                Log.d(TAG, "Response body = NULL");
+                                                Log.d(TAG, String.valueOf(counter));
+                                                counter = 0;
                                             }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<MessageWrapper> call, Throwable t) {
+                                        } catch (Exception e) {
                                             counter++;
-                                            Log.e(TAG, "Something went wrong " + t.getMessage());
+                                            Log.e(TAG, e.getMessage());
+                                            Log.e(TAG, String.valueOf(counter));
                                         }
-                                    });
-                                }
-                            }, 0L, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000);
-                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<MessageWrapper> call, Throwable t) {
+                                        counter++;
+                                        Log.e(TAG, "Something went wrong " + t.getMessage());
+                                    }
+                                });
+                            }
+                        }, 0L, Long.parseLong(settingsSecondSims.get("frequencyOfRequests"), 10) * 1000);
                     }
                     Timer timerTwo = new Timer();
                     timerTwo.schedule(new TimerTask() {
                         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
                         @Override
                         public void run() {
-                            if (!mes.isEmpty()) {
-                                if (i <= mes.size() - 1) {
+                            if (!messageListFirstSim.isEmpty()) {
+                                if (i <= messageListFirstSim.size() - 1) {
                                     service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"),
-                                            settingsFirstSims.get("secretKey"), mes.get(i).getMessageID(), STATUS_PENDING).enqueue(new Callback<Status>() {
+                                            settingsFirstSims.get("secretKey"), messageListFirstSim.get(i).getMessageID(), STATUS_PENDING).enqueue(new Callback<Status>() {
                                         @Override
                                         public void onResponse(Call<Status> call, Response<Status> response) {
                                             if (response.body() != null) {
@@ -458,29 +452,95 @@ public class MainActivity extends AppCompatActivity {
                                             Log.d(TAG, "Error get status pending " + t.getMessage());
                                         }
                                     });
-                                    mesStatus = mes;
+                                    mesStatus = messageListFirstSim;
                                     SmsManager smsManager;
                                     if (Build.VERSION.SDK_INT <= LOLLIPOP_MR1) {
                                         smsManager = SmsManager.getDefault();
                                     } else {
                                         smsManager = getSmsManager(simList.get(Integer.valueOf(SIM_ID) - 1)); //todo change to real sim id
                                     }
-                                    if (mes.get(i).getMessage().length() > 100) {
-                                        ArrayList<String> parts = smsManager.divideMessage(mes.get(i).getMessage());
+                                    final ArrayList<Integer> simCardList = new ArrayList<>();
+                                    SubscriptionManager subscriptionManager;
+                                    subscriptionManager = SubscriptionManager.from(getBaseContext());
+                                    final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
+                                            .getActiveSubscriptionInfoList();
+                                    for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+                                        int subscriptionId = subscriptionInfo.getSubscriptionId();
+                                        simCardList.add(subscriptionId);
+                                    }
+
+                                    if (messageListFirstSim.get(i).getMessage().length() > 100) {
+                                        ArrayList<String> parts = smsManager.divideMessage(messageListFirstSim.get(i).getMessage());
                                         int numParts = parts.size();
                                         for (int i = 0; i < numParts; i++) {
                                             sentIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, sentIntent, 0));
                                             deliveryIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, deliverIntent, 0));
                                         }
-                                        smsManager.sendMultipartTextMessage(mes.get(i).getPhone(), null, parts, sentIntents, deliveryIntents);
+                                        smsManager.sendMultipartTextMessage(messageListFirstSim.get(i).getPhone(), null, parts, sentIntents, deliveryIntents);
                                     } else {
-                                        smsManager.sendTextMessage(mes.get(i).getPhone(), null, mes.get(i).getMessage(), sentPi, deliverPi);
-
+                                        SmsManager.getSmsManagerForSubscriptionId(simCardList.get(0)).sendTextMessage(messageListFirstSim.get(i).getPhone(), null, messageListFirstSim.get(i).getMessage(), sentPi, deliverPi);
+//                                        SmsManager.getSmsManagerForSubscriptionId(simCardList.get(1)).sendTextMessage("+375336859996", null, "hello world", sentPi, sentPi);
+//                                        smsManager.sendTextMessage(messageListFirstSim.get(i).getPhone(), null, messageListFirstSim.get(i).getMessage(), sentPi, deliverPi);
                                     }
                                     i++;
                                 } else {
-                                    mesStatus = mes;
-                                    mes.clear();
+                                    mesStatus = messageListFirstSim;
+                                    messageListFirstSim.clear();
+                                    i = 0;
+                                }
+                            }
+                            if (!messageListSecondSim.isEmpty()) {
+                                if (i <= messageListSecondSim.size() - 1) {
+                                    service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsSecondSims.get("simId"),
+                                            settingsSecondSims.get("secretKey"), messageListSecondSim.get(i).getMessageID(), STATUS_PENDING).enqueue(new Callback<Status>() {
+                                        @Override
+                                        public void onResponse(Call<Status> call, Response<Status> response) {
+                                            if (response.body() != null) {
+                                                Log.d(TAG, "Message status: " + response.body().getStatus());
+                                            }
+                                            counter = 0;
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Status> call, Throwable t) {
+                                            counter++;
+                                            Log.d(TAG, "Error get status pending " + t.getMessage());
+                                        }
+                                    });
+//                                    mesStatus = messageListFirstSim;
+                                    SmsManager smsManager;
+                                    if (Build.VERSION.SDK_INT <= LOLLIPOP_MR1) {
+                                        smsManager = SmsManager.getDefault();
+                                    } else {
+                                        smsManager = getSmsManager(simList.get(Integer.valueOf(SIM_ID) - 1)); //todo change to real sim id
+                                    }
+                                    final ArrayList<Integer> simCardList = new ArrayList<>();
+                                    SubscriptionManager subscriptionManager;
+                                    subscriptionManager = SubscriptionManager.from(getBaseContext());
+                                    final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
+                                            .getActiveSubscriptionInfoList();
+                                    for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+                                        int subscriptionId = subscriptionInfo.getSubscriptionId();
+                                        simCardList.add(subscriptionId);
+                                    }
+
+                                    if (messageListSecondSim.get(i).getMessage().length() > 100) {
+                                        ArrayList<String> parts = smsManager.divideMessage(messageListSecondSim.get(i).getMessage());
+                                        int numParts = parts.size();
+                                        for (int i = 0; i < numParts; i++) {
+                                            sentIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, sentIntent, 0));
+                                            deliveryIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, deliverIntent, 0));
+                                        }
+                                        smsManager.sendMultipartTextMessage(messageListSecondSim.get(i).getPhone(), null, parts, sentIntents, deliveryIntents);
+                                    } else {
+                                        SmsManager.getSmsManagerForSubscriptionId(simCardList.get(1)).sendTextMessage(messageListSecondSim.get(i).getPhone(), null, messageListSecondSim.get(i).getMessage(), sentPi, deliverPi);
+//                                        SmsManager.getSmsManagerForSubscriptionId(simCardList.get(1)).sendTextMessage("+375336859996", null, "hello world", sentPi, sentPi);
+//                                        smsManager.sendTextMessage(messageListFirstSim.get(i).getPhone(), null, messageListFirstSim.get(i).getMessage(), sentPi, deliverPi);
+                                    }
+                                    i++;
+                                } else {
+                                    mesStatus = messageListFirstSim;
+                                    messageListFirstSim.clear();
                                     i = 0;
                                 }
                             }
@@ -506,7 +566,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 try {
                                     service.sendSms(NEW_INCOME_MESSAGE, DEVICE_ID, SIM_ID, settingsFirstSims.get("secretKey"),
-                                            smses.get(n).address, smses.get(n).body, getMessageIdForSms(smses.get(n).address,smses.get(n).body)).enqueue(new Callback<Status>() {
+                                            smses.get(n).address, smses.get(n).body, getMessageIdForSms(smses.get(n).address, smses.get(n).body)).enqueue(new Callback<Status>() {
                                         @Override
                                         public void onResponse(Call<Status> call, Response<Status> response) {
                                             if (response.body() != null) {
@@ -535,9 +595,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public String getMessageIdForSms(String phone, String message){
+    public String getMessageIdForSms(String phone, String message) {
         Calendar c = Calendar.getInstance();
-        System.out.println("Current time => "+c.getTime());
+        System.out.println("Current time => " + c.getTime());
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = df.format(c.getTime());
         String[] item = formattedDate.split(" ");
@@ -551,7 +611,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     public static String MD5_Hash(String s) {
         MessageDigest m = null;
 
@@ -561,11 +620,10 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        m.update(s.getBytes(),0,s.length());
+        m.update(s.getBytes(), 0, s.length());
         String hash = new BigInteger(1, m.digest()).toString(16);
         return hash;
     }
-
 
 
     @TargetApi(LOLLIPOP_MR1)

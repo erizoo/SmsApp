@@ -12,12 +12,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import erizo.by.smsapp.App;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.service.TinyDb;
 
@@ -27,7 +22,7 @@ import static erizo.by.smsapp.App.settingsFirstSims;
 public class SettingsFirstSim extends Activity {
 
     private static final String TAG = SettingsFirstSim.class.getSimpleName();
-    private static final String SETTINGS = "first_sim_settings";
+    private static final String SETTINGS_FIRST_SIM = "first_sim_settings";
     private Switch aSwitch;
     private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
     private Button saveSettings, nextSettings;
@@ -39,14 +34,6 @@ public class SettingsFirstSim extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_first_sim_activity);
         tinyDb = new TinyDb(this);
-//        if (tinyDb.keyContaints(SETTINGS)) {
-//            Log.d(TAG, "settings contains. set them to view");
-//            String serializedSettings = tinyDb.getString(SETTINGS);
-//            Gson gson = new Gson();
-//            settingsFirstSims = gson.fromJson(serializedSettings, new TypeToken<Map<String, String>>(){}.getType());
-//        } else {
-//            settingsFirstSims = new HashMap<>();
-//        }
         aSwitch = (Switch) findViewById(R.id.switch_first_sim);
         simId = (EditText) findViewById(R.id.sim_first_id_edit);
         url = (EditText) findViewById(R.id.url_first_sim_edit);
@@ -110,11 +97,11 @@ public class SettingsFirstSim extends Activity {
                 if(frequencyOfSmsSending.getText().toString().equals("")){
                     settingsFirstSims.put("frequencyOfSmsSending", "60");
                 }
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                Intent intent = new Intent(getBaseContext(), AdditionalSettingsFirstSim.class);
                 startActivity(intent);
                 Gson gson = new Gson();
                 String serializedSettings = gson.toJson(settingsFirstSims);
-                tinyDb.putString(SETTINGS, serializedSettings);
+                tinyDb.putString(SETTINGS_FIRST_SIM, serializedSettings);
             }
         });
     }
