@@ -11,7 +11,6 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Telephony;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -24,10 +23,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -46,7 +43,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
-import static erizo.by.smsapp.activity.SettingsFirstSim.settingsFirstSims;
+import static erizo.by.smsapp.App.settingsFirstSims;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -289,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(deliverReceiver);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -337,16 +335,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 timerGetSmsFromPhone = new Timer();
-                try {
-                    if (settingsFirstSims.get("status").equals("false")) {
-                        Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
-                    } else {
-                        settings.setClickable(false);
-                        Log.d(TAG, "App started ");
-                        if (settingsFirstSims.get("status").equals("true")) {
-                            Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
-                            timer = new Timer();
-                            timer.schedule(new TimerTask() {
+                if (settingsFirstSims.get("status").equals("false")) {
+                    Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
+                } else {
+                    settings.setClickable(false);
+                    Log.d(TAG, "App started ");
+                    if (settingsFirstSims.get("status").equals("true")) {
+                        Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
+                        try {
+                            timer[0].schedule(new TimerTask() {
                                 @Override
                                 public void run() {
                                     service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
@@ -427,64 +424,60 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }, 0L, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000);
                         }
-                        final SmsManager smsManager = SmsManager.getDefault();
-                        Timer timerTwo = new Timer();
-                        timerTwo.schedule(new TimerTask() {
-                            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
-                            @Override
-                            public void run() {
-                                if (!mes.isEmpty()) {
-                                    if (i <= mes.size() - 1) {
-                                        service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_PENDING).enqueue(new Callback<Status>() {
-                                            @Override
-                                            public void onResponse(Call<Status> call, Response<Status> response) {
-                                                if (response.body() != null) {
-                                                    Log.d(TAG, "Message status: " + response.body().getStatus());
-                                                }
-                                                counter = 0;
-                                            }
-
-                                            @Override
-                                            public void onFailure(Call<Status> call, Throwable t) {
-                                                counter++;
-                                                Log.d(TAG, "Error get status pending " + t.getMessage());
-                                            }
-                                        });
-                                        mesStatus = mes;
-                                        SmsManager smsManager;
-                                        if (simList.isEmpty()) {
-                                            smsManager = SmsManager.getDefault();
-                                        } else {
-                                            smsManager = getSmsManager(simList.get(Integer.valueOf(SIM_ID))); //todo change to real sim id
-                                        }
-                                        if (mes.get(i).getMessage().length() > 100) {
-                                            ArrayList<String> parts = smsManager.divideMessage(mes.get(i).getMessage());
-                                            int numParts = parts.size();
-                                            for (int i = 0; i < numParts; i++) {
-                                                sentIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, sentIntent, 0));
-                                                deliveryIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, deliverIntent, 0));
-                                            }
-                                            smsManager.sendMultipartTextMessage(mes.get(i).getPhone(), null, parts, sentIntents, deliveryIntents);
-                                        } else {
-                                            smsManager.sendTextMessage(mes.get(i).getPhone(), null, mes.get(i).getMessage(), sentPi, deliverPi);
-
-                                        }
-                                        i++;
-                                    } else {
-                                        mesStatus = mes;
-                                        mes.clear();
-                                        i = 0;
-                                    }
-                                }
-
-                            }
-                        }, 0L, Long.parseLong(settingsFirstSims.get("frequencyOfSmsSending"), 10) * 1000);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Активируйте SIM-карту ", Toast.LENGTH_SHORT).show();
                     }
-                } catch (NullPointerException e) {
-                    Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
+                    Timer timerTwo = new Timer();
+                    timerTwo.schedule(new TimerTask() {
+                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
+                        @Override
+                        public void run() {
+                            if (!mes.isEmpty()) {
+                                if (i <= mes.size() - 1) {
+                                    service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, SIM_ID, SECRET_KEY, mes.get(i).getMessageID(), STATUS_PENDING).enqueue(new Callback<Status>() {
+                                        @Override
+                                        public void onResponse(Call<Status> call, Response<Status> response) {
+                                            if (response.body() != null) {
+                                                Log.d(TAG, "Message status: " + response.body().getStatus());
+                                            }
+                                            counter = 0;
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Status> call, Throwable t) {
+                                            counter++;
+                                            Log.d(TAG, "Error get status pending " + t.getMessage());
+                                        }
+                                    });
+                                    mesStatus = mes;
+                                    SmsManager smsManager;
+                                    if (Build.VERSION.SDK_INT <= LOLLIPOP_MR1) {
+                                        smsManager = SmsManager.getDefault();
+                                    } else {
+                                        smsManager = getSmsManager(simList.get(Integer.valueOf(SIM_ID) - 1)); //todo change to real sim id
+                                    }
+                                    if (mes.get(i).getMessage().length() > 100) {
+                                        ArrayList<String> parts = smsManager.divideMessage(mes.get(i).getMessage());
+                                        int numParts = parts.size();
+                                        for (int i = 0; i < numParts; i++) {
+                                            sentIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, sentIntent, 0));
+                                            deliveryIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, deliverIntent, 0));
+                                        }
+                                        smsManager.sendMultipartTextMessage(mes.get(i).getPhone(), null, parts, sentIntents, deliveryIntents);
+                                    } else {
+                                        smsManager.sendTextMessage(mes.get(i).getPhone(), null, mes.get(i).getMessage(), sentPi, deliverPi);
+
+                                    }
+                                    i++;
+                                } else {
+                                    mesStatus = mes;
+                                    mes.clear();
+                                    i = 0;
+                                }
+                            }
+
+                        }
+                    }, 0L, Long.parseLong(settingsFirstSims.get("frequencyOfSmsSending"), 10) * 1000);
                 }
+
                 TelephonyProvider telephonyProvider = new TelephonyProvider(getBaseContext());
                 List<Sms> smses = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
                 timerGetSmsFromPhone.schedule(new TimerTask() {
@@ -525,7 +518,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     }
-                }, 0L, 60L * 1000);
+                }, 0L, 30L * 1000);
             }
         });
     }

@@ -17,8 +17,12 @@ import com.google.gson.reflect.TypeToken;
 import java.util.HashMap;
 import java.util.Map;
 
+import erizo.by.smsapp.App;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.service.TinyDb;
+
+import static erizo.by.smsapp.App.settingsFirstSims;
+
 
 public class SettingsFirstSim extends Activity {
 
@@ -27,7 +31,7 @@ public class SettingsFirstSim extends Activity {
     private Switch aSwitch;
     private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
     private Button saveSettings;
-    static Map<String, String> settingsFirstSims;
+//    static Map<String, String> settingsFirstSims;
     private TinyDb tinyDb;
 
     @Override
@@ -35,14 +39,14 @@ public class SettingsFirstSim extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_first_sim_activity);
         tinyDb = new TinyDb(this);
-        if (tinyDb.keyContaints(SETTINGS)) {
-            Log.d(TAG, "settings contains. set them to view");
-            String serializedSettings = tinyDb.getString(SETTINGS);
-            Gson gson = new Gson();
-            settingsFirstSims = gson.fromJson(serializedSettings, new TypeToken<Map<String, String>>(){}.getType());
-        } else {
-            settingsFirstSims = new HashMap<>();
-        }
+//        if (tinyDb.keyContaints(SETTINGS)) {
+//            Log.d(TAG, "settings contains. set them to view");
+//            String serializedSettings = tinyDb.getString(SETTINGS);
+//            Gson gson = new Gson();
+//            settingsFirstSims = gson.fromJson(serializedSettings, new TypeToken<Map<String, String>>(){}.getType());
+//        } else {
+//            settingsFirstSims = new HashMap<>();
+//        }
         aSwitch = (Switch) findViewById(R.id.switch_first_sim);
         simId = (EditText) findViewById(R.id.sim_first_id_edit);
         url = (EditText) findViewById(R.id.url_first_sim_edit);
