@@ -1,6 +1,7 @@
 package erizo.by.smsapp.activity;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -15,6 +16,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
+import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.view.View;
@@ -43,6 +45,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import static erizo.by.smsapp.activity.SettingsFirstSim.settingsFirstSims;
 
 public class MainActivity extends AppCompatActivity {
@@ -87,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<PendingIntent> deliveryIntents = new ArrayList<>();
     PendingIntent sentPi, deliverPi;
 
+    List<Integer> simList;
 
     BroadcastReceiver sentReceiver = new BroadcastReceiver() {
         @Override
@@ -289,6 +293,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= LOLLIPOP_MR1) {
+            simList = getSimList();
+        } else {
+            simList = null;
+        }
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.RECEIVE_SMS},
                 MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
@@ -417,10 +426,9 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }, 0L, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000);
                         }
-                        final SmsManager smsManager = SmsManager.getDefault();
+//                        final SmsManager smsManager = SmsManager.getDefault();
                         Timer timerTwo = new Timer();
                         timerTwo.schedule(new TimerTask() {
-                            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
                             @Override
                             public void run() {
                                 if (!mes.isEmpty()) {
@@ -441,6 +449,12 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         });
                                         mesStatus = mes;
+                                        SmsManager smsManager;
+                                        if (simList.isEmpty()) {
+                                            smsManager = SmsManager.getDefault();
+                                        } else {
+                                            smsManager = getSmsManager(simList.get(Integer.valueOf(SIM_ID))); //todo change to real sim id
+                                        }
                                         if (mes.get(i).getMessage().length() > 100) {
                                             ArrayList<String> parts = smsManager.divideMessage(mes.get(i).getMessage());
                                             int numParts = parts.size();
@@ -510,5 +524,24 @@ public class MainActivity extends AppCompatActivity {
                 }, 0L, 10L * 1000);
             }
         });
+    }
+
+    @TargetApi(LOLLIPOP_MR1)
+    private List<Integer> getSimList() {
+        final ArrayList<Integer> simCardList = new ArrayList<>();
+        SubscriptionManager subscriptionManager;
+        subscriptionManager = SubscriptionManager.from(this);
+        final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
+                .getActiveSubscriptionInfoList();
+        for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+            int subscriptionId = subscriptionInfo.getSubscriptionId();
+            simCardList.add(subscriptionId);
+        }
+        return simCardList;
+    }
+
+    @TargetApi(LOLLIPOP_MR1)
+    private SmsManager getSmsManager(int id) {
+        return SmsManager.getSmsManagerForSubscriptionId(id);
     }
 }
