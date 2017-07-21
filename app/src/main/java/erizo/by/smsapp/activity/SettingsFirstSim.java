@@ -49,6 +49,10 @@ public class SettingsFirstSim extends Activity {
         secretKey = (EditText) findViewById(R.id.secret_key_first_sim_edit);
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_first_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_first_sim_edit_text);
+        saveSettings = (Button) findViewById(R.id.save_button_settings_first_sim);
+        simId.setText(settingsFirstSims.get("simId"));
+        url.setText(settingsFirstSims.get("url"));
+        secretKey.setText(settingsFirstSims.get("secretKey"));
         frequencyOfRequests.setText(settingsFirstSims.get("frequencyOfRequests"));
         frequencyOfSmsSending.setText(settingsFirstSims.get("frequencyOfSmsSending"));
         saveSettings = (Button) findViewById(R.id.save_button_settings_first_sim);
@@ -77,6 +81,12 @@ public class SettingsFirstSim extends Activity {
         saveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                settingsFirstSims.put("simId", simId.getText().toString());
+                Log.d(TAG, settingsFirstSims.get("simId"));
+                settingsFirstSims.put("url", url.getText().toString());
+                Log.d(TAG, settingsFirstSims.get("url"));
+                settingsFirstSims.put("secretKey", secretKey.getText().toString());
+                Log.d(TAG, settingsFirstSims.get("secretKey"));
                 settingsFirstSims.put("frequencyOfRequests", frequencyOfRequests.getText().toString());
                 Log.d(TAG, settingsFirstSims.get("frequencyOfRequests"));
                 settingsFirstSims.put("frequencyOfSmsSending", frequencyOfSmsSending.getText().toString());

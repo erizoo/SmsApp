@@ -337,15 +337,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 timerGetSmsFromPhone = new Timer();
-                if (settingsFirstSims.get("status").equals("")) {
-                    Toast.makeText(getApplicationContext(), "Активируйте SIM-карту ", Toast.LENGTH_SHORT).show();
-                } else {
-                    settings.setClickable(false);
-                    Log.d(TAG, "App started ");
-                    if (settingsFirstSims.get("status").equals("true")) {
-                        Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
-                        try {
-                            timer[0].schedule(new TimerTask() {
+                try {
+                    if (settingsFirstSims.get("status").equals("false")) {
+                        Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
+                    } else {
+                        settings.setClickable(false);
+                        Log.d(TAG, "App started ");
+                        if (settingsFirstSims.get("status").equals("true")) {
+                            Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
+                            timer = new Timer();
+                            timer.schedule(new TimerTask() {
                                 @Override
                                 public void run() {
                                     service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, SIM_ID, SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
@@ -426,9 +427,10 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }, 0L, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000);
                         }
-//                        final SmsManager smsManager = SmsManager.getDefault();
+                        final SmsManager smsManager = SmsManager.getDefault();
                         Timer timerTwo = new Timer();
                         timerTwo.schedule(new TimerTask() {
+                            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
                             @Override
                             public void run() {
                                 if (!mes.isEmpty()) {
@@ -480,6 +482,8 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(getApplicationContext(), "Активируйте SIM-карту ", Toast.LENGTH_SHORT).show();
                     }
+                } catch (NullPointerException e) {
+                    Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 }
                 TelephonyProvider telephonyProvider = new TelephonyProvider(getBaseContext());
                 List<Sms> smses = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
@@ -490,14 +494,14 @@ public class MainActivity extends AppCompatActivity {
                         final List<Sms> smses = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
                         Log.d(TAG, "List size: " + smses.size());
                         if (!smses.isEmpty()) {
-                            for (n = 0; n <= smses.size() - 1; n++) {
-                                if (n == smses.size() - 1) {
+                            for (n = 0; n <= smses.size(); n++) {
+                                if (n == smses.size()) {
                                     getContentResolver().delete(Uri.parse("content://sms"), null, null);
                                     smses.clear();
                                     n = 0;
                                 }
                                 try {
-                                    service.sendSms(NEW_INCOME_MESSAGE, DEVICE_ID, SIM_ID, SECRET_KEY, smses.get(n).subject, smses.get(n).body, "78R934RYYIUTWE67T3T6RU").enqueue(new Callback<Status>() {
+                                    service.sendSms(NEW_INCOME_MESSAGE, DEVICE_ID, SIM_ID, SECRET_KEY, smses.get(n).address, smses.get(n).body, "78R934RYYIUTWE67T3T6RU").enqueue(new Callback<Status>() {
                                         @Override
                                         public void onResponse(Call<Status> call, Response<Status> response) {
                                             if (response.body() != null) {
@@ -521,7 +525,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     }
-                }, 0L, 10L * 1000);
+                }, 0L, 60L * 1000);
             }
         });
     }

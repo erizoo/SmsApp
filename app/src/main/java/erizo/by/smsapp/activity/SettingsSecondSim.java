@@ -50,8 +50,6 @@ public class SettingsSecondSim extends Activity {
         secretKey = (EditText) findViewById(R.id.secret_key_second_sim_edit);
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_second_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_second_sim_edit_text);
-        frequencyOfRequests.setText(settingsSecondSims.get("frequencyOfRequests"));
-        frequencyOfSmsSending.setText(settingsSecondSims.get("frequencyOfSmsSending"));
         saveSettings = (Button) findViewById(R.id.save_button_settings_second_sim);
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
