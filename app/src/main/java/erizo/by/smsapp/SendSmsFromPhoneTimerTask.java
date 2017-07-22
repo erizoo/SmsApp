@@ -23,7 +23,8 @@ import static android.telephony.SmsManager.getSmsManagerForSubscriptionId;
 public class SendSmsFromPhoneTimerTask extends TimerTask {
 
     private static final String TAG = SendSmsFromPhoneTimerTask.class.getSimpleName();
-    private Queue<Message> smsList;
+
+    private Queue<Message> messages;
     private Map<String, String> simSettings;
     private SmsManager smsManager;
     private PendingIntent sentPi, deliverPi;
@@ -34,7 +35,7 @@ public class SendSmsFromPhoneTimerTask extends TimerTask {
                                      PendingIntent sentPi,
                                      PendingIntent deliverPi,
                                      Context context) {
-        this.smsList = smsList;
+        this.messages = smsList;
         this.simSettings = simSettings;
         this.sentPi = sentPi;
         this.deliverPi = deliverPi;
@@ -48,15 +49,13 @@ public class SendSmsFromPhoneTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        if (!smsList.isEmpty()) {
-            for (Message message : smsList) {
+        if (!messages.isEmpty()) {
+            for (Message message : messages) {
                 if (message.getStatus() == null) {
-//                    if (!message.getStatus().equals("110")) {
                     smsManager.sendTextMessage(message.getPhone(), null, message.getMessage(), sentPi, deliverPi);
                     Log.d(TAG, "sms sent " + message);
                     message.setStatus("110");
                     Log.d(TAG, "changed status to 110 : " + message);
-//                    }
                 }
             }
         }
