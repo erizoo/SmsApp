@@ -8,6 +8,7 @@ public class Message {
     private String sendTime;
     private String expTime;
     private String simID;
+    private String status;
 
     public String getMessageID() {
         return messageID;
@@ -57,6 +58,14 @@ public class Message {
         this.simID = simID;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
@@ -66,6 +75,7 @@ public class Message {
                 ", sendTime='" + sendTime + '\'' +
                 ", expTime='" + expTime + '\'' +
                 ", simID='" + simID + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

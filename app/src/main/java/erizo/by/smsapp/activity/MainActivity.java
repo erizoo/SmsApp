@@ -30,10 +30,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import erizo.by.smsapp.GetSmsFromServerTimerTask;
 import erizo.by.smsapp.R;
+import erizo.by.smsapp.SendSmsFromPhoneTimerTask;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.MessageWrapper;
 import erizo.by.smsapp.model.Status;
@@ -88,224 +92,219 @@ public class MainActivity extends AppCompatActivity {
             .baseUrl(BASE_HOST)
             .build();
     private APIService service = retrofit.create(APIService.class);
-    private List<Message> messageListFirstSim = new LinkedList<>();
-    private List<Message> messageListSecondSim = new LinkedList<>();
+    private Queue<Message> messageListFirstSim = new ConcurrentLinkedQueue<>();
+    private Queue<Message> messageListSecondSim = new ConcurrentLinkedQueue<>();
     private List<Message> mesStatus = new LinkedList<>();
     private List<Message> mesStatusDelivered = new LinkedList<>();
-    BroadcastReceiver sentReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (!mesStatus.isEmpty()) {
-                if (k <= mesStatus.size() - 1) {
-                    switch (getResultCode()) {
-                        case Activity.RESULT_OK:
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
-                                    mesStatus.get(k).getMessageID(), STATUS_SENT).enqueue(new Callback<Status>() {
-                                @Override
-                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                    if (response.body() != null) {
-                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    }
-                                    k++;
-                                    if (k == mesStatus.size()) {
-                                        k = 0;
-                                    }
-                                    counter = 0;
-                                }
-
-                                @Override
-                                public void onFailure(Call<Status> call, Throwable t) {
-                                    counter++;
-                                    Log.d(TAG, "Error get status sent " + t.getMessage());
-                                }
-                            });
-                            break;
-                        case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                            Log.d(TAG, "Generic failure ");
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
-                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
-                                @Override
-                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                    if (response.body() != null) {
-                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    }
-                                    k++;
-                                    if (k == mesStatus.size()) {
-                                        k = 0;
-                                    }
-                                    counter = 0;
-                                }
-
-                                @Override
-                                public void onFailure(Call<Status> call, Throwable t) {
-                                    counter++;
-                                    Log.d(TAG, "Error get status sent " + t.getMessage());
-                                }
-                            });
-                            break;
-                        case SmsManager.RESULT_ERROR_NO_SERVICE:
-                            Log.d(TAG, "No service ");
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
-                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
-                                @Override
-                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                    if (response.body() != null) {
-                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    }
-                                    k++;
-                                    if (k == mesStatus.size()) {
-                                        k = 0;
-                                    }
-                                    counter = 0;
-                                }
-
-                                @Override
-                                public void onFailure(Call<Status> call, Throwable t) {
-                                    counter++;
-                                    Log.d(TAG, "Error get status sent " + t.getMessage());
-                                }
-                            });
-                            break;
-                        case SmsManager.RESULT_ERROR_NULL_PDU:
-                            Log.d(TAG, "Null PDU ");
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
-                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
-                                @Override
-                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                    if (response.body() != null) {
-                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    }
-                                    k++;
-                                    if (k == mesStatus.size()) {
-                                        k = 0;
-                                    }
-                                    counter = 0;
-                                }
-
-                                @Override
-                                public void onFailure(Call<Status> call, Throwable t) {
-                                    counter++;
-                                    Log.d(TAG, "Error get status sent " + t.getMessage());
-                                }
-                            });
-                            break;
-                        case SmsManager.RESULT_ERROR_RADIO_OFF:
-                            Log.d(TAG, "Radio off ");
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
-                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
-                                @Override
-                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                    if (response.body() != null) {
-                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    }
-                                    k++;
-                                    if (k == mesStatus.size()) {
-                                        k = 0;
-                                    }
-                                    counter = 0;
-                                }
-
-                                @Override
-                                public void onFailure(Call<Status> call, Throwable t) {
-                                    counter++;
-                                    Log.d(TAG, "Error get status sent " + t.getMessage());
-                                }
-                            });
-                            break;
-                    }
-                    mesStatusDelivered = mesStatus;
-                } else {
-                    mesStatus.clear();
-                    k = 0;
-                }
-            }
-
-        }
-    };
-    BroadcastReceiver deliverReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (!mesStatusDelivered.isEmpty()) {
-                if (j <= mesStatusDelivered.size() - 1) {
-                    switch (getResultCode()) {
-                        case Activity.RESULT_OK:
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
-                                    mesStatusDelivered.get(j).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
-                                @Override
-                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                    if (response.body() != null) {
-                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    }
-                                    j++;
-                                    if (j == mesStatusDelivered.size()) {
-                                        j = 0;
-                                    }
-                                    counter = 0;
-                                }
-
-                                @Override
-                                public void onFailure(Call<Status> call, Throwable t) {
-                                    counter++;
-                                    Log.d(TAG, "Error get status sent " + t.getMessage());
-                                }
-                            });
-                            break;
-                        case Activity.RESULT_CANCELED:
-                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
-                                    mesStatusDelivered.get(j).getMessageID(), STATUS_INDELIVERED).enqueue(new Callback<Status>() {
-                                @Override
-                                public void onResponse(Call<Status> call, Response<Status> response) {
-                                    if (response.body() != null) {
-                                        Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    }
-                                    j++;
-                                    if (j == mesStatusDelivered.size()) {
-                                        j = 0;
-                                    }
-                                    counter = 0;
-                                }
-
-                                @Override
-                                public void onFailure(Call<Status> call, Throwable t) {
-                                    counter++;
-                                    Log.d(TAG, "Error get status sent " + t.getMessage());
-                                }
-                            });
-                            break;
-                    }
-                } else {
-                    mesStatusDelivered.clear();
-                    j = 0;
-                }
-            }
-        }
-    };
-    private Timer timerGetSmsFromPhone = new Timer();
+//    BroadcastReceiver sentReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if (!messageListFirstSim.isEmpty()) {
+//                for (Message) {
+//                    switch (getResultCode()) {
+//                        case Activity.RESULT_OK:
+//                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+//                                    mesStatus.get(k).getMessageID(), STATUS_SENT).enqueue(new Callback<Status>() {
+//                                @Override
+//                                public void onResponse(Call<Status> call, Response<Status> response) {
+//                                    if (response.body() != null) {
+//                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+//                                    }
+//                                    k++;
+//                                    if (k == mesStatus.size()) {
+//                                        k = 0;
+//                                    }
+//                                    counter = 0;
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<Status> call, Throwable t) {
+//                                    counter++;
+//                                    Log.d(TAG, "Error get status sent " + t.getMessage());
+//                                }
+//                            });
+//                            break;
+//                        case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+//                            Log.d(TAG, "Generic failure ");
+//                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+//                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
+//                                @Override
+//                                public void onResponse(Call<Status> call, Response<Status> response) {
+//                                    if (response.body() != null) {
+//                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+//                                    }
+//                                    k++;
+//                                    if (k == mesStatus.size()) {
+//                                        k = 0;
+//                                    }
+//                                    counter = 0;
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<Status> call, Throwable t) {
+//                                    counter++;
+//                                    Log.d(TAG, "Error get status sent " + t.getMessage());
+//                                }
+//                            });
+//                            break;
+//                        case SmsManager.RESULT_ERROR_NO_SERVICE:
+//                            Log.d(TAG, "No service ");
+//                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+//                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
+//                                @Override
+//                                public void onResponse(Call<Status> call, Response<Status> response) {
+//                                    if (response.body() != null) {
+//                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+//                                    }
+//                                    k++;
+//                                    if (k == mesStatus.size()) {
+//                                        k = 0;
+//                                    }
+//                                    counter = 0;
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<Status> call, Throwable t) {
+//                                    counter++;
+//                                    Log.d(TAG, "Error get status sent " + t.getMessage());
+//                                }
+//                            });
+//                            break;
+//                        case SmsManager.RESULT_ERROR_NULL_PDU:
+//                            Log.d(TAG, "Null PDU ");
+//                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+//                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
+//                                @Override
+//                                public void onResponse(Call<Status> call, Response<Status> response) {
+//                                    if (response.body() != null) {
+//                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+//                                    }
+//                                    k++;
+//                                    if (k == mesStatus.size()) {
+//                                        k = 0;
+//                                    }
+//                                    counter = 0;
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<Status> call, Throwable t) {
+//                                    counter++;
+//                                    Log.d(TAG, "Error get status sent " + t.getMessage());
+//                                }
+//                            });
+//                            break;
+//                        case SmsManager.RESULT_ERROR_RADIO_OFF:
+//                            Log.d(TAG, "Radio off ");
+//                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+//                                    mesStatus.get(k).getMessageID(), STATUS_UNSENT).enqueue(new Callback<Status>() {
+//                                @Override
+//                                public void onResponse(Call<Status> call, Response<Status> response) {
+//                                    if (response.body() != null) {
+//                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+//                                    }
+//                                    k++;
+//                                    if (k == mesStatus.size()) {
+//                                        k = 0;
+//                                    }
+//                                    counter = 0;
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<Status> call, Throwable t) {
+//                                    counter++;
+//                                    Log.d(TAG, "Error get status sent " + t.getMessage());
+//                                }
+//                            });
+//                            break;
+//                    }
+//                    mesStatusDelivered = mesStatus;
+//                } else {
+//                    mesStatus.clear();
+//                    k = 0;
+//                }
+//            }
+//
+//        }
+//    };
+//    BroadcastReceiver deliverReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if (!mesStatusDelivered.isEmpty()) {
+//                if (j <= mesStatusDelivered.size() - 1) {
+//                    switch (getResultCode()) {
+//                        case Activity.RESULT_OK:
+//                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+//                                    mesStatusDelivered.get(j).getMessageID(), STATUS_DELIVERED).enqueue(new Callback<Status>() {
+//                                @Override
+//                                public void onResponse(Call<Status> call, Response<Status> response) {
+//                                    if (response.body() != null) {
+//                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+//                                    }
+//                                    j++;
+//                                    if (j == mesStatusDelivered.size()) {
+//                                        j = 0;
+//                                    }
+//                                    counter = 0;
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<Status> call, Throwable t) {
+//                                    counter++;
+//                                    Log.d(TAG, "Error get status sent " + t.getMessage());
+//                                }
+//                            });
+//                            break;
+//                        case Activity.RESULT_CANCELED:
+//                            service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsFirstSims.get("simId"), settingsFirstSims.get("secretKey"),
+//                                    mesStatusDelivered.get(j).getMessageID(), STATUS_INDELIVERED).enqueue(new Callback<Status>() {
+//                                @Override
+//                                public void onResponse(Call<Status> call, Response<Status> response) {
+//                                    if (response.body() != null) {
+//                                        Log.d(TAG, "Message status: " + response.body().getStatus());
+//                                    }
+//                                    j++;
+//                                    if (j == mesStatusDelivered.size()) {
+//                                        j = 0;
+//                                    }
+//                                    counter = 0;
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<Status> call, Throwable t) {
+//                                    counter++;
+//                                    Log.d(TAG, "Error get status sent " + t.getMessage());
+//                                }
+//                            });
+//                            break;
+//                    }
+//                } else {
+//                    mesStatusDelivered.clear();
+//                    j = 0;
+//                }
+//            }
+//        }
+//    };
+//    private Timer timerGetSmsFromPhone = new Timer();
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(sentReceiver, new IntentFilter(SENT_SMS));
-        registerReceiver(deliverReceiver, new IntentFilter(DELIVER_SMS));
+//        registerReceiver(sentReceiver, new IntentFilter(SENT_SMS));
+//        registerReceiver(deliverReceiver, new IntentFilter(DELIVER_SMS));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(sentReceiver);
-        unregisterReceiver(deliverReceiver);
+//        unregisterReceiver(sentReceiver);
+//        unregisterReceiver(deliverReceiver);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
+//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= LOLLIPOP_MR1) {
-            simList = getSimList();
-        } else {
-            simList = null;
-        }
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.RECEIVE_SMS},
                 MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
@@ -344,7 +343,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                timerGetSmsFromPhone = new Timer();
+                Timer getSmsFromServer_firstSim = new Timer();
+                Timer sendSmsFromPhone_firstSim = new Timer();
                 if (settingsFirstSims.get("status").equals("false")) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
@@ -352,86 +352,18 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "App started ");
                     if (settingsFirstSims.get("status").equals("true")) {
                         Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
-                        timer[0] = new Timer();
-                        timer[0].schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, settingsFirstSims.get("simId"),
-                                        settingsFirstSims.get("secretKey")).enqueue(new Callback<MessageWrapper>() {
-                                    @Override
-                                    public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
-                                        try {
-                                            if (response.body() != null) {
-                                                Log.d(TAG, response.body().toString());
-                                                if (!response.body().getMessages().isEmpty()) {
-                                                    for (Message list : response.body().getMessages()) {
-                                                        messageListFirstSim.add(list);
-                                                    }
-                                                    counter = 0;
-                                                } else {
-                                                    Log.d(TAG, "No new messages");
-                                                    new FileLogService().appendLog("Hello world");
-                                                }
-                                                Log.d(TAG, String.valueOf(counter));
-                                            } else {
-                                                Log.d(TAG, "Response body = NULL");
-                                                Log.d(TAG, String.valueOf(counter));
-                                                counter = 0;
-                                            }
-                                        } catch (Exception e) {
-                                            counter++;
-                                            Log.e(TAG, e.getMessage());
-                                            Log.e(TAG, String.valueOf(counter));
-                                        }
-                                    }
+                        getSmsFromServer_firstSim.schedule(new GetSmsFromServerTimerTask(settingsFirstSims, messageListFirstSim), 0L, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000);
+                        sendSmsFromPhone_firstSim.schedule(new SendSmsFromPhoneTimerTask(messageListFirstSim, settingsFirstSims, sentPi, deliverPi, getBaseContext()), 0L, Long.parseLong(settingsFirstSims.get("frequencyOfSmsSending"), 10) * 1000);
 
-                                    @Override
-                                    public void onFailure(Call<MessageWrapper> call, Throwable t) {
-                                        counter++;
-                                        Log.e(TAG, "Something went wrong " + t.getMessage());
-                                    }
-                                });
-                                service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, settingsSecondSims.get("simId"),
-                                        settingsFirstSims.get("secretKey")).enqueue(new Callback<MessageWrapper>() {
-                                    @Override
-                                    public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
-                                        try {
-                                            if (response.body() != null) {
-                                                Log.d(TAG, response.body().toString());
-                                                if (!response.body().getMessages().isEmpty()) {
-                                                    for (Message list : response.body().getMessages()) {
-                                                        messageListSecondSim.add(list);
-                                                    }
-                                                    counter = 0;
-                                                } else {
-                                                    Log.d(TAG, "No new messages");
-                                                    new FileLogService().appendLog("Hello world");
-                                                }
-                                                Log.d(TAG, String.valueOf(counter));
-                                            } else {
-                                                Log.d(TAG, "Response body = NULL");
-                                                Log.d(TAG, String.valueOf(counter));
-                                                counter = 0;
-                                            }
-                                        } catch (Exception e) {
-                                            counter++;
-                                            Log.e(TAG, e.getMessage());
-                                            Log.e(TAG, String.valueOf(counter));
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<MessageWrapper> call, Throwable t) {
-                                        counter++;
-                                        Log.e(TAG, "Something went wrong " + t.getMessage());
-                                    }
-                                });
-                            }
-                        }, 0L, Long.parseLong(settingsSecondSims.get("frequencyOfRequests"), 10) * 1000);
                     }
+
+//                    if (settingsSecondSims.get("status").equals("true")) {
+//                        Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
+//                        getSmsFromServer_SecondSim.schedule(new GetSmsFromServerTimerTask(settingsSecondSims, messageListSecondSim), 0, Long.parseLong(settingsFirstSims.get("frequencyOfRequests"), 10) * 1000);
+//                    }
+
                     Timer timerTwo = new Timer();
                     timerTwo.schedule(new TimerTask() {
-                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
                         @Override
                         public void run() {
                             if (!messageListFirstSim.isEmpty()) {
@@ -489,68 +421,9 @@ public class MainActivity extends AppCompatActivity {
                                     i = 0;
                                 }
                             }
-                            if (!messageListSecondSim.isEmpty()) {
-                                if (i <= messageListSecondSim.size() - 1) {
-                                    service.sendStatus(SET_MESSAGES_STATUS, DEVICE_ID, settingsSecondSims.get("simId"),
-                                            settingsSecondSims.get("secretKey"), messageListSecondSim.get(i).getMessageID(), STATUS_PENDING).enqueue(new Callback<Status>() {
-                                        @Override
-                                        public void onResponse(Call<Status> call, Response<Status> response) {
-                                            if (response.body() != null) {
-                                                Log.d(TAG, "Message status: " + response.body().getStatus());
-                                            }
-                                            counter = 0;
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<Status> call, Throwable t) {
-                                            counter++;
-                                            Log.d(TAG, "Error get status pending " + t.getMessage());
-                                        }
-                                    });
-//                                    mesStatus = messageListFirstSim;
-                                    SmsManager smsManager;
-                                    if (Build.VERSION.SDK_INT <= LOLLIPOP_MR1) {
-                                        smsManager = SmsManager.getDefault();
-                                    } else {
-                                        smsManager = getSmsManager(simList.get(Integer.valueOf(SIM_ID) - 1)); //todo change to real sim id
-                                    }
-                                    final ArrayList<Integer> simCardList = new ArrayList<>();
-                                    SubscriptionManager subscriptionManager;
-                                    subscriptionManager = SubscriptionManager.from(getBaseContext());
-                                    final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
-                                            .getActiveSubscriptionInfoList();
-                                    for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
-                                        int subscriptionId = subscriptionInfo.getSubscriptionId();
-                                        simCardList.add(subscriptionId);
-                                    }
-
-                                    if (messageListSecondSim.get(i).getMessage().length() > 100) {
-                                        ArrayList<String> parts = smsManager.divideMessage(messageListSecondSim.get(i).getMessage());
-                                        int numParts = parts.size();
-                                        for (int i = 0; i < numParts; i++) {
-                                            sentIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, sentIntent, 0));
-                                            deliveryIntents.add(PendingIntent.getBroadcast(getBaseContext(), 0, deliverIntent, 0));
-                                        }
-                                        smsManager.sendMultipartTextMessage(messageListSecondSim.get(i).getPhone(), null, parts, sentIntents, deliveryIntents);
-                                    } else {
-                                        SmsManager.getSmsManagerForSubscriptionId(simCardList.get(1)).sendTextMessage(messageListSecondSim.get(i).getPhone(), null, messageListSecondSim.get(i).getMessage(), sentPi, deliverPi);
-//                                        SmsManager.getSmsManagerForSubscriptionId(simCardList.get(1)).sendTextMessage("+375336859996", null, "hello world", sentPi, sentPi);
-//                                        smsManager.sendTextMessage(messageListFirstSim.get(i).getPhone(), null, messageListFirstSim.get(i).getMessage(), sentPi, deliverPi);
-                                    }
-                                    i++;
-                                } else {
-                                    mesStatus = messageListFirstSim;
-                                    messageListFirstSim.clear();
-                                    i = 0;
-                                }
-                            }
-
                         }
                     }, 0L, Long.parseLong(settingsFirstSims.get("frequencyOfSmsSending"), 10) * 1000);
                 }
-
-                TelephonyProvider telephonyProvider = new TelephonyProvider(getBaseContext());
-                List<Sms> smses = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
                 timerGetSmsFromPhone.schedule(new TimerTask() {
                     @Override
                     public void run() {
