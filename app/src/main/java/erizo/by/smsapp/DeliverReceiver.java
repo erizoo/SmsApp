@@ -18,14 +18,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class DeliverReceiver extends BroadcastReceiver {
+public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
 
     private static final String TAG = DeliverReceiver.class.getSimpleName();
     private static final String BASE_HOST = "https://con24.ru/testapi/"; // TODO: 22.7.17 change to settings value
-    private static final String SET_MESSAGES_STATUS = "setMessageStatus";
     private static final String DEVICE_ID = "1";
-    private static final String STATUS_UNDELIVERED = "undelivered";
-    private static final String STATUS_DELIVERED = "delivered";
+
     private Queue<Message> messages;
     private Map<String, String> simSettings;
 
@@ -90,7 +88,6 @@ public class DeliverReceiver extends BroadcastReceiver {
                                         }
 //                                    counter = 0;
                                     }
-
                                     @Override
                                     public void onFailure(Call<Status> call, Throwable t) {
 //                                    counter++;

@@ -32,7 +32,6 @@ public class GetSmsFromServerTimerTask extends TimerTask {
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_HOST)
             .build();
-
     private APIService service = retrofit.create(APIService.class);
 
     public GetSmsFromServerTimerTask(Map<String, String> simSettings, Queue<Message> serverMessageList) {
@@ -42,16 +41,20 @@ public class GetSmsFromServerTimerTask extends TimerTask {
     }
 
     public void run() {
-        service.getMessages(GET_ALL_MESSAGES_TASK, DEVICE_ID, simSettings.get("simId"),
-                SECRET_KEY).enqueue(new Callback<MessageWrapper>() {
+        service.getMessages(
+                GET_ALL_MESSAGES_TASK,
+                DEVICE_ID,
+                simSettings.get("simId"),
+                SECRET_KEY)
+                .enqueue(new Callback<MessageWrapper>() {
             @Override
             public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {
                 try {
                     if (response.body() != null) {
                         Log.d(TAG, response.body().toString());
                         if (!response.body().getMessages().isEmpty()) {
-                            for (Message list : response.body().getMessages()) {
-                                messages.add(list);
+                            for (Message message : response.body().getMessages()) {
+                                messages.add(message);
                             }
                         } else {
                             Log.d(TAG, "No new messages");

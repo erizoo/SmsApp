@@ -10,7 +10,6 @@ import android.telephony.SubscriptionManager;
 import android.util.Log;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.TimerTask;
 
@@ -20,30 +19,28 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import static android.telephony.SmsManager.getDefault;
 import static android.telephony.SmsManager.getSmsManagerForSubscriptionId;
 
-public class SendSmsFromPhoneTimerTask extends TimerTask {
+public class SendSmsFromPhoneTimerTask extends TimerTask implements SmsStatus {
 
     private static final String TAG = SendSmsFromPhoneTimerTask.class.getSimpleName();
 
     private Queue<Message> messages;
-    private Map<String, String> simSettings;
     private SmsManager smsManager;
     private PendingIntent sentPi, deliverPi;
     private Context context;
 
     public SendSmsFromPhoneTimerTask(Queue<Message> smsList,
-                                     Map<String, String> simSettings,
+                                     int simSlot,
                                      PendingIntent sentPi,
                                      PendingIntent deliverPi,
                                      Context context) {
         this.messages = smsList;
-        this.simSettings = simSettings;
         this.sentPi = sentPi;
         this.deliverPi = deliverPi;
         this.context = context;
         if (Build.VERSION.SDK_INT <= LOLLIPOP_MR1) {
             smsManager = SmsManager.getDefault();
         } else {
-            smsManager = getSmsManager(Integer.valueOf(simSettings.get("simSlot")));
+            smsManager = getSmsManager(simSlot);
         }
     }
 
@@ -52,9 +49,13 @@ public class SendSmsFromPhoneTimerTask extends TimerTask {
         if (!messages.isEmpty()) {
             for (Message message : messages) {
                 if (message.getStatus() == null) {
-                    smsManager.sendTextMessage(message.getPhone(), null, message.getMessage(), sentPi, deliverPi);
+                    smsManager.sendTextMessage(message.getPhone(),
+                            null,
+                            message.getMessage(),
+                            sentPi,
+                            deliverPi);
                     Log.d(TAG, "sms sent " + message);
-                    message.setStatus("110");
+                    message.setStatus(SMS_PENDING);
                     Log.d(TAG, "changed status to 110 : " + message);
                 }
             }

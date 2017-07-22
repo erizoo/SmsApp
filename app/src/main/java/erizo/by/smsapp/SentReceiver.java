@@ -19,14 +19,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SentReceiver extends BroadcastReceiver {
+public class SentReceiver extends BroadcastReceiver implements SmsStatus {
 
     private static final String TAG = SentReceiver.class.getSimpleName();
     private static final String BASE_HOST = "https://con24.ru/testapi/"; // TODO: 22.7.17 change to settings value
-    private static final String SET_MESSAGES_STATUS = "setMessageStatus";
     private static final String DEVICE_ID = "1";
-    private static final String STATUS_SENT = "sent";
-    private static final String STATUS_UNSENT = "unsent";
 
     private Queue<Message> messages;
     private Map<String, String> simSettings;
@@ -50,9 +47,8 @@ public class SentReceiver extends BroadcastReceiver {
                 case Activity.RESULT_OK:
                     if (messages.peek().getStatus() != null) {
                         for (Message message : messages) {
-                            if (message.getStatus().equals("110")) {
-                                Log.d(this.getClass().getSimpleName(), "sms broadcast starting");
-//                                Message message = messages.poll();
+                            if (message.getStatus().equals(SMS_PENDING)) {
+                                Log.d(TAG, "sms broadcast starting");
                                 service.sendStatus(SET_MESSAGES_STATUS,
                                         DEVICE_ID,
                                         simSettings.get("simId"),
@@ -65,20 +61,20 @@ public class SentReceiver extends BroadcastReceiver {
                                             Log.d(TAG, "Message status: " + response.body().getStatus());
                                         }
                                     }
-
                                     @Override
                                     public void onFailure(Call<Status> call, Throwable t) {
 //                                        counter++;
                                         Log.d(TAG, "Error get status sent " + t.getMessage());
                                     }
                                 });
-                                message.setStatus("115");
+                                message.setStatus(SMS_SENT);
+                                return;
                             }
                         }
                     }
                     break;
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                    Log.d(this.getClass().getSimpleName(), "Generic failure ");
+                    Log.d(TAG, "Generic failure ");
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -93,7 +89,6 @@ public class SentReceiver extends BroadcastReceiver {
                                     Log.d(TAG, "Message status: " + response.body().getStatus());
                                 }
                             }
-
                             @Override
                             public void onFailure(Call<Status> call, Throwable t) {
 //                                        counter++;
@@ -104,7 +99,7 @@ public class SentReceiver extends BroadcastReceiver {
                     }
                     break;
                 case SmsManager.RESULT_ERROR_NO_SERVICE:
-                    Log.d(this.getClass().getSimpleName(), "No service ");
+                    Log.d(TAG, "No service ");
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -130,7 +125,7 @@ public class SentReceiver extends BroadcastReceiver {
                     }
                     break;
                 case SmsManager.RESULT_ERROR_NULL_PDU:
-                    Log.d(this.getClass().getSimpleName(), "Null PDU ");
+                    Log.d(TAG, "Null PDU ");
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -156,7 +151,7 @@ public class SentReceiver extends BroadcastReceiver {
                     }
                     break;
                 case SmsManager.RESULT_ERROR_RADIO_OFF:
-                    Log.d(this.getClass().getSimpleName(), "Radio off ");
+                    Log.d(TAG, "Radio off ");
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
