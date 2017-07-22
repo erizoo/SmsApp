@@ -16,8 +16,8 @@ import erizo.by.smsapp.service.TinyDb;
  */
 
 public class App extends Application {
-    public static Map<String, String> settingsFirstSims;
-    public static Map<String, String> settingsSecondSims;
+    public static Map<String, String> firstSimSettings;
+    public static Map<String, String> secondSimSettings;
     private static final String SETTINGS_FIRST_SIM = "first_sim_settings";
     private static final String SETTINGS_SECOND_SIM = "second_sim_settings";
     private TinyDb tinyDb;
@@ -30,20 +30,20 @@ public class App extends Application {
             Log.d("App", "settings contains. set them to view");
             String serializedSettingsFirstSim = tinyDb.getString(SETTINGS_FIRST_SIM);
             Gson gson = new Gson();
-            settingsFirstSims = gson.fromJson(serializedSettingsFirstSim, new TypeToken<Map<String, String>>(){}.getType());
+            firstSimSettings = gson.fromJson(serializedSettingsFirstSim, new TypeToken<Map<String, String>>(){}.getType());
         } else {
-            settingsFirstSims = new HashMap<>();
-            settingsFirstSims.put("status", "false");
+            firstSimSettings = new HashMap<>();
+            firstSimSettings.put("status", "false");
         }
         tinyDbSecondSim = new TinyDb(this);
         if (tinyDbSecondSim.keyContaints(SETTINGS_SECOND_SIM)) {
             Log.d("App", "settings contains. set them to view");
             String serializedSettingsSecondSim = tinyDbSecondSim.getString(SETTINGS_SECOND_SIM);
             Gson gson = new Gson();
-            settingsSecondSims = gson.fromJson(serializedSettingsSecondSim, new TypeToken<Map<String, String>>(){}.getType());
+            secondSimSettings = gson.fromJson(serializedSettingsSecondSim, new TypeToken<Map<String, String>>(){}.getType());
         } else {
-            settingsSecondSims = new HashMap<>();
-            settingsSecondSims.put("status", "false");
+            secondSimSettings = new HashMap<>();
+            secondSimSettings.put("status", "false");
         }
 
     }

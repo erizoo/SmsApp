@@ -13,8 +13,7 @@ import com.google.gson.Gson;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.service.TinyDb;
 
-import static erizo.by.smsapp.App.settingsFirstSims;
-import static erizo.by.smsapp.App.settingsSecondSims;
+import static erizo.by.smsapp.App.secondSimSettings;
 
 public class AdditionalSettingsSecondSim extends AppCompatActivity {
 
@@ -43,41 +42,41 @@ public class AdditionalSettingsSecondSim extends AppCompatActivity {
         timeMessages = (EditText) findViewById(R.id.time_messages_second_sim_edit);
         saveTestSettings = (Button) findViewById(R.id.button_save_test_settings_second_sim);
 
-        frequencyAlert.setText(settingsSecondSims.get("frequencyAlert"));
-        numbersAlerts.setText(settingsSecondSims.get("numbersAlerts"));
-        email.setText(settingsSecondSims.get("email"));
-        loginForEmail.setText(settingsSecondSims.get("loginForEmail"));
-        passwordForEmail.setText(settingsSecondSims.get("passwordForEmail"));
-        portForEmail.setText(settingsSecondSims.get("portForEmail"));
-        maxNumberError.setText(settingsSecondSims.get("maxNumberError"));
-        maxNumbersMessages.setText(settingsSecondSims.get("maxNumbersMessages"));
-        timeMessages.setText(settingsSecondSims.get("timeMessages"));
+        frequencyAlert.setText(secondSimSettings.get("frequencyAlert"));
+        numbersAlerts.setText(secondSimSettings.get("numbersAlerts"));
+        email.setText(secondSimSettings.get("email"));
+        loginForEmail.setText(secondSimSettings.get("loginForEmail"));
+        passwordForEmail.setText(secondSimSettings.get("passwordForEmail"));
+        portForEmail.setText(secondSimSettings.get("portForEmail"));
+        maxNumberError.setText(secondSimSettings.get("maxNumberError"));
+        maxNumbersMessages.setText(secondSimSettings.get("maxNumbersMessages"));
+        timeMessages.setText(secondSimSettings.get("timeMessages"));
 
         saveTestSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsSecondSims.put("frequencyAlert", frequencyAlert.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("frequencyAlert"));
-                settingsSecondSims.put("numbersAlerts", numbersAlerts.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("numbersAlerts"));
-                settingsSecondSims.put("email", email.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("email"));
-                settingsSecondSims.put("loginForEmail", loginForEmail.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("loginForEmail"));
-                settingsSecondSims.put("passwordForEmail", passwordForEmail.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("passwordForEmail"));
-                settingsSecondSims.put("portForEmail", portForEmail.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("portForEmail"));
-                settingsSecondSims.put("maxNumberError", maxNumberError.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("maxNumberError"));
-                settingsSecondSims.put("maxNumbersMessages", maxNumbersMessages.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("maxNumbersMessages"));
-                settingsSecondSims.put("timeMessages", timeMessages.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("timeMessages"));
+                secondSimSettings.put("frequencyAlert", frequencyAlert.getText().toString());
+                Log.d(TAG, secondSimSettings.get("frequencyAlert"));
+                secondSimSettings.put("numbersAlerts", numbersAlerts.getText().toString());
+                Log.d(TAG, secondSimSettings.get("numbersAlerts"));
+                secondSimSettings.put("email", email.getText().toString());
+                Log.d(TAG, secondSimSettings.get("email"));
+                secondSimSettings.put("loginForEmail", loginForEmail.getText().toString());
+                Log.d(TAG, secondSimSettings.get("loginForEmail"));
+                secondSimSettings.put("passwordForEmail", passwordForEmail.getText().toString());
+                Log.d(TAG, secondSimSettings.get("passwordForEmail"));
+                secondSimSettings.put("portForEmail", portForEmail.getText().toString());
+                Log.d(TAG, secondSimSettings.get("portForEmail"));
+                secondSimSettings.put("maxNumberError", maxNumberError.getText().toString());
+                Log.d(TAG, secondSimSettings.get("maxNumberError"));
+                secondSimSettings.put("maxNumbersMessages", maxNumbersMessages.getText().toString());
+                Log.d(TAG, secondSimSettings.get("maxNumbersMessages"));
+                secondSimSettings.put("timeMessages", timeMessages.getText().toString());
+                Log.d(TAG, secondSimSettings.get("timeMessages"));
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
                 Gson gson = new Gson();
-                String serializedSettings = gson.toJson(settingsSecondSims);
+                String serializedSettings = gson.toJson(secondSimSettings);
                 tinyDbSecondSim.putString(SETTINGS_SECOND_SIM, serializedSettings);
             }
         });

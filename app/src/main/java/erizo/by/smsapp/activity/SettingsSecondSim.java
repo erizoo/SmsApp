@@ -16,12 +16,13 @@ import com.google.gson.Gson;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.service.TinyDb;
 
-import static erizo.by.smsapp.App.settingsFirstSims;
-import static erizo.by.smsapp.App.settingsSecondSims;
+import static erizo.by.smsapp.App.firstSimSettings;
+import static erizo.by.smsapp.App.secondSimSettings;
 
 public class SettingsSecondSim extends Activity {
 
     private static final String TAG = SettingsSecondSim.class.getSimpleName();
+    private static final String SECOND_SIM_SLOT_NUMBER = "1";
     private static final String SETTINGS_SECOND_SIM = "second_sim_settings";
     private Switch aSwitch;
     private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
@@ -43,25 +44,25 @@ public class SettingsSecondSim extends Activity {
         saveSettings = (Button) findViewById(R.id.save_button_settings_second_sim);
         nextSettings = (Button) findViewById(R.id.test_button_second_sim);
 
-        simId.setText(settingsSecondSims.get("simId"));
-        url.setText(settingsSecondSims.get("url"));
-        secretKey.setText(settingsSecondSims.get("secretKey"));
-        frequencyOfRequests.setText(settingsSecondSims.get("frequencyOfRequests"));
-        frequencyOfSmsSending.setText(settingsSecondSims.get("frequencyOfSmsSending"));
+        simId.setText(secondSimSettings.get("simId"));
+        url.setText(secondSimSettings.get("url"));
+        secretKey.setText(secondSimSettings.get("secretKey"));
+        frequencyOfRequests.setText(secondSimSettings.get("frequencyOfRequests"));
+        frequencyOfSmsSending.setText(secondSimSettings.get("frequencyOfSmsSending"));
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    settingsSecondSims.put("status", "true");
+                    secondSimSettings.put("status", "true");
                     Toast.makeText(getApplicationContext(), "SET ON", Toast.LENGTH_SHORT).show();
                 } else {
-                    settingsSecondSims.put("status", "false");
+                    secondSimSettings.put("status", "false");
                     Toast.makeText(getApplicationContext(), "SET OFF", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         try {
-            if (settingsSecondSims.get("status").equals("false")){
+            if (secondSimSettings.get("status").equals("false")){
                 aSwitch.setChecked(false);
             } else {
                 aSwitch.setChecked(true);
@@ -81,26 +82,28 @@ public class SettingsSecondSim extends Activity {
         saveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsSecondSims.put("simId", simId.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("simId"));
-                settingsSecondSims.put("url", url.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("url"));
-                settingsSecondSims.put("secretKey", secretKey.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("secretKey"));
-                settingsSecondSims.put("frequencyOfRequests", frequencyOfRequests.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("frequencyOfRequests"));
-                settingsSecondSims.put("frequencyOfSmsSending", frequencyOfSmsSending.getText().toString());
-                Log.d(TAG, settingsSecondSims.get("frequencyOfSmsSending"));
+                secondSimSettings.put("simSlot", SECOND_SIM_SLOT_NUMBER);
+                Log.d(TAG, firstSimSettings.get("simSlot"));
+                secondSimSettings.put("simId", simId.getText().toString());
+                Log.d(TAG, secondSimSettings.get("simId"));
+                secondSimSettings.put("url", url.getText().toString());
+                Log.d(TAG, secondSimSettings.get("url"));
+                secondSimSettings.put("secretKey", secretKey.getText().toString());
+                Log.d(TAG, secondSimSettings.get("secretKey"));
+                secondSimSettings.put("frequencyOfRequests", frequencyOfRequests.getText().toString());
+                Log.d(TAG, secondSimSettings.get("frequencyOfRequests"));
+                secondSimSettings.put("frequencyOfSmsSending", frequencyOfSmsSending.getText().toString());
+                Log.d(TAG, secondSimSettings.get("frequencyOfSmsSending"));
                 if(frequencyOfRequests.getText().toString().equals("")){
-                    settingsSecondSims.put("frequencyOfRequests", "60");
+                    secondSimSettings.put("frequencyOfRequests", "60");
                 }
                 if(frequencyOfSmsSending.getText().toString().equals("")){
-                    settingsSecondSims.put("frequencyOfSmsSending", "60");
+                    secondSimSettings.put("frequencyOfSmsSending", "60");
                 }
                 Intent intent = new Intent(getBaseContext(), AdditionalSettingsSecondSim.class);
                 startActivity(intent);
                 Gson gson = new Gson();
-                String serializedSettings = gson.toJson(settingsSecondSims);
+                String serializedSettings = gson.toJson(secondSimSettings);
                 tinyDbSecondSim.putString(SETTINGS_SECOND_SIM, serializedSettings);
             }
         });

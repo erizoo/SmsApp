@@ -7,8 +7,8 @@ import android.os.Build;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
+import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -17,13 +17,12 @@ import java.util.TimerTask;
 import erizo.by.smsapp.model.Message;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
-
-/**
- * Created by valera on 22.7.17.
- */
+import static android.telephony.SmsManager.getDefault;
+import static android.telephony.SmsManager.getSmsManagerForSubscriptionId;
 
 public class SendSmsFromPhoneTimerTask extends TimerTask {
 
+    private static final String TAG = SendSmsFromPhoneTimerTask.class.getSimpleName();
     private Queue<Message> smsList;
     private Map<String, String> simSettings;
     private SmsManager smsManager;
@@ -43,7 +42,7 @@ public class SendSmsFromPhoneTimerTask extends TimerTask {
         if (Build.VERSION.SDK_INT <= LOLLIPOP_MR1) {
             smsManager = SmsManager.getDefault();
         } else {
-            smsManager = getSmsManager(Integer.valueOf(simSettings.get("sim_slot")));
+            smsManager = getSmsManager(Integer.valueOf(simSettings.get("simSlot")));
         }
     }
 
@@ -51,28 +50,32 @@ public class SendSmsFromPhoneTimerTask extends TimerTask {
     public void run() {
         if (!smsList.isEmpty()) {
             for (Message message : smsList) {
-                smsManager.sendTextMessage(message.getPhone(), null, message.getMessage(), sentPi, deliverPi);
-                message.setStatus("110");
+                if (message.getStatus() == null) {
+//                    if (!message.getStatus().equals("110")) {
+                    smsManager.sendTextMessage(message.getPhone(), null, message.getMessage(), sentPi, deliverPi);
+                    Log.d(TAG, "sms sent " + message);
+                    message.setStatus("110");
+                    Log.d(TAG, "changed status to 110 : " + message);
+//                    }
+                }
             }
         }
     }
 
     @TargetApi(LOLLIPOP_MR1)
-    private List<Integer> getSimList() {
-        final ArrayList<Integer> simCardList = new ArrayList<>();
-        SubscriptionManager subscriptionManager;
-        subscriptionManager = SubscriptionManager.from(context);
+    private SmsManager getSmsManager(int simSlot) {
+        SubscriptionManager subscriptionManager = SubscriptionManager.from(context);
         final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
                 .getActiveSubscriptionInfoList();
-        for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
-            int subscriptionId = subscriptionInfo.getSubscriptionId();
-            simCardList.add(subscriptionId);
+        try {
+            for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+                if (subscriptionInfo.getSimSlotIndex() == simSlot) {
+                    return getSmsManagerForSubscriptionId(subscriptionInfo.getSubscriptionId());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return simCardList;
-    }
-
-    @TargetApi(LOLLIPOP_MR1)
-    private SmsManager getSmsManager(int id) {
-        return SmsManager.getSmsManagerForSubscriptionId(id);
+        return getDefault();
     }
 }
