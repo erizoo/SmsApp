@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import erizo.by.smsapp.DeliverReceiver;
 import erizo.by.smsapp.GetSmsFromServerTimerTask;
+import erizo.by.smsapp.IncomeSmsSendTimerTask;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.SendSmsFromPhoneTimerTask;
 import erizo.by.smsapp.SentReceiver;
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                                         10) * 1000);
                     }
                 }
-
+                new Timer().schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings), 0L, 30L * 1000);
             }
         });
     }
