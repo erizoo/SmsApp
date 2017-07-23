@@ -26,15 +26,16 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
     private Queue<Message> messages;
     private Map<String, String> simSettings;
 
-    private Retrofit retrofit = new Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(simSettings.get("url"))
-            .build();
-    private APIService service = retrofit.create(APIService.class);
+    private APIService service;
 
     public SentReceiver(Queue<Message> messages, Map<String, String> simSettings){
         this.messages = messages;
         this.simSettings = simSettings;
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(simSettings.get("url"))
+                .build();
+        this.service = retrofit.create(APIService.class);
     }
 
     @Override

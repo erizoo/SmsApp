@@ -61,7 +61,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                     service.sendSms(
                             NEW_INCOME_MESSAGE,
                             simSettings.get("deviceId"),
-                            simSettings.get("secretKey"),
+                            simSettings.get("simId"),
                             simSettings.get("secretKey"),
                             smsList.get(n).address,
                             smsList.get(n).body,

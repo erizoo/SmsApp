@@ -113,10 +113,12 @@ public class MainActivity extends AppCompatActivity {
                 Timer sendSmsFromPhone_firstSim = new Timer();
                 Timer getSmsFromServer_secondSim = new Timer();
                 Timer sendSmsFromPhone_secondSim = new Timer();
+                Timer sendSms = new Timer();
                 timers.add(getSmsFromServer_firstSim);
                 timers.add(sendSmsFromPhone_firstSim);
                 timers.add(getSmsFromServer_secondSim);
                 timers.add(sendSmsFromPhone_secondSim);
+                timers.add(sendSms);
                 if (firstSimSettings.get("status").equals("false")) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                                         10) * 1000);
                     }
                 }
-                new Timer().schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings), 0L, 30L * 1000);
+                sendSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings), 0L, 30L * 1000);
             }
         });
     }

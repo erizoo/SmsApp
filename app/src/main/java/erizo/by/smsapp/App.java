@@ -31,6 +31,8 @@ public class App extends Application {
         } else {
             firstSimSettings = new HashMap<>();
             firstSimSettings.put("status", "false");
+            firstSimSettings.put("url", "https://con24.ru/testapi/");
+            firstSimSettings.put("secretKey", "T687G798UHO786");
         }
         tinyDbSecondSim = new TinyDb(this);
         if (tinyDbSecondSim.keyContaints(SETTINGS_SECOND_SIM)) {
@@ -41,15 +43,9 @@ public class App extends Application {
         } else {
             secondSimSettings = new HashMap<>();
             secondSimSettings.put("status", "false");
+            secondSimSettings.put("url", "https://con24.ru/testapi/");
+            secondSimSettings.put("secretKey", "T687G798UHO786");
         }
 
-    }
-
-    public TinyDb getTinyDb() {
-        return tinyDb;
-    }
-
-    public TinyDb getTinyDbSecondSim() {
-        return tinyDbSecondSim;
     }
 }

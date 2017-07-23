@@ -24,16 +24,17 @@ public class GetSmsFromServerTimerTask extends TimerTask {
     private Queue<Message> messages;
     private Map<String,String> simSettings;
 
-    private Retrofit retrofit = new Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(simSettings.get("url"))
-            .build();
-    private APIService service = retrofit.create(APIService.class);
+    private APIService service;
 
     public GetSmsFromServerTimerTask(Map<String, String> simSettings, Queue<Message> serverMessageList) {
         super();
         this.simSettings = simSettings;
         this.messages = serverMessageList;
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(simSettings.get("url"))
+                .build();
+        service = retrofit.create(APIService.class);
     }
 
     public void run() {
