@@ -19,8 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Частота запросов "
-        android:layout_marginBottom="26dp"
-        android:layout_above="@+id/frequency_sent_sms_first_sim"
+        android:layout_above="@+id/frequency_sent_sms_first_sim_edit_text"
         android:layout_alignStart="@+id/frequency_sent_sms_first_sim" />
 
     <EditText
@@ -43,7 +42,7 @@
         android:textSize="14sp"
         android:layout_above="@+id/save_button_settings_first_sim"
         android:layout_alignStart="@+id/sim_first_id"
-        android:layout_marginBottom="95dp" />
+        android:layout_marginBottom="26dp" />
 
     <EditText
         android:id="@+id/frequency_sent_sms_first_sim_edit_text"
@@ -74,16 +73,17 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:layout_below="@+id/switch_first_sim"
-        android:layout_alignStart="@+id/frequency_requests_first_sim_edit_text" />
+        android:layout_alignBottom="@+id/sim_first_id"
+        android:layout_alignEnd="@+id/secret_key_first_sim_edit" />
 
     <TextView
         android:id="@+id/sim_first_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/sim_first_id_edit"
+        android:text="SIM ID"
+        android:layout_above="@+id/url_first_sim_edit"
         android:layout_alignStart="@+id/switch_first_sim"
-        android:text="SIM ID" />
+        android:layout_marginBottom="14dp" />
 
     <TextView
         android:id="@+id/secret_key_first_sim"
@@ -131,5 +131,24 @@
         android:textColor="@android:color/background_light"
         android:textSize="15sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/device_id_first_sim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/sim_first_id_edit"
+        android:layout_alignLeft="@+id/sim_first_id"
+        android:layout_alignStart="@+id/sim_first_id"
+        android:text="DEVICE ID" />
+
+    <EditText
+        android:id="@+id/device_id_first_sim_edit"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/sim_first_id_edit"
+        android:layout_alignLeft="@+id/sim_first_id_edit"
+        android:layout_alignStart="@+id/sim_first_id_edit"
+        android:ems="10"
+        android:inputType="textPersonName" />
 
 </RelativeLayout>

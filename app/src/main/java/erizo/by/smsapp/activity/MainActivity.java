@@ -172,46 +172,7 @@ public class MainActivity extends AppCompatActivity {
                                         10) * 1000);
                     }
                 }
-//                timerGetSmsFromPhone.schedule(new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        TelephonyProvider telephonyProvider = new TelephonyProvider(getBaseContext());
-//                        final List<Sms> smses = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
-//                        Log.d(TAG, "List size: " + smses.size());
-//                        if (!smses.isEmpty()) {
-//                            for (n = 0; n <= smses.size(); n++) {
-//                                if (n == smses.size()) {
-//                                    getContentResolver().delete(Uri.parse("content://sms"), null, null);
-//                                    smses.clear();
-//                                    n = 0;
-//                                }
-//                                try {
-//                                    service.sendSms(NEW_INCOME_MESSAGE, DEVICE_ID, SIM_ID, firstSimSettings.get("secretKey"),
-//                                            smses.get(n).address, smses.get(n).body, getMessageIdForSms(smses.get(n).address, smses.get(n).body)).enqueue(new Callback<Status>() {
-//                                        @Override
-//                                        public void onResponse(Call<Status> call, Response<Status> response) {
-//                                            if (response.body() != null) {
-//                                                Log.d(TAG, "Message status: " + response.body().getStatus());
-//                                            }
-//                                            counter = 0;
-//                                        }
-//
-//                                        @Override
-//                                        public void onFailure(Call<Status> call, Throwable t) {
-//                                            counter++;
-//                                            Log.d(TAG, "Error get status pending " + t.getMessage());
-//                                        }
-//                                    });
-//                                } catch (Exception e) {
-//                                    Log.d(TAG, "No new sms ");
-//                                }
-//                            }
-//                        } else {
-//                            Log.d(TAG, "No new sms ");
-//                        }
-//
-//                    }
-//                }, 0L, 30L * 1000);
+
             }
         });
     }

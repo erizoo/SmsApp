@@ -25,7 +25,7 @@ public class SettingsFirstSim extends Activity {
     private static final String FIRST_SIM_SLOT_NUMBER = "0";
     private static final String SETTINGS_FIRST_SIM = "first_sim_settings";
     private Switch aSwitch;
-    private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
+    private EditText deviceId, simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
     private Button saveSettings, nextSettings;
 //    static Map<String, String> firstSimSettings;
     private TinyDb tinyDb;
@@ -36,6 +36,7 @@ public class SettingsFirstSim extends Activity {
         setContentView(R.layout.settings_first_sim_activity);
         tinyDb = new TinyDb(this);
         aSwitch = (Switch) findViewById(R.id.switch_first_sim);
+        deviceId = (EditText) findViewById(R.id.device_id_first_sim_edit);
         simId = (EditText) findViewById(R.id.sim_first_id_edit);
         url = (EditText) findViewById(R.id.url_first_sim_edit);
         secretKey = (EditText) findViewById(R.id.secret_key_first_sim_edit);
@@ -43,6 +44,7 @@ public class SettingsFirstSim extends Activity {
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_first_sim_edit_text);
         saveSettings = (Button) findViewById(R.id.save_button_settings_first_sim);
         nextSettings = (Button) findViewById(R.id.test_button);
+        deviceId.setText(firstSimSettings.get("deviceId"));
         simId.setText(firstSimSettings.get("simId"));
         url.setText(firstSimSettings.get("url"));
         secretKey.setText(firstSimSettings.get("secretKey"));
@@ -84,6 +86,8 @@ public class SettingsFirstSim extends Activity {
             public void onClick(View v) {
                 firstSimSettings.put("simSlot", FIRST_SIM_SLOT_NUMBER);
                 Log.d(TAG, firstSimSettings.get("simSlot"));
+                firstSimSettings.put("deviceId", deviceId.getText().toString());
+                Log.d(TAG, firstSimSettings.get("deviceId"));
                 firstSimSettings.put("simId", simId.getText().toString());
                 Log.d(TAG, firstSimSettings.get("simId"));
                 firstSimSettings.put("url", url.getText().toString());

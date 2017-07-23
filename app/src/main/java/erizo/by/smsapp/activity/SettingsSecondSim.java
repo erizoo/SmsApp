@@ -25,7 +25,7 @@ public class SettingsSecondSim extends Activity {
     private static final String SECOND_SIM_SLOT_NUMBER = "1";
     private static final String SETTINGS_SECOND_SIM = "second_sim_settings";
     private Switch aSwitch;
-    private EditText simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
+    private EditText deviceId,simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
     private Button saveSettings, nextSettings;
 
     private TinyDb tinyDbSecondSim;
@@ -36,6 +36,7 @@ public class SettingsSecondSim extends Activity {
         setContentView(R.layout.settings_second_sim_activity);
         tinyDbSecondSim = new TinyDb(this);
         aSwitch = (Switch) findViewById(R.id.switch_second_sim);
+        deviceId = (EditText) findViewById(R.id.device_id_second_sim_edit);
         simId = (EditText) findViewById(R.id.sim_second_id_edit);
         url = (EditText) findViewById(R.id.url_second_sim_edit);
         secretKey = (EditText) findViewById(R.id.secret_key_second_sim_edit);
@@ -44,6 +45,7 @@ public class SettingsSecondSim extends Activity {
         saveSettings = (Button) findViewById(R.id.save_button_settings_second_sim);
         nextSettings = (Button) findViewById(R.id.test_button_second_sim);
 
+        deviceId.setText(secondSimSettings.get("deviceId"));
         simId.setText(secondSimSettings.get("simId"));
         url.setText(secondSimSettings.get("url"));
         secretKey.setText(secondSimSettings.get("secretKey"));
@@ -84,6 +86,8 @@ public class SettingsSecondSim extends Activity {
             public void onClick(View v) {
                 secondSimSettings.put("simSlot", SECOND_SIM_SLOT_NUMBER);
                 Log.d(TAG, firstSimSettings.get("simSlot"));
+                secondSimSettings.put("deviceId", deviceId.getText().toString());
+                Log.d(TAG, secondSimSettings.get("deviceId"));
                 secondSimSettings.put("simId", simId.getText().toString());
                 Log.d(TAG, secondSimSettings.get("simId"));
                 secondSimSettings.put("url", url.getText().toString());
