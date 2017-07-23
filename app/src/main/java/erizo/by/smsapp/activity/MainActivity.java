@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Timer;
@@ -50,20 +51,26 @@ public class MainActivity extends AppCompatActivity {
     private Queue<Message> firstSimMessageList = new ConcurrentLinkedQueue<>();
     private Queue<Message> secondSimMessageList = new ConcurrentLinkedQueue<>();
     private BroadcastReceiver firstSimSentReceiver = new SentReceiver(firstSimMessageList, firstSimSettings);
-    private BroadcastReceiver deliverReceiver = new DeliverReceiver(firstSimMessageList, firstSimSettings);
+    private BroadcastReceiver firstSimDeliverReceiver = new DeliverReceiver(firstSimMessageList, firstSimSettings);
+    private BroadcastReceiver secondSimSentReceiver = new SentReceiver(secondSimMessageList, secondSimSettings);
+    private BroadcastReceiver secondSimDeliverReceiver = new DeliverReceiver(secondSimMessageList, secondSimSettings);
 
     @Override
     protected void onResume() {
         super.onResume();
         registerReceiver(firstSimSentReceiver, new IntentFilter(SENT_SMS));
-        registerReceiver(deliverReceiver, new IntentFilter(DELIVER_SMS));
+        registerReceiver(firstSimDeliverReceiver, new IntentFilter(DELIVER_SMS));
+        registerReceiver(secondSimSentReceiver, new IntentFilter(SENT_SMS));
+        registerReceiver(secondSimDeliverReceiver, new IntentFilter(DELIVER_SMS));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         unregisterReceiver(firstSimSentReceiver);
-        unregisterReceiver(deliverReceiver);
+        unregisterReceiver(firstSimDeliverReceiver);
+        unregisterReceiver(secondSimSentReceiver);
+        unregisterReceiver(secondSimDeliverReceiver);
     }
 
     @Override
@@ -96,7 +103,10 @@ public class MainActivity extends AppCompatActivity {
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: 22.7.17 add timers cancellation
+                for (Timer timer : timers) {
+                    timer.cancel();
+                }
+                timers.clear();
                 Log.d(TAG, "App stopped ");
                 Toast.makeText(getApplicationContext(), "App stopped ", Toast.LENGTH_SHORT).show();
                 settingsButton.setClickable(true);
@@ -112,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 Timer sendSmsFromPhone_secondSim = new Timer();
                 timers.add(getSmsFromServer_firstSim);
                 timers.add(sendSmsFromPhone_firstSim);
-                timers.add(sendSmsFromPhone_firstSim);
+                timers.add(getSmsFromServer_secondSim);
                 timers.add(sendSmsFromPhone_secondSim);
                 if (firstSimSettings.get("status").equals("false")) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
