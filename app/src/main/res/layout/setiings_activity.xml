@@ -14,4 +14,14 @@
         android:text="SIM1"
         android:textColor="@android:color/background_light" />
 
+    <Button
+        android:id="@+id/sim_two_button"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="35dp"
+        android:background="@android:color/holo_blue_light"
+        android:textColor="@android:color/background_light"
+        android:text="SIM2" />
+
 </LinearLayout>

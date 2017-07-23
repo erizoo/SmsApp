@@ -5,11 +5,12 @@ android {
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "erizo.by.smsapp"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
     buildTypes {
         release {
@@ -32,5 +33,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: '2.3.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'me.everything:providers-android:1.0.1'
     testCompile 'junit:junit:4.12'
 }

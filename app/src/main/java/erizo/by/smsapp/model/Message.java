@@ -7,17 +7,8 @@ public class Message {
     private String message;
     private String sendTime;
     private String expTime;
-
-    public Message() {
-    }
-
-    public Message(String messageID, String phone, String message, String sendTime, String expTime) {
-        this.messageID = messageID;
-        this.phone = phone;
-        this.message = message;
-        this.sendTime = sendTime;
-        this.expTime = expTime;
-    }
+    private String simID;
+    private String status;
 
     public String getMessageID() {
         return messageID;
@@ -59,6 +50,22 @@ public class Message {
         this.expTime = expTime;
     }
 
+    public String getSimID() {
+        return simID;
+    }
+
+    public void setSimID(String simID) {
+        this.simID = simID;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
@@ -67,6 +74,8 @@ public class Message {
                 ", message='" + message + '\'' +
                 ", sendTime='" + sendTime + '\'' +
                 ", expTime='" + expTime + '\'' +
+                ", simID='" + simID + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }
