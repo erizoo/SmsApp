@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import erizo.by.smsapp.DeliverReceiver;
 import erizo.by.smsapp.GetSmsFromServerTimerTask;
+import erizo.by.smsapp.IncomeSmsSendTimerTask;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.SendSmsFromPhoneTimerTask;
 import erizo.by.smsapp.SentReceiver;
@@ -172,37 +173,8 @@ public class MainActivity extends AppCompatActivity {
                                         10) * 1000);
                     }
                 }
-
+                new Timer().schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings), 0L, 30L * 1000);
             }
         });
-    }
-
-    public String getMessageIdForSms(String phone, String message) {
-        Calendar c = Calendar.getInstance();
-        System.out.println("Current time => " + c.getTime());
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String formattedDate = df.format(c.getTime());
-        String[] item = formattedDate.split(" ");
-        String[] itemOne = item[0].split("-");
-        String[] itemTwo = item[1].split(":");
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(itemOne[0]).append(itemOne[1]).append(itemOne[2]).append(itemTwo[0]).append(itemTwo[1]).append(itemTwo[2])
-                .append("00001").append("00001").append(MD5_Hash(phone + message));
-        Log.d(TAG, String.valueOf(stringBuilder).toUpperCase());
-        return String.valueOf(stringBuilder).toUpperCase();
-    }
-
-    public static String MD5_Hash(String s) {
-        MessageDigest m = null;
-
-        try {
-            m = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        m.update(s.getBytes(), 0, s.length());
-        String hash = new BigInteger(1, m.digest()).toString(16);
-        return hash;
     }
 }
