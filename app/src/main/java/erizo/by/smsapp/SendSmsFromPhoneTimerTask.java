@@ -3,12 +3,14 @@ package erizo.by.smsapp;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.TimerTask;
@@ -23,20 +25,29 @@ public class SendSmsFromPhoneTimerTask extends TimerTask implements SmsStatus {
 
     private static final String TAG = SendSmsFromPhoneTimerTask.class.getSimpleName();
 
+    private ArrayList<PendingIntent> sentIntents = new ArrayList<>();
+    private ArrayList<PendingIntent> deliveryIntents = new ArrayList<>();
+
     private Queue<Message> messages;
     private SmsManager smsManager;
     private PendingIntent sentPi, deliverPi;
     private Context context;
+    private Intent sentIntent;
+    private Intent deliverIntent;
 
     public SendSmsFromPhoneTimerTask(Queue<Message> smsList,
                                      int simSlot,
                                      PendingIntent sentPi,
                                      PendingIntent deliverPi,
-                                     Context context) {
+                                     Context context,
+                                     Intent sentIntent,
+                                     Intent deliverIntent) {
         this.messages = smsList;
         this.sentPi = sentPi;
         this.deliverPi = deliverPi;
         this.context = context;
+        this.sentIntent = sentIntent;
+        this.deliverIntent = deliverIntent;
         if (Build.VERSION.SDK_INT <= LOLLIPOP_MR1) {
             smsManager = SmsManager.getDefault();
         } else {
@@ -49,11 +60,27 @@ public class SendSmsFromPhoneTimerTask extends TimerTask implements SmsStatus {
         if (!messages.isEmpty()) {
             for (Message message : messages) {
                 if (message.getStatus() == null) {
-                    smsManager.sendTextMessage(message.getPhone(),
-                            null,
-                            message.getMessage(),
-                            sentPi,
-                            deliverPi);
+                    if (message.getMessage().length() > 60) {
+                        ArrayList<String> parts = smsManager.divideMessage(message.getMessage());
+                        int numParts = parts.size();
+                        for (int i = 0; i < numParts; i++) {
+                            sentIntents.add(PendingIntent.getBroadcast(context, 0, sentIntent, 0));
+                            deliveryIntents.add(PendingIntent.getBroadcast(context, 0, deliverIntent, 0));
+                        }
+                        smsManager.sendMultipartTextMessage(
+                                message.getPhone(),
+                                null,
+                                parts,
+                                sentIntents,
+                                deliveryIntents);
+
+                    } else {
+                        smsManager.sendTextMessage(message.getPhone(),
+                                null,
+                                message.getMessage(),
+                                sentPi,
+                                deliverPi);
+                    }
                     Log.d(TAG, "sms sent " + message);
                     message.setStatus(SMS_PENDING);
                     Log.d(TAG, "changed status to 110 : " + message);

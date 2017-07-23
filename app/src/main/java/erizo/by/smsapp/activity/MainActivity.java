@@ -44,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private String DELIVER_SMS = "DELIVER_SMS";
     private Intent sentIntent = new Intent(SENT_SMS);
     private Intent deliverIntent = new Intent(DELIVER_SMS);
-    private ArrayList<PendingIntent> sentIntents = new ArrayList<>();
-    private ArrayList<PendingIntent> deliveryIntents = new ArrayList<>();
     private PendingIntent sentPi, deliverPi;
     private Button startButton, stopButton, settingsButton;
     private Queue<Message> firstSimMessageList = new ConcurrentLinkedQueue<>();
@@ -145,7 +143,9 @@ public class MainActivity extends AppCompatActivity {
                                         Integer.valueOf(firstSimSettings.get("simSlot")),
                                         sentPi,
                                         deliverPi,
-                                        getBaseContext()),
+                                        getBaseContext(),
+                                        sentIntent,
+                                        deliverIntent),
                                 0L,
                                 Long.parseLong(firstSimSettings.get("frequencyOfSmsSending"),
                                         10) * 1000);
@@ -164,7 +164,9 @@ public class MainActivity extends AppCompatActivity {
                                         Integer.valueOf(secondSimSettings.get("simSlot")),
                                         sentPi,
                                         deliverPi,
-                                        getBaseContext()),
+                                        getBaseContext(),
+                                        sentIntent,
+                                        deliverIntent),
                                 0L,
                                 Long.parseLong(secondSimSettings.get("frequencyOfSmsSending"),
                                         10) * 1000);
