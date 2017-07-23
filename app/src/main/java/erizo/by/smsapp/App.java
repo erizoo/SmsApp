@@ -11,9 +11,6 @@ import java.util.Map;
 
 import erizo.by.smsapp.service.TinyDb;
 
-/**
- * Created by Erizo on 21.07.2017.
- */
 
 public class App extends Application {
     public static Map<String, String> firstSimSettings;

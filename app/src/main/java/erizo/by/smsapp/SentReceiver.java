@@ -22,15 +22,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SentReceiver extends BroadcastReceiver implements SmsStatus {
 
     private static final String TAG = SentReceiver.class.getSimpleName();
-    private static final String BASE_HOST = "https://con24.ru/testapi/"; // TODO: 22.7.17 change to settings value
-    private static final String DEVICE_ID = "1";
 
     private Queue<Message> messages;
     private Map<String, String> simSettings;
 
     private Retrofit retrofit = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_HOST)
+            .baseUrl(simSettings.get("url"))
             .build();
     private APIService service = retrofit.create(APIService.class);
 
@@ -50,7 +48,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             if (message.getStatus().equals(SMS_PENDING)) {
                                 Log.d(TAG, "sms broadcast starting");
                                 service.sendStatus(SET_MESSAGES_STATUS,
-                                        DEVICE_ID,
+                                        simSettings.get("deviceId"),
                                         simSettings.get("simId"),
                                         simSettings.get("secretKey"),
                                         message.getMessageID(),
@@ -78,7 +76,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
-                                DEVICE_ID,
+                                simSettings.get("deviceId"),
                                 simSettings.get("simId"),
                                 simSettings.get("secretKey"),
                                 message.getMessageID(),
@@ -100,10 +98,11 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                     break;
                 case SmsManager.RESULT_ERROR_NO_SERVICE:
                     Log.d(TAG, "No service ");
+
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
-                                DEVICE_ID,
+                                simSettings.get("deviceId"),
                                 simSettings.get("simId"),
                                 simSettings.get("secretKey"),
                                 message.getMessageID(),
@@ -129,7 +128,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
-                                DEVICE_ID,
+                                simSettings.get("deviceId"),
                                 simSettings.get("simId"),
                                 simSettings.get("secretKey"),
                                 message.getMessageID(),
@@ -155,7 +154,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
-                                DEVICE_ID,
+                                simSettings.get("deviceId"),
                                 simSettings.get("simId"),
                                 simSettings.get("secretKey"),
                                 message.getMessageID(),

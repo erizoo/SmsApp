@@ -19,10 +19,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class GetSmsFromServerTimerTask extends TimerTask {
 
     private static final String TAG = GetSmsFromServerTimerTask.class.getSimpleName();
-    private static final String BASE_HOST = "https://con24.ru/testapi/"; // TODO: 22.7.17 change to values from settings
-    private static final String DEVICE_ID = "1";                         // TODO: 22.7.17 change to values from settings
-    private static final String SECRET_KEY = "T687G798UHO7867H";
-
     private static final String GET_ALL_MESSAGES_TASK = "getAllMessages";
 
     private Queue<Message> messages;
@@ -30,7 +26,7 @@ public class GetSmsFromServerTimerTask extends TimerTask {
 
     private Retrofit retrofit = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_HOST)
+            .baseUrl(simSettings.get("url"))
             .build();
     private APIService service = retrofit.create(APIService.class);
 
@@ -43,9 +39,9 @@ public class GetSmsFromServerTimerTask extends TimerTask {
     public void run() {
         service.getMessages(
                 GET_ALL_MESSAGES_TASK,
-                DEVICE_ID,
+                simSettings.get("deviceId"),
                 simSettings.get("simId"),
-                SECRET_KEY)
+                simSettings.get("secretKey"))
                 .enqueue(new Callback<MessageWrapper>() {
             @Override
             public void onResponse(Call<MessageWrapper> call, Response<MessageWrapper> response) {

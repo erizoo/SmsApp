@@ -21,15 +21,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
 
     private static final String TAG = DeliverReceiver.class.getSimpleName();
-    private static final String BASE_HOST = "https://con24.ru/testapi/"; // TODO: 22.7.17 change to settings value
-    private static final String DEVICE_ID = "1";
 
     private Queue<Message> messages;
     private Map<String, String> simSettings;
 
     private Retrofit retrofit = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_HOST)
+            .baseUrl(simSettings.get("url"))
             .build();
     private APIService service = retrofit.create(APIService.class);
 
@@ -48,7 +46,7 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                         Message message = messages.poll();
                         service.sendStatus(
                                 SET_MESSAGES_STATUS,
-                                DEVICE_ID,
+                                simSettings.get("deviceId"),
                                 simSettings.get("simId"),
                                 simSettings.get("secretKey"),
                                 message.getMessageID(),
@@ -75,7 +73,7 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                         Message message = messages.poll();
                         service.sendStatus(
                                 SET_MESSAGES_STATUS,
-                                DEVICE_ID,
+                                simSettings.get("deviceId"),
                                 simSettings.get("simId"),
                                 simSettings.get("secretKey"),
                                 message.getMessageID(),

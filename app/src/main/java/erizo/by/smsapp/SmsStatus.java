@@ -1,8 +1,5 @@
 package erizo.by.smsapp;
 
-/**
- * Created by valera on 22.7.17.
- */
 
 public interface SmsStatus {
     String STATUS_UNDELIVERED = "undelivered";

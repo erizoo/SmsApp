@@ -13,13 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Timer;
@@ -175,34 +169,5 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-    public String getMessageIdForSms(String phone, String message) {
-        Calendar c = Calendar.getInstance();
-        System.out.println("Current time => " + c.getTime());
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String formattedDate = df.format(c.getTime());
-        String[] item = formattedDate.split(" ");
-        String[] itemOne = item[0].split("-");
-        String[] itemTwo = item[1].split(":");
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(itemOne[0]).append(itemOne[1]).append(itemOne[2]).append(itemTwo[0]).append(itemTwo[1]).append(itemTwo[2])
-                .append("00001").append("00001").append(MD5_Hash(phone + message));
-        Log.d(TAG, String.valueOf(stringBuilder).toUpperCase());
-        return String.valueOf(stringBuilder).toUpperCase();
-    }
-
-    public static String MD5_Hash(String s) {
-        MessageDigest m = null;
-
-        try {
-            m = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        m.update(s.getBytes(), 0, s.length());
-        String hash = new BigInteger(1, m.digest()).toString(16);
-        return hash;
     }
 }
