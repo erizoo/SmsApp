@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -103,7 +104,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "App stopped ");
                 Toast.makeText(getApplicationContext(), "App stopped ", Toast.LENGTH_SHORT).show();
                 settingsButton.setClickable(true);
+                settingsButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
                 startButton.setClickable(true);
+                startButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
             }
         });
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -123,7 +126,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
                     settingsButton.setClickable(false);
+                    settingsButton.setBackgroundColor(Color.GRAY);
                     startButton.setClickable(false);
+                    startButton.setBackgroundColor(Color.GRAY);
                     Log.d(TAG, "App started ");
                     if (firstSimSettings.get("status").equals("true")) {
                         Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();

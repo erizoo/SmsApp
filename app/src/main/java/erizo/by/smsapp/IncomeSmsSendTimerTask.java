@@ -1,6 +1,7 @@
 package erizo.by.smsapp;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
@@ -101,7 +102,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
         String[] itemTwo = item[1].split(":");
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(itemOne[0]).append(itemOne[1]).append(itemOne[2]).append(itemTwo[0]).append(itemTwo[1]).append(itemTwo[2])
-                .append("00001").append("00001").append(MD5_Hash(phone + message));
+                .append("0000").append(simSettings.get("deviceId")).append("0000").append(simSettings.get("simId")).append(MD5_Hash(phone + message));
         Log.d(TAG, String.valueOf(stringBuilder).toUpperCase());
         return String.valueOf(stringBuilder).toUpperCase();
     }
