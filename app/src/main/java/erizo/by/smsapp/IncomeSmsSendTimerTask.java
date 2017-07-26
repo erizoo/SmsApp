@@ -16,15 +16,12 @@ import java.util.TimerTask;
 
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
-import me.everything.providers.android.telephony.Sms;
 import me.everything.providers.android.telephony.TelephonyProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import static erizo.by.smsapp.App.firstSimSettings;
 
 public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
@@ -49,11 +46,12 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
     @Override
     public void run() {
         TelephonyProvider telephonyProvider = new TelephonyProvider(context);
-        final List<Sms> smsList = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
+        final List<me.everything.providers.android.telephony.Sms> smsList = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
         Log.d(TAG, "List size: " + smsList.size());
         if (!smsList.isEmpty()) {
             for (int n = 0; n <= smsList.size(); n++) {
                 if (n == smsList.size()) {
+
                     context.getContentResolver().delete(Uri.parse("content://sms"), null, null);
                     smsList.clear();
                     n = 0;

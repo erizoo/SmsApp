@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 timers.add(getSmsFromServer_secondSim);
                 timers.add(sendSmsFromPhone_secondSim);
                 timers.add(sendSms);
-                if (firstSimSettings.get("status").equals("false")) {
+                if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false") ) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
                     settingsButton.setClickable(false);

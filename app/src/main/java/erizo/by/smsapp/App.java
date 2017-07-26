@@ -1,18 +1,15 @@
 package erizo.by.smsapp;
-
 import android.app.Application;
 import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import erizo.by.smsapp.service.TinyDb;
 
 
 public class App extends Application {
+
     public static Map<String, String> firstSimSettings;
     public static Map<String, String> secondSimSettings;
     private static final String SETTINGS_FIRST_SIM = "first_sim_settings";
@@ -27,7 +24,8 @@ public class App extends Application {
             Log.d("App", "settings contains. set them to view");
             String serializedSettingsFirstSim = tinyDb.getString(SETTINGS_FIRST_SIM);
             Gson gson = new Gson();
-            firstSimSettings = gson.fromJson(serializedSettingsFirstSim, new TypeToken<Map<String, String>>(){}.getType());
+            firstSimSettings = gson.fromJson(serializedSettingsFirstSim, new TypeToken<Map<String, String>>() {
+            }.getType());
         } else {
             firstSimSettings = new HashMap<>();
             firstSimSettings.put("status", "false");
@@ -39,7 +37,8 @@ public class App extends Application {
             Log.d("App", "settings contains. set them to view");
             String serializedSettingsSecondSim = tinyDbSecondSim.getString(SETTINGS_SECOND_SIM);
             Gson gson = new Gson();
-            secondSimSettings = gson.fromJson(serializedSettingsSecondSim, new TypeToken<Map<String, String>>(){}.getType());
+            secondSimSettings = gson.fromJson(serializedSettingsSecondSim, new TypeToken<Map<String, String>>() {
+            }.getType());
         } else {
             secondSimSettings = new HashMap<>();
             secondSimSettings.put("status", "false");
@@ -48,4 +47,5 @@ public class App extends Application {
         }
 
     }
+
 }
