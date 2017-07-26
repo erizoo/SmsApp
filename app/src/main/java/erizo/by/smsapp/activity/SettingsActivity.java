@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.telephony.SmsManager;
+import android.telephony.SubscriptionManager;
 import android.view.View;
 import android.widget.Button;
 
@@ -24,7 +24,7 @@ public class SettingsActivity extends Activity {
         simOne = (Button) findViewById(R.id.sim_one_button);
         simTwo = (Button) findViewById(R.id.sim_two_button);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if ( SmsManager.getDefaultSmsSubscriptionId()>1){
+            if (SubscriptionManager.from(this).getActiveSubscriptionInfoList().size() > 1) {
                 simOne.setEnabled(true);
                 simTwo.setEnabled(true);
             } else {
@@ -33,6 +33,7 @@ public class SettingsActivity extends Activity {
                 App.secondSimSettings.put("status", "false");
                 simTwo.setBackgroundColor(Color.GRAY);
             }
+        } else {
             simOne.setEnabled(true);
             simTwo.setEnabled(false);
             App.secondSimSettings.put("status", "false");

@@ -1,8 +1,13 @@
 package erizo.by.smsapp.activity;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,9 +18,14 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.util.List;
+
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.service.TinyDb;
 
+import static android.os.Build.VERSION.SDK;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import static erizo.by.smsapp.App.firstSimSettings;
 
 
@@ -133,12 +143,25 @@ public class SettingsFirstSim extends Activity {
                 Log.d(TAG, firstSimSettings.get("maxNumbersMessages"));
                 firstSimSettings.put("timeMessages", timeMessages.getText().toString());
                 Log.d(TAG, firstSimSettings.get("timeMessages"));
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(intent);
+                firstSimSettings.put("android_sim_slot", String.valueOf(getAndroidFirstSimSlotId()));
+                Log.d(TAG, firstSimSettings.get("android_sim_slot"));
+
                 Gson gson = new Gson();
                 String serializedSettings = gson.toJson(firstSimSettings);
                 tinyDb.putString(SETTINGS_FIRST_SIM, serializedSettings);
+
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
     }
+
+    @TargetApi(LOLLIPOP_MR1)
+    private int getAndroidFirstSimSlotId() {
+        if (SDK_INT >= LOLLIPOP_MR1) {
+            return SubscriptionManager.from(this).getActiveSubscriptionInfoList().get(0).getSubscriptionId();
+        }
+        return SmsManager.getDefault().getSubscriptionId(); // TODO: 26.07.2017 doesn't work in api under 22
+    }
 }
+

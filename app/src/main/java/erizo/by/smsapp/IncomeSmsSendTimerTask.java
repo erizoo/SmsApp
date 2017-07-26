@@ -10,13 +10,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
-import me.everything.providers.android.telephony.TelephonyProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,34 +46,26 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     @Override
     public void run() {
-        TelephonyProvider telephonyProvider = new TelephonyProvider(context);
-        final List<me.everything.providers.android.telephony.Sms> smsList = telephonyProvider.getSms(TelephonyProvider.Filter.INBOX).getList();
-        Log.d(TAG, "List size: " + smsList.size());
-        if (!smsList.isEmpty()) {
-            for (int n = 0; n <= smsList.size(); n++) {
-                if (n == smsList.size()) {
-
-                    context.getContentResolver().delete(Uri.parse("content://sms"), null, null);
-                    smsList.clear();
-                    n = 0;
-                }
+        Queue<Message> messages = getCurrentSimIncomeMessageList();
+        Log.d(TAG, "List size: " + messages.size());
+        if (!messages.isEmpty()) {
+            for (Message message : messages) {
                 try {
                     service.sendSms(
                             NEW_INCOME_MESSAGE,
                             simSettings.get("deviceId"),
                             simSettings.get("simId"),
                             simSettings.get("secretKey"),
-                            smsList.get(n).address,
-                            smsList.get(n).body,
+                            message.getPhone(),
+                            message.getMessage(),
                             getMessageIdForSms(
-                                    smsList.get(n).address,
-                                    smsList.get(n).body)).enqueue(new Callback<Status>() {
+                                    message.getPhone(),
+                                    message.getMessage())).enqueue(new Callback<Status>() {
                         @Override
                         public void onResponse(Call<Status> call, Response<Status> response) {
                             if (response.body() != null) {
                                 Log.d(TAG, "Message status: " + response.body().getStatus());
                             }
-//                            counter = 0;
                         }
 
                         @Override
@@ -85,6 +78,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                     Log.d(TAG, "No new sms ");
                 }
             }
+            messages.clear();
         } else {
             Log.d(TAG, "No new sms ");
         }
@@ -92,7 +86,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     private String getMessageIdForSms(String phone, String message) {
         Calendar c = Calendar.getInstance();
-        System.out.println("Current time => " + c.getTime());
+        Log.d(TAG, "Current time => " + c.getTime());
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = df.format(c.getTime());
         String[] item = formattedDate.split(" ");
@@ -115,6 +109,26 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
         m.update(s.getBytes(), 0, s.length());
         String hash = new BigInteger(1, m.digest()).toString(16);
         return hash;
+    }
+
+    private Queue<Message> getCurrentSimIncomeMessageList() {
+        Cursor cursor = context.getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
+        Queue<Message> messages = new ConcurrentLinkedQueue<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                if (cursor.getString(27).equals(simSettings.get("android_sim_slot"))) {
+                    Message message = new Message(cursor.getString(2), cursor.getString(12));
+                    messages.add(message);
+                    Log.d(TAG, "Added to income message list message : " + message);
+                }
+            } while (cursor.moveToNext());
+        } else {
+            Log.d(TAG, "Empty sms input box");
+            // empty box, no SMS
+        }
+
+        return messages;
     }
 
 }

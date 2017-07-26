@@ -116,16 +116,6 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Timer getSmsFromServer_firstSim = new Timer();
-                Timer sendSmsFromPhone_firstSim = new Timer();
-                Timer getSmsFromServer_secondSim = new Timer();
-                Timer sendSmsFromPhone_secondSim = new Timer();
-                Timer sendSms = new Timer();
-                timers.add(getSmsFromServer_firstSim);
-                timers.add(sendSmsFromPhone_firstSim);
-                timers.add(getSmsFromServer_secondSim);
-                timers.add(sendSmsFromPhone_secondSim);
-                timers.add(sendSms);
                 if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false") ) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
@@ -137,6 +127,14 @@ public class MainActivity extends AppCompatActivity {
                     startButton.setBackgroundColor(Color.GRAY);
                     Log.d(TAG, "App started ");
                     if (firstSimSettings.get("status").equals("true")) {
+                        Timer getSmsFromServer_firstSim = new Timer();
+                        Timer sendSmsFromPhone_firstSim = new Timer();
+                        Timer sendFirstSimInboxSms = new Timer();
+                        timers.add(sendFirstSimInboxSms);
+                        timers.add(getSmsFromServer_firstSim);
+                        timers.add(sendSmsFromPhone_firstSim);
+
+                        sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings), 0L, 30L * 1000);
                         Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
                         getSmsFromServer_firstSim.schedule(
                                 new GetSmsFromServerTimerTask(
@@ -159,6 +157,14 @@ public class MainActivity extends AppCompatActivity {
                                         10) * 1000);
                     }
                     if (secondSimSettings.get("status").equals("true")) {
+                        Timer getSmsFromServer_secondSim = new Timer();
+                        Timer sendSmsFromPhone_secondSim = new Timer();
+                        Timer sendSecondSimInboxSms = new Timer();
+                        timers.add(sendSecondSimInboxSms);
+                        timers.add(getSmsFromServer_secondSim);
+                        timers.add(sendSmsFromPhone_secondSim);
+
+                        sendSecondSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, secondSimSettings), 0L, 30L * 1000);
                         getSmsFromServer_secondSim.schedule(
                                 new GetSmsFromServerTimerTask(
                                         secondSimSettings,
@@ -180,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
                                         10) * 1000);
                     }
                 }
-                sendSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings), 0L, 30L * 1000);
             }
         });
     }

@@ -1,8 +1,11 @@
 package erizo.by.smsapp.activity;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +19,8 @@ import com.google.gson.Gson;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.service.TinyDb;
 
-import static erizo.by.smsapp.App.firstSimSettings;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import static erizo.by.smsapp.App.secondSimSettings;
 
 public class SettingsSecondSim extends Activity {
@@ -97,7 +101,7 @@ public class SettingsSecondSim extends Activity {
             @Override
             public void onClick(View v) {
                 secondSimSettings.put("simSlot", SECOND_SIM_SLOT_NUMBER);
-                Log.d(TAG, firstSimSettings.get("simSlot"));
+                Log.d(TAG, secondSimSettings.get("simSlot"));
                 secondSimSettings.put("deviceId", deviceId.getText().toString());
                 Log.d(TAG, secondSimSettings.get("deviceId"));
                 secondSimSettings.put("simId", simId.getText().toString());
@@ -134,12 +138,24 @@ public class SettingsSecondSim extends Activity {
                 Log.d(TAG, secondSimSettings.get("maxNumbersMessages"));
                 secondSimSettings.put("timeMessages", timeMessages.getText().toString());
                 Log.d(TAG, secondSimSettings.get("timeMessages"));
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(intent);
+                secondSimSettings.put("android_sim_slot", String.valueOf(getAndroidSecondSimSlotId()));
+                Log.d(TAG, secondSimSettings.get("android_sim_slot"));
+
                 Gson gson = new Gson();
                 String serializedSettings = gson.toJson(secondSimSettings);
                 tinyDbSecondSim.putString(SETTINGS_SECOND_SIM, serializedSettings);
+
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
+    }
+
+    @TargetApi(LOLLIPOP_MR1)
+    private int getAndroidSecondSimSlotId() {
+        if (SDK_INT >= LOLLIPOP_MR1) {
+            return SubscriptionManager.from(this).getActiveSubscriptionInfoList().get(1).getSubscriptionId();
+        }
+        return SmsManager.getDefault().getSubscriptionId(); // TODO: 26.07.2017 doesn't work in api under 22
     }
 }

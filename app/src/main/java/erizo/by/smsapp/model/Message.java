@@ -10,6 +10,14 @@ public class Message {
     private String simID;
     private String status;
 
+    public Message() {
+    }
+
+    public Message(String phone, String message) {
+        this.message = message;
+        this.phone = phone;
+    }
+
     public String getMessageID() {
         return messageID;
     }
