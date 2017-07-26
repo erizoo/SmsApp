@@ -94,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         stopButton = (Button) findViewById(R.id.stop_button);
+        stopButton.setEnabled(false);
+        stopButton.setBackgroundColor(Color.GRAY);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
                 settingsButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
                 startButton.setClickable(true);
                 startButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
+                stopButton.setEnabled(false);
+                stopButton.setBackgroundColor(Color.GRAY);
             }
         });
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +129,8 @@ public class MainActivity extends AppCompatActivity {
                 if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false") ) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
+                    stopButton.setEnabled(true);
+                    stopButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
                     settingsButton.setClickable(false);
                     settingsButton.setBackgroundColor(Color.GRAY);
                     startButton.setClickable(false);

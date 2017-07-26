@@ -1,162 +1,346 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ScrollView01"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="1000dp">
+
+        <Switch
+            android:id="@+id/switch_second_sim"
+            android:layout_width="135dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="35dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="43dp"
+            android:text="Статус" />
+
+        <TextView
+            android:id="@+id/frequency_requests_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/frequency_sent_sms_second_sim_edit_text"
+            android:layout_alignLeft="@+id/frequency_sent_sms_second_sim"
+            android:layout_alignStart="@+id/frequency_sent_sms_second_sim"
+            android:text="Частота запросов " />
+
+        <EditText
+            android:id="@+id/frequency_requests_second_sim_edit_text"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/frequency_requests_second_sim"
+            android:layout_marginLeft="44dp"
+            android:layout_marginStart="44dp"
+            android:layout_toEndOf="@+id/frequency_sent_sms_second_sim"
+            android:layout_toRightOf="@+id/frequency_sent_sms_second_sim"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/frequency_sent_sms_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/switch_second_sim"
+            android:layout_alignStart="@+id/switch_second_sim"
+            android:layout_below="@+id/switch_second_sim"
+            android:layout_marginTop="278dp"
+            android:text="Периодичность отправки "
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/frequency_sent_sms_second_sim_edit_text"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/frequency_sent_sms_second_sim"
+            android:layout_alignStart="@+id/frequency_requests_second_sim_edit_text"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/sim_second_id_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/sim_second_id"
+            android:layout_alignBottom="@+id/sim_second_id"
+            android:layout_alignEnd="@+id/url_second_sim_edit"
+            android:layout_alignRight="@+id/url_second_sim_edit"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/sim_second_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/url_second_sim_edit"
+            android:layout_alignLeft="@+id/switch_second_sim"
+            android:layout_alignStart="@+id/switch_second_sim"
+            android:layout_marginBottom="25dp"
+            android:text="SIM ID" />
+
+        <TextView
+            android:id="@+id/secret_key_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/frequency_requests_second_sim_edit_text"
+            android:layout_alignStart="@+id/frequency_requests_second_sim"
+            android:text="SecretKey" />
+
+        <EditText
+            android:id="@+id/secret_key_second_sim_edit"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/frequency_requests_second_sim_edit_text"
+            android:layout_toEndOf="@+id/frequency_requests_second_sim"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/url_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/secret_key_second_sim_edit"
+            android:layout_alignStart="@+id/secret_key_second_sim"
+            android:text="URL" />
+
+        <EditText
+            android:id="@+id/url_second_sim_edit"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/secret_key_second_sim_edit"
+            android:layout_toEndOf="@+id/secret_key_second_sim"
+            android:ems="10"
+            android:inputType="textPersonName" />
 
 
-    <Switch
-        android:id="@+id/switch_second_sim"
-        android:layout_width="135dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="35dp"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="43dp"
-        android:text="Статус" />
+        <TextView
+            android:id="@+id/device_id_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/sim_second_id_edit"
+            android:layout_alignLeft="@+id/switch_second_sim"
+            android:layout_alignStart="@+id/switch_second_sim"
+            android:layout_marginBottom="19dp"
+            android:text="DEVICE ID" />
 
-    <TextView
-        android:id="@+id/frequency_requests_second_sim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/frequency_sent_sms_second_sim"
-        android:layout_alignStart="@+id/frequency_sent_sms_second_sim"
-        android:layout_marginBottom="26dp"
-        android:text="Частота запросов " />
+        <EditText
+            android:id="@+id/device_id_second_sim_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/device_id_second_sim"
+            android:layout_alignBottom="@+id/device_id_second_sim"
+            android:layout_alignLeft="@+id/sim_second_id_edit"
+            android:layout_alignStart="@+id/sim_second_id_edit"
+            android:ems="10"
+            android:inputType="textPersonName" />
 
-    <EditText
-        android:id="@+id/frequency_requests_second_sim_edit_text"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_alignBottom="@+id/frequency_requests_second_sim"
-        android:layout_toRightOf="@+id/frequency_sent_sms_second_sim"
-        android:layout_toEndOf="@+id/frequency_sent_sms_second_sim"
-        android:layout_marginLeft="44dp"
-        android:layout_marginStart="44dp" />
+        <TextView
+            android:id="@+id/frequency_alert_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Частота алертов"
+            android:layout_marginTop="42dp"
+            android:layout_below="@+id/textView"
+            android:layout_alignLeft="@+id/frequency_sent_sms_second_sim"
+            android:layout_alignStart="@+id/frequency_sent_sms_second_sim" />
 
-    <TextView
-        android:id="@+id/frequency_sent_sms_second_sim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Периодичность отправки "
-        android:textSize="14sp"
-        android:layout_marginBottom="32dp"
-        android:layout_above="@+id/save_button_settings_second_sim"
-        android:layout_alignLeft="@+id/sim_second_id"
-        android:layout_alignStart="@+id/sim_second_id" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frequency_sent_sms_second_sim"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="35dp"
+            android:text="Самотетстирование"
+            android:textSize="25sp" />
 
-    <EditText
-        android:id="@+id/frequency_sent_sms_second_sim_edit_text"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_alignBottom="@+id/frequency_sent_sms_second_sim"
-        android:layout_alignStart="@+id/frequency_requests_second_sim_edit_text" />
+        <TextView
+            android:id="@+id/numbers_alerts_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="Номера для алертов "
+            android:layout_below="@+id/frequency_alert_second_sim"
+            android:layout_alignLeft="@+id/frequency_alert_second_sim"
+            android:layout_alignStart="@+id/frequency_alert_second_sim" />
 
-    <Button
-        android:id="@+id/save_button_settings_second_sim"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="74dp"
-        android:background="@android:color/holo_blue_light"
-        android:text="Сохранить"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_light"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        <TextView
+            android:id="@+id/mail_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/numbers_alerts_second_sim"
+            android:layout_alignStart="@+id/numbers_alerts_second_sim"
+            android:layout_below="@+id/numbers_alerts_second_sim"
+            android:layout_marginTop="32dp"
+            android:text="Почтовый ящик" />
 
-    <EditText
-        android:id="@+id/sim_second_id_edit"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_alignBaseline="@+id/sim_second_id"
-        android:layout_alignBottom="@+id/sim_second_id"
-        android:layout_alignRight="@+id/url_second_sim_edit"
-        android:layout_alignEnd="@+id/url_second_sim_edit" />
+        <TextView
+            android:id="@+id/login_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/password_second_sim"
+            android:layout_alignStart="@+id/password_second_sim"
+            android:layout_below="@+id/mail_second_sim"
+            android:layout_marginTop="35dp"
+            android:text="Логин для почты " />
 
-    <TextView
-        android:id="@+id/sim_second_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SIM ID"
-        android:layout_marginBottom="25dp"
-        android:layout_above="@+id/url_second_sim_edit"
-        android:layout_alignLeft="@+id/switch_second_sim"
-        android:layout_alignStart="@+id/switch_second_sim" />
+        <TextView
+            android:id="@+id/password_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/port_sim_second"
+            android:layout_alignStart="@+id/port_sim_second"
+            android:layout_below="@+id/login_second_sim"
+            android:layout_marginTop="34dp"
+            android:text="Пароль для почты " />
 
-    <TextView
-        android:id="@+id/secret_key_second_sim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/frequency_requests_second_sim_edit_text"
-        android:layout_alignStart="@+id/frequency_requests_second_sim"
-        android:text="SecretKey" />
+        <TextView
+            android:id="@+id/port_sim_second"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/max_number_errors_second_sim"
+            android:layout_alignStart="@+id/max_number_errors_second_sim"
+            android:layout_below="@+id/password_second_sim"
+            android:layout_marginTop="38dp"
+            android:text="SMTP порт " />
 
-    <EditText
-        android:id="@+id/secret_key_second_sim_edit"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_above="@+id/frequency_requests_second_sim_edit_text"
-        android:layout_toEndOf="@+id/frequency_requests_second_sim" />
+        <TextView
+            android:id="@+id/max_number_errors_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/max_numbers_messages_second_sim"
+            android:layout_alignStart="@+id/max_numbers_messages_second_sim"
+            android:layout_below="@+id/port_sim_second"
+            android:layout_marginTop="34dp"
+            android:text="Максимальное число ошибок" />
 
-    <TextView
-        android:id="@+id/url_second_sim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/secret_key_second_sim_edit"
-        android:layout_alignStart="@+id/secret_key_second_sim"
-        android:text="URL" />
+        <TextView
+            android:id="@+id/max_numbers_messages_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/frequency_alert_second_sim"
+            android:layout_alignStart="@+id/frequency_alert_second_sim"
+            android:layout_below="@+id/max_number_errors_second_sim"
+            android:layout_marginTop="28dp"
+            android:text="Максимальное число сообщений" />
 
-    <EditText
-        android:id="@+id/url_second_sim_edit"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_above="@+id/secret_key_second_sim_edit"
-        android:layout_toEndOf="@+id/secret_key_second_sim" />
+        <TextView
+            android:id="@+id/time_messages_second_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Время оценки сообщений"
+            android:layout_below="@+id/max_numbers_messages_second_sim"
+            android:layout_alignLeft="@+id/max_numbers_messages_second_sim"
+            android:layout_alignStart="@+id/max_numbers_messages_second_sim"
+            android:layout_marginTop="27dp" />
 
-    <Button
-        android:id="@+id/test_button_second_sim"
-        android:layout_width="170dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="14dp"
-        android:background="@android:color/holo_blue_light"
-        android:text="Самотестирование"
-        android:textColor="@android:color/background_light"
-        android:textSize="15sp"
-        android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/device_id_second_sim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/sim_second_id_edit"
-        android:layout_alignLeft="@+id/switch_second_sim"
-        android:layout_alignStart="@+id/switch_second_sim"
-        android:layout_marginBottom="19dp"
-        android:text="DEVICE ID" />
+        <Button
+            android:id="@+id/button_save_test_settings_second_sim"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@android:color/holo_blue_light"
+            android:text="Сохранить"
+            android:textColor="@android:color/background_light"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/device_id_second_sim_edit"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/device_id_second_sim"
-        android:layout_alignBottom="@+id/device_id_second_sim"
-        android:layout_alignLeft="@+id/sim_second_id_edit"
-        android:layout_alignStart="@+id/sim_second_id_edit"
-        android:ems="10"
-        android:inputType="textPersonName" />
+        <EditText
+            android:id="@+id/frequency_alert_second_sim_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/numbers_alerts_second_sim_edit"
+            android:layout_alignLeft="@+id/numbers_alerts_second_sim_edit"
+            android:layout_alignStart="@+id/numbers_alerts_second_sim_edit"
+            android:ems="10"
+            android:inputType="textPersonName" />
 
-</RelativeLayout>
+        <EditText
+            android:id="@+id/numbers_alerts_second_sim_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frequency_alert_second_sim"
+            android:layout_toEndOf="@+id/max_number_errors_second_sim"
+            android:layout_toRightOf="@+id/max_number_errors_second_sim"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/mail_second_sim_edit"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/mail_second_sim"
+            android:layout_alignEnd="@+id/max_numbers_messages_second_sim_edit"
+            android:layout_alignRight="@+id/max_numbers_messages_second_sim_edit"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/login_second_sim_edit"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/login_second_sim"
+            android:layout_alignLeft="@+id/mail_second_sim_edit"
+            android:layout_alignStart="@+id/mail_second_sim_edit"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/password_second_sim_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/password_second_sim"
+            android:layout_alignLeft="@+id/port_sim_second_edit"
+            android:layout_alignStart="@+id/port_sim_second_edit"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/port_sim_second_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/port_sim_second"
+            android:layout_toEndOf="@+id/max_number_errors_second_sim"
+            android:layout_toRightOf="@+id/max_number_errors_second_sim"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/max_number_errors_second_sim_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/max_number_errors_second_sim"
+            android:layout_toEndOf="@+id/max_numbers_messages_second_sim"
+            android:layout_toRightOf="@+id/max_numbers_messages_second_sim"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/max_numbers_messages_second_sim_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/max_numbers_messages_second_sim"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@+id/button_save_test_settings_second_sim"
+            android:layout_toRightOf="@+id/button_save_test_settings_second_sim"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/time_messages_second_sim_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:layout_alignBottom="@+id/time_messages_second_sim"
+            android:layout_toRightOf="@+id/port_sim_second_edit"
+            android:layout_toEndOf="@+id/port_sim_second_edit" />
+    </RelativeLayout>
+</ScrollView>

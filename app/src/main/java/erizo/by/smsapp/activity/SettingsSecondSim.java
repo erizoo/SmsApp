@@ -25,8 +25,11 @@ public class SettingsSecondSim extends Activity {
     private static final String SECOND_SIM_SLOT_NUMBER = "1";
     private static final String SETTINGS_SECOND_SIM = "second_sim_settings";
     private Switch aSwitch;
-    private EditText deviceId,simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending;
-    private Button saveSettings, nextSettings;
+    private EditText deviceId,simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending,
+            frequencyAlert, numbersAlerts, email, loginForEmail,
+            passwordForEmail, portForEmail, maxNumberError, maxNumbersMessages,
+            timeMessages;
+    private Button saveSettings;
 
     private TinyDb tinyDbSecondSim;
 
@@ -42,8 +45,16 @@ public class SettingsSecondSim extends Activity {
         secretKey = (EditText) findViewById(R.id.secret_key_second_sim_edit);
         frequencyOfRequests = (EditText) findViewById(R.id.frequency_requests_second_sim_edit_text);
         frequencyOfSmsSending = (EditText) findViewById(R.id.frequency_sent_sms_second_sim_edit_text);
-        saveSettings = (Button) findViewById(R.id.save_button_settings_second_sim);
-        nextSettings = (Button) findViewById(R.id.test_button_second_sim);
+        frequencyAlert = (EditText) findViewById(R.id.frequency_alert_second_sim_edit);
+        numbersAlerts = (EditText) findViewById(R.id.numbers_alerts_second_sim_edit);
+        email = (EditText) findViewById(R.id.mail_second_sim_edit);
+        loginForEmail = (EditText) findViewById(R.id.login_second_sim_edit);
+        passwordForEmail = (EditText) findViewById(R.id.password_second_sim_edit);
+        portForEmail = (EditText) findViewById(R.id.port_sim_second_edit);
+        maxNumberError = (EditText) findViewById(R.id.max_number_errors_second_sim_edit);
+        maxNumbersMessages = (EditText) findViewById(R.id.max_numbers_messages_second_sim_edit);
+        timeMessages = (EditText) findViewById(R.id.time_messages_second_sim_edit);
+        saveSettings = (Button) findViewById(R.id.button_save_test_settings_second_sim);
 
         deviceId.setText(secondSimSettings.get("deviceId"));
         simId.setText(secondSimSettings.get("simId"));
@@ -51,6 +62,15 @@ public class SettingsSecondSim extends Activity {
         secretKey.setText(secondSimSettings.get("secretKey"));
         frequencyOfRequests.setText(secondSimSettings.get("frequencyOfRequests"));
         frequencyOfSmsSending.setText(secondSimSettings.get("frequencyOfSmsSending"));
+        frequencyAlert.setText(secondSimSettings.get("frequencyAlert"));
+        numbersAlerts.setText(secondSimSettings.get("numbersAlerts"));
+        email.setText(secondSimSettings.get("email"));
+        loginForEmail.setText(secondSimSettings.get("loginForEmail"));
+        passwordForEmail.setText(secondSimSettings.get("passwordForEmail"));
+        portForEmail.setText(secondSimSettings.get("portForEmail"));
+        maxNumberError.setText(secondSimSettings.get("maxNumberError"));
+        maxNumbersMessages.setText(secondSimSettings.get("maxNumbersMessages"));
+        timeMessages.setText(secondSimSettings.get("timeMessages"));
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -72,14 +92,6 @@ public class SettingsSecondSim extends Activity {
         } catch (Exception e){
             Log.e(TAG, e.getMessage());
         }
-
-        nextSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), AdditionalSettingsSecondSim.class);
-                startActivity(intent);
-            }
-        });
 
         saveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,7 +116,25 @@ public class SettingsSecondSim extends Activity {
                 if(frequencyOfSmsSending.getText().toString().equals("")){
                     secondSimSettings.put("frequencyOfSmsSending", "60");
                 }
-                Intent intent = new Intent(getBaseContext(), AdditionalSettingsSecondSim.class);
+                secondSimSettings.put("frequencyAlert", frequencyAlert.getText().toString());
+                Log.d(TAG, secondSimSettings.get("frequencyAlert"));
+                secondSimSettings.put("numbersAlerts", numbersAlerts.getText().toString());
+                Log.d(TAG, secondSimSettings.get("numbersAlerts"));
+                secondSimSettings.put("email", email.getText().toString());
+                Log.d(TAG, secondSimSettings.get("email"));
+                secondSimSettings.put("loginForEmail", loginForEmail.getText().toString());
+                Log.d(TAG, secondSimSettings.get("loginForEmail"));
+                secondSimSettings.put("passwordForEmail", passwordForEmail.getText().toString());
+                Log.d(TAG, secondSimSettings.get("passwordForEmail"));
+                secondSimSettings.put("portForEmail", portForEmail.getText().toString());
+                Log.d(TAG, secondSimSettings.get("portForEmail"));
+                secondSimSettings.put("maxNumberError", maxNumberError.getText().toString());
+                Log.d(TAG, secondSimSettings.get("maxNumberError"));
+                secondSimSettings.put("maxNumbersMessages", maxNumbersMessages.getText().toString());
+                Log.d(TAG, secondSimSettings.get("maxNumbersMessages"));
+                secondSimSettings.put("timeMessages", timeMessages.getText().toString());
+                Log.d(TAG, secondSimSettings.get("timeMessages"));
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
                 Gson gson = new Gson();
                 String serializedSettings = gson.toJson(secondSimSettings);
