@@ -13,6 +13,7 @@ import java.util.Queue;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
+import erizo.by.smsapp.service.FileLogService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,6 +28,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
     private Map<String, String> simSettings;
 
     private APIService service;
+    private FileLogService logService = new FileLogService();
 
     public SentReceiver(Queue<Message> messages, Map<String, String> simSettings){
         this.messages = messages;
@@ -64,6 +66,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                                     public void onFailure(Call<Status> call, Throwable t) {
 //                                        counter++;
                                         Log.d(TAG, "Error get status sent " + t.getMessage());
+                                        logService.appendLog(t.getMessage());
                                     }
                                 });
                                 message.setStatus(SMS_SENT);
@@ -74,6 +77,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                     break;
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                     Log.d(TAG, "Generic failure ");
+                    logService.appendLog("RESULT_ERROR_GENERIC_FAILURE");
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -92,14 +96,14 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onFailure(Call<Status> call, Throwable t) {
 //                                        counter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
+                                logService.appendLog(t.getMessage());
                             }
-
                         });
                     }
                     break;
                 case SmsManager.RESULT_ERROR_NO_SERVICE:
                     Log.d(TAG, "No service ");
-
+                    logService.appendLog("RESULT_ERROR_NO_SERVICE");
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -119,13 +123,14 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onFailure(Call<Status> call, Throwable t) {
 //                                        counter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
+                                logService.appendLog(t.getMessage());
                             }
-
                         });
                     }
                     break;
                 case SmsManager.RESULT_ERROR_NULL_PDU:
                     Log.d(TAG, "Null PDU ");
+                    logService.appendLog("RESULT_ERROR_NULL_PDU");
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -145,6 +150,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onFailure(Call<Status> call, Throwable t) {
 //                                        counter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
+                                logService.appendLog(t.getMessage());
                             }
 
                         });
@@ -152,6 +158,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                     break;
                 case SmsManager.RESULT_ERROR_RADIO_OFF:
                     Log.d(TAG, "Radio off ");
+                    logService.appendLog("RESULT_ERROR_RADIO_OFF");
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -171,8 +178,8 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onFailure(Call<Status> call, Throwable t) {
 //                                        counter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
+                                logService.appendLog(t.getMessage());
                             }
-
                         });
                     }
                     break;
