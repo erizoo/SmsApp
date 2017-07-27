@@ -161,7 +161,7 @@ public class SettingsFirstSim extends Activity {
         if (SDK_INT >= LOLLIPOP_MR1) {
             return SubscriptionManager.from(this).getActiveSubscriptionInfoList().get(0).getSubscriptionId();
         }
-        return SmsManager.getDefault().getSubscriptionId(); // TODO: 26.07.2017 doesn't work in api under 22
+        return Integer.valueOf(firstSimSettings.get("simSlot")) + 1;
     }
 }
 

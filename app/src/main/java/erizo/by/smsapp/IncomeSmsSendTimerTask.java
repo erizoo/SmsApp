@@ -27,6 +27,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     private static final String TAG = IncomeSmsSendTimerTask.class.getSimpleName();
+    private static final int SIM_SLOT_NUMBER = 27;
+    private static final int PHONE = 2;
+    private static final int MESSAGE = 12;
+    private static final int P_ID = 1;
 
     private Context context;
     private Map<String, String> simSettings;
@@ -116,11 +120,19 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
         Queue<Message> messages = new ConcurrentLinkedQueue<>();
 
         if (cursor.moveToFirst()) {
+            Log.d(TAG, "Cursor : " + cursor.toString());
+            for (int i = 0; i < cursor.getColumnNames().length; i++) {
+                Log.d(TAG, cursor.getColumnName(i) + ": " + cursor.getString(i));
+            }
             do {
-                if (cursor.getString(27).equals(simSettings.get("android_sim_slot"))) {
-                    Message message = new Message(cursor.getString(2), cursor.getString(12));
+                if (cursor.getString(SIM_SLOT_NUMBER).equals(simSettings.get("android_sim_slot"))) {
+                    Message message = new Message(cursor.getString(PHONE), cursor.getString(MESSAGE));
                     messages.add(message);
-                    Log.d(TAG, "Added to income message list message : " + message);
+                    Log.d(TAG, "Added to income message list message : " + message.toString());
+                    String pid = cursor.getString(P_ID);
+                    String uri = "content://sms/conversations/" + pid;
+                    context.getContentResolver().delete(Uri.parse(uri), null, null);
+                    Log.d(TAG, "Message was deleted");
                 }
             } while (cursor.moveToNext());
         } else {
