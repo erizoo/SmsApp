@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
+import erizo.by.smsapp.service.FileLogService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +38,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     private Retrofit retrofit;
     private APIService service;
+    private FileLogService logService = new FileLogService();
 
     public IncomeSmsSendTimerTask(Context context, Map<String, String> simSettings) {
         this.context = context;
@@ -75,7 +77,9 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                         @Override
                         public void onFailure(Call<Status> call, Throwable t) {
 //                            counter++;
-                            Log.d(TAG, "Error get status pending " + t.getMessage());
+                            Log.e(TAG, t.getMessage());
+                            logService.appendLog(t.getMessage());
+                            Log.e(TAG, "Error get status pending " + t.getMessage());
                         }
                     });
                 } catch (Exception e) {
@@ -137,7 +141,6 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
             } while (cursor.moveToNext());
         } else {
             Log.d(TAG, "Empty sms input box");
-            // empty box, no SMS
         }
 
         return messages;

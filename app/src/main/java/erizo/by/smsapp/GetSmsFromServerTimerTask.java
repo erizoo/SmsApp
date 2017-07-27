@@ -25,6 +25,7 @@ public class GetSmsFromServerTimerTask extends TimerTask {
     private Map<String,String> simSettings;
 
     private APIService service;
+    FileLogService logService = new FileLogService();
 
     public GetSmsFromServerTimerTask(Map<String, String> simSettings, Queue<Message> serverMessageList) {
         super();
@@ -55,11 +56,11 @@ public class GetSmsFromServerTimerTask extends TimerTask {
                             }
                         } else {
                             Log.d(TAG, "No new messages");
-                            new FileLogService().appendLog("Hello world");
                         }
 //                        Log.d(TAG, String.valueOf(counter));
                     } else {
                         Log.d(TAG, "Response body = NULL");
+                        logService.appendLog("Empty response body in :" + TAG);
 //                        Log.d(TAG, String.valueOf(counter));
 //                        counter = 0;
                     }
@@ -74,6 +75,7 @@ public class GetSmsFromServerTimerTask extends TimerTask {
             public void onFailure(Call<MessageWrapper> call, Throwable t) {
 //                counter++;
                 Log.e(TAG, "Something went wrong " + t.getMessage());
+                logService.appendLog(t.getMessage());
             }
         });
     }

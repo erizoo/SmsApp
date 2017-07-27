@@ -12,6 +12,7 @@ import java.util.Queue;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
+import erizo.by.smsapp.service.FileLogService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,8 +26,8 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
     private Queue<Message> messages;
     private Map<String, String> simSettings;
 
-
     private APIService service;
+    private FileLogService logService = new FileLogService();
 
     public DeliverReceiver(Queue<Message> messages, Map<String, String> simSettings) {
         this.messages = messages;
@@ -66,12 +67,14 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                                     public void onFailure(Call<Status> call, Throwable t) {
 //                                    counter++;
                                         Log.d(TAG, "Error get status sent " + t.getMessage());
+                                        logService.appendLog(t.getMessage());
                                     }
                                 });
                     }
                     break;
                 case Activity.RESULT_CANCELED:
                     if (messages.peek().getStatus() != null) {
+                        logService.appendLog("message didn't delivered");
                         Message message = messages.poll();
                         service.sendStatus(
                                 SET_MESSAGES_STATUS,
@@ -92,6 +95,7 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                                     public void onFailure(Call<Status> call, Throwable t) {
 //                                    counter++;
                                         Log.d(TAG, "Error get status sent " + t.getMessage());
+                                        logService.appendLog(t.getMessage());
                                     }
                                 });
                     }

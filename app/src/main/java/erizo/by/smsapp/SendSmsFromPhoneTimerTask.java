@@ -35,7 +35,6 @@ public class SendSmsFromPhoneTimerTask extends TimerTask implements SmsStatus {
     private Intent sentIntent;
     private Intent deliverIntent;
 
-
     public SendSmsFromPhoneTimerTask(Queue<Message> smsList,
                                      int simSlot,
                                      PendingIntent sentPi,
