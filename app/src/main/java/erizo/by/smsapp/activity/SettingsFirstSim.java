@@ -27,6 +27,7 @@ import static android.os.Build.VERSION.SDK;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import static erizo.by.smsapp.App.firstSimSettings;
+import static erizo.by.smsapp.App.secondSimSettings;
 
 
 public class SettingsFirstSim extends Activity {
@@ -119,10 +120,10 @@ public class SettingsFirstSim extends Activity {
                 Log.d(TAG, firstSimSettings.get("frequencyOfRequests"));
                 firstSimSettings.put("frequencyOfSmsSending", frequencyOfSmsSending.getText().toString());
                 Log.d(TAG, firstSimSettings.get("frequencyOfSmsSending"));
-                if(frequencyOfRequests.getText().toString().equals("")){
+                if (frequencyOfRequests.getText().toString().equals("")) {
                     firstSimSettings.put("frequencyOfRequests", "60");
                 }
-                if(frequencyOfSmsSending.getText().toString().equals("")){
+                if (frequencyOfSmsSending.getText().toString().equals("")) {
                     firstSimSettings.put("frequencyOfSmsSending", "60");
                 }
                 firstSimSettings.put("frequencyAlert", frequencyAlert.getText().toString());
