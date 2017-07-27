@@ -21,6 +21,7 @@ import erizo.by.smsapp.service.TinyDb;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
+import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
 
 public class SettingsSecondSim extends Activity {
@@ -156,6 +157,6 @@ public class SettingsSecondSim extends Activity {
         if (SDK_INT >= LOLLIPOP_MR1) {
             return SubscriptionManager.from(this).getActiveSubscriptionInfoList().get(1).getSubscriptionId();
         }
-        return SmsManager.getDefault().getSubscriptionId(); // TODO: 26.07.2017 doesn't work in api under 22
+        return Integer.valueOf(secondSimSettings.get("simSlot")) + 1;
     }
 }
