@@ -115,10 +115,10 @@ public class SettingsSecondSim extends Activity {
                 Log.d(TAG, secondSimSettings.get("frequencyOfRequests"));
                 secondSimSettings.put("frequencyOfSmsSending", frequencyOfSmsSending.getText().toString());
                 Log.d(TAG, secondSimSettings.get("frequencyOfSmsSending"));
-                if(frequencyOfRequests.getText().toString().equals("")){
+                if(frequencyOfRequests.getText().toString().equals("")) {
                     secondSimSettings.put("frequencyOfRequests", "60");
                 }
-                if(frequencyOfSmsSending.getText().toString().equals("")){
+                if(frequencyOfSmsSending.getText().toString().equals("")) {
                     secondSimSettings.put("frequencyOfSmsSending", "60");
                 }
                 secondSimSettings.put("frequencyAlert", frequencyAlert.getText().toString());
