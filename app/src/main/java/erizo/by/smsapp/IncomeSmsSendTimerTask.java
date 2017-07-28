@@ -25,6 +25,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static erizo.by.smsapp.activity.MainActivity.logService;
+
 public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     private static final String TAG = IncomeSmsSendTimerTask.class.getSimpleName();
@@ -38,7 +40,6 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     private Retrofit retrofit;
     private APIService service;
-    private FileLogService logService = new FileLogService();
 
     public IncomeSmsSendTimerTask(Context context, Map<String, String> simSettings) {
         this.context = context;
@@ -70,6 +71,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                         @Override
                         public void onResponse(Call<Status> call, Response<Status> response) {
                             if (response.body() != null) {
+                                logService.appendLog("Message status: " + response.body().getStatus() + TAG);
                                 Log.d(TAG, "Message status: " + response.body().getStatus());
                             }
                         }
@@ -83,11 +85,13 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                         }
                     });
                 } catch (Exception e) {
+                    logService.appendLog( "No new sms "  + TAG);
                     Log.d(TAG, "No new sms ");
                 }
             }
             messages.clear();
         } else {
+            logService.appendLog( "No new sms "  + TAG);
             Log.d(TAG, "No new sms ");
         }
     }
@@ -125,6 +129,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
         if (cursor.moveToFirst()) {
             Log.d(TAG, "Cursor : " + cursor.toString());
+            logService.appendLog( "Cursor : " + cursor.toString()  + TAG);
             for (int i = 0; i < cursor.getColumnNames().length; i++) {
                 Log.d(TAG, cursor.getColumnName(i) + ": " + cursor.getString(i));
             }
@@ -133,13 +138,16 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                     Message message = new Message(cursor.getString(PHONE), cursor.getString(MESSAGE));
                     messages.add(message);
                     Log.d(TAG, "Added to income message list message : " + message.toString());
+                    logService.appendLog( "Added to income message list message : " + message.toString()  + TAG);
                     String pid = cursor.getString(P_ID);
                     String uri = "content://sms/conversations/" + pid;
                     context.getContentResolver().delete(Uri.parse(uri), null, null);
                     Log.d(TAG, "Message was deleted");
+                    logService.appendLog( "Message was deleted"  + TAG);
                 }
             } while (cursor.moveToNext());
         } else {
+            logService.appendLog("Empty sms input box" + TAG);
             Log.d(TAG, "Empty sms input box");
         }
 

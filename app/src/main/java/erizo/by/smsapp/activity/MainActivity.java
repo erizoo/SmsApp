@@ -27,6 +27,7 @@ import erizo.by.smsapp.R;
 import erizo.by.smsapp.SendSmsFromPhoneTimerTask;
 import erizo.by.smsapp.SentReceiver;
 import erizo.by.smsapp.model.Message;
+import erizo.by.smsapp.service.FileLogService;
 
 import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
-
+    public static FileLogService logService = new FileLogService();
     private String SENT_SMS = "SENT_SMS";
     private String DELIVER_SMS = "DELIVER_SMS";
     private Intent sentIntent = new Intent(SENT_SMS);
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
                     timer.cancel();
                 }
                 timers.clear();
+                logService.appendLog("App stopped  :" + TAG);
                 Log.d(TAG, "App stopped ");
                 Toast.makeText(getApplicationContext(), "App stopped ", Toast.LENGTH_SHORT).show();
                 settingsButton.setClickable(true);
@@ -126,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     startButton.setClickable(false);
                     startButton.setBackgroundColor(Color.GRAY);
                     Log.d(TAG, "App started ");
+                    logService.appendLog("App started  :" + TAG);
                     if (firstSimSettings.get("status").equals("true")) {
                         Timer getSmsFromServer_firstSim = new Timer();
                         Timer sendSmsFromPhone_firstSim = new Timer();

@@ -16,6 +16,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static erizo.by.smsapp.activity.MainActivity.logService;
+
 public class GetSmsFromServerTimerTask extends TimerTask {
 
     private static final String TAG = GetSmsFromServerTimerTask.class.getSimpleName();
@@ -25,7 +27,7 @@ public class GetSmsFromServerTimerTask extends TimerTask {
     private Map<String,String> simSettings;
 
     private APIService service;
-    FileLogService logService = new FileLogService();
+
 
     public GetSmsFromServerTimerTask(Map<String, String> simSettings, Queue<Message> serverMessageList) {
         super();
@@ -50,12 +52,14 @@ public class GetSmsFromServerTimerTask extends TimerTask {
                 try {
                     if (response.body() != null) {
                         Log.d(TAG, response.body().toString());
+                        logService.appendLog(response.body().toString() + TAG);
                         if (!response.body().getMessages().isEmpty()) {
                             for (Message message : response.body().getMessages()) {
                                 messages.add(message);
                             }
                         } else {
                             Log.d(TAG, "No new messages");
+                            logService.appendLog("No new messages :" + TAG);
                         }
 //                        Log.d(TAG, String.valueOf(counter));
                     } else {
@@ -66,6 +70,7 @@ public class GetSmsFromServerTimerTask extends TimerTask {
                     }
                 } catch (Exception e) {
 //                    counter++;
+                    logService.appendLog(e.getMessage() + TAG);
                     Log.e(TAG, e.getMessage());
 //                    Log.e(TAG, String.valueOf(counter));
                 }

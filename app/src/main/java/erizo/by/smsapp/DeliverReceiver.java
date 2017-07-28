@@ -19,6 +19,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static erizo.by.smsapp.activity.MainActivity.logService;
+
 public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
 
     private static final String TAG = DeliverReceiver.class.getSimpleName();
@@ -27,7 +29,7 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
     private Map<String, String> simSettings;
 
     private APIService service;
-    private FileLogService logService = new FileLogService();
+
 
     public DeliverReceiver(Queue<Message> messages, Map<String, String> simSettings) {
         this.messages = messages;
@@ -59,6 +61,7 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                                     public void onResponse(Call<Status> call, Response<Status> response) {
                                         if (response.body() != null) {
                                             Log.d(TAG, "Message status: " + response.body().getStatus());
+                                            logService.appendLog( "Message status: " + response.body().getStatus() + TAG);
                                         }
 //                                counter = 0;
                                     }
@@ -88,6 +91,7 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                                     public void onResponse(Call<Status> call, Response<Status> response) {
                                         if (response.body() != null) {
                                             Log.d(TAG, "Message status: " + response.body().getStatus());
+                                            logService.appendLog( "Message status: " + response.body().getStatus() + TAG);
                                         }
 //                                    counter = 0;
                                     }

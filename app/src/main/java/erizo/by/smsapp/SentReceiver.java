@@ -20,6 +20,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static erizo.by.smsapp.activity.MainActivity.logService;
+
 public class SentReceiver extends BroadcastReceiver implements SmsStatus {
 
     private static final String TAG = SentReceiver.class.getSimpleName();
@@ -28,7 +30,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
     private Map<String, String> simSettings;
 
     private APIService service;
-    private FileLogService logService = new FileLogService();
+
 
     public SentReceiver(Queue<Message> messages, Map<String, String> simSettings){
         this.messages = messages;
@@ -43,6 +45,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Sent sms broadcasting start");
+        logService.appendLog("Sent sms broadcasting start" + TAG);
         if (!messages.isEmpty())
             switch (getResultCode()) {
                 case Activity.RESULT_OK:
@@ -50,6 +53,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                         for (Message message : messages) {
                             if (message.getStatus().equals(SMS_PENDING)) {
                                 Log.d(TAG, "sms broadcast starting");
+                                logService.appendLog("sms broadcast starting" + TAG);
                                 service.sendStatus(SET_MESSAGES_STATUS,
                                         simSettings.get("deviceId"),
                                         simSettings.get("simId"),
@@ -60,6 +64,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                                     public void onResponse(Call<Status> call, Response<Status> response) {
                                         if (response.body() != null) {
                                             Log.d(TAG, "Message status: " + response.body().getStatus());
+                                            logService.appendLog( "Message status: " + response.body().getStatus() + TAG);
                                         }
                                     }
                                     @Override
@@ -89,6 +94,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             @Override
                             public void onResponse(Call<Status> call, Response<Status> response) {
                                 if (response.body() != null) {
+                                    logService.appendLog( "Message status: " + response.body().getStatus() + TAG);
                                     Log.d(TAG, "Message status: " + response.body().getStatus());
                                 }
                             }

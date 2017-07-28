@@ -12,7 +12,7 @@ public class FileLogService {
 
     public void appendLog(String text) {
         File logDir = Environment.getExternalStorageDirectory();
-        File logFile = new File(logDir.getAbsolutePath() + "/", "log.txt");
+        File logFile = new File(logDir.getAbsolutePath() + "/", "hello.txt");
         if (!logFile.exists()) {
             try {
                 logFile.createNewFile();
