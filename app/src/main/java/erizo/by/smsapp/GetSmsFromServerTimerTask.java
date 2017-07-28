@@ -27,12 +27,14 @@ public class GetSmsFromServerTimerTask extends TimerTask {
     private Map<String,String> simSettings;
 
     private APIService service;
+    private Integer counter;
 
 
-    public GetSmsFromServerTimerTask(Map<String, String> simSettings, Queue<Message> serverMessageList) {
+    public GetSmsFromServerTimerTask(Map<String, String> simSettings, Queue<Message> serverMessageList, Integer counter) {
         super();
         this.simSettings = simSettings;
         this.messages = serverMessageList;
+        this.counter = counter;
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(simSettings.get("url"))
@@ -61,24 +63,21 @@ public class GetSmsFromServerTimerTask extends TimerTask {
                             Log.d(TAG, "No new messages");
                             logService.appendLog("No new messages :" + TAG);
                         }
-//                        Log.d(TAG, String.valueOf(counter));
                     } else {
                         Log.d(TAG, "Response body = NULL");
                         logService.appendLog("Empty response body in :" + TAG);
-//                        Log.d(TAG, String.valueOf(counter));
-//                        counter = 0;
+                        counter = 0;
                     }
                 } catch (Exception e) {
-//                    counter++;
+                    counter++;
                     logService.appendLog(e.getMessage() + TAG);
                     Log.e(TAG, e.getMessage());
-//                    Log.e(TAG, String.valueOf(counter));
                 }
             }
 
             @Override
             public void onFailure(Call<MessageWrapper> call, Throwable t) {
-//                counter++;
+                counter++;
                 Log.e(TAG, "Something went wrong " + t.getMessage());
                 logService.appendLog(t.getMessage());
             }

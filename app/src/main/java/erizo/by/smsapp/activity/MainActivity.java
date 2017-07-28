@@ -34,6 +34,7 @@ import static erizo.by.smsapp.App.secondSimSettings;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Integer counter;
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
     public static FileLogService logService = new FileLogService();
@@ -45,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
     private Button startButton, stopButton, settingsButton;
     private Queue<Message> firstSimMessageList = new ConcurrentLinkedQueue<>();
     private Queue<Message> secondSimMessageList = new ConcurrentLinkedQueue<>();
-    private BroadcastReceiver firstSimSentReceiver = new SentReceiver(firstSimMessageList, firstSimSettings);
-    private BroadcastReceiver firstSimDeliverReceiver = new DeliverReceiver(firstSimMessageList, firstSimSettings);
-    private BroadcastReceiver secondSimSentReceiver = new SentReceiver(secondSimMessageList, secondSimSettings);
-    private BroadcastReceiver secondSimDeliverReceiver = new DeliverReceiver(secondSimMessageList, secondSimSettings);
+    private BroadcastReceiver firstSimSentReceiver = new SentReceiver(firstSimMessageList, firstSimSettings, counter);
+    private BroadcastReceiver firstSimDeliverReceiver = new DeliverReceiver(firstSimMessageList, firstSimSettings, counter);
+    private BroadcastReceiver secondSimSentReceiver = new SentReceiver(secondSimMessageList, secondSimSettings, counter);
+    private BroadcastReceiver secondSimDeliverReceiver = new DeliverReceiver(secondSimMessageList, secondSimSettings, counter);
 
     @Override
     protected void onResume() {
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false") ) {
+                if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false")) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
                     stopButton.setEnabled(true);
@@ -142,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
                         getSmsFromServer_firstSim.schedule(
                                 new GetSmsFromServerTimerTask(
                                         firstSimSettings,
-                                        firstSimMessageList),
+                                        firstSimMessageList,
+                                        counter),
                                 0L,
                                 Long.parseLong(firstSimSettings.get("frequencyOfRequests"),
                                         10) * 1000);
@@ -154,7 +156,8 @@ public class MainActivity extends AppCompatActivity {
                                         deliverPi,
                                         getBaseContext(),
                                         sentIntent,
-                                        deliverIntent),
+                                        deliverIntent,
+                                        counter),
                                 0L,
                                 Long.parseLong(firstSimSettings.get("frequencyOfSmsSending"),
                                         10) * 1000);
@@ -171,7 +174,8 @@ public class MainActivity extends AppCompatActivity {
                         getSmsFromServer_secondSim.schedule(
                                 new GetSmsFromServerTimerTask(
                                         secondSimSettings,
-                                        secondSimMessageList),
+                                        secondSimMessageList,
+                                        counter),
                                 0L,
                                 Long.parseLong(secondSimSettings.get("frequencyOfRequests"),
                                         10) * 1000);
@@ -183,7 +187,8 @@ public class MainActivity extends AppCompatActivity {
                                         deliverPi,
                                         getBaseContext(),
                                         sentIntent,
-                                        deliverIntent),
+                                        deliverIntent,
+                                        counter),
                                 0L,
                                 Long.parseLong(secondSimSettings.get("frequencyOfSmsSending"),
                                         10) * 1000);

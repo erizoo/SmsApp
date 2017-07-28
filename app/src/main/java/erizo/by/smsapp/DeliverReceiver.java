@@ -12,7 +12,6 @@ import java.util.Queue;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
-import erizo.by.smsapp.service.FileLogService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,9 +28,10 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
     private Map<String, String> simSettings;
 
     private APIService service;
+    private Integer counter;
 
 
-    public DeliverReceiver(Queue<Message> messages, Map<String, String> simSettings) {
+    public DeliverReceiver(Queue<Message> messages, Map<String, String> simSettings, Integer counter) {
         this.messages = messages;
         this.simSettings = simSettings;
         Retrofit retrofit = new Retrofit.Builder()
@@ -61,14 +61,14 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                                     public void onResponse(Call<Status> call, Response<Status> response) {
                                         if (response.body() != null) {
                                             Log.d(TAG, "Message status: " + response.body().getStatus());
-                                            logService.appendLog( "Message status: " + response.body().getStatus() + TAG);
+                                            logService.appendLog("Message status: " + response.body().getStatus() + TAG);
                                         }
-//                                counter = 0;
+                                        counter = 0;
                                     }
 
                                     @Override
                                     public void onFailure(Call<Status> call, Throwable t) {
-//                                    counter++;
+                                        counter++;
                                         Log.d(TAG, "Error get status sent " + t.getMessage());
                                         logService.appendLog(t.getMessage());
                                     }
@@ -91,13 +91,14 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                                     public void onResponse(Call<Status> call, Response<Status> response) {
                                         if (response.body() != null) {
                                             Log.d(TAG, "Message status: " + response.body().getStatus());
-                                            logService.appendLog( "Message status: " + response.body().getStatus() + TAG);
+                                            logService.appendLog("Message status: " + response.body().getStatus() + TAG);
                                         }
-//                                    counter = 0;
+                                        counter++;
                                     }
+
                                     @Override
                                     public void onFailure(Call<Status> call, Throwable t) {
-//                                    counter++;
+                                        counter++;
                                         Log.d(TAG, "Error get status sent " + t.getMessage());
                                         logService.appendLog(t.getMessage());
                                     }
