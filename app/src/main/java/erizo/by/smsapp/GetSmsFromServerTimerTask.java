@@ -9,7 +9,6 @@ import java.util.TimerTask;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.MessageWrapper;
 import erizo.by.smsapp.service.APIService;
-import erizo.by.smsapp.service.FileLogService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,14 +26,14 @@ public class GetSmsFromServerTimerTask extends TimerTask {
     private Map<String,String> simSettings;
 
     private APIService service;
-    private Integer counter;
+    private Integer systemErrorCounter;
 
 
-    public GetSmsFromServerTimerTask(Map<String, String> simSettings, Queue<Message> serverMessageList, Integer counter) {
+    public GetSmsFromServerTimerTask(Map<String, String> simSettings, Queue<Message> serverMessageList, Integer systemErrorCounter) {
         super();
         this.simSettings = simSettings;
         this.messages = serverMessageList;
-        this.counter = counter;
+        this.systemErrorCounter = systemErrorCounter;
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(simSettings.get("url"))
@@ -66,10 +65,10 @@ public class GetSmsFromServerTimerTask extends TimerTask {
                     } else {
                         Log.d(TAG, "Response body = NULL");
                         logService.appendLog("Empty response body in :" + TAG);
-                        counter = 0;
+                        systemErrorCounter = 0;
                     }
                 } catch (Exception e) {
-                    counter++;
+                    systemErrorCounter++;
                     logService.appendLog(e.getMessage() + TAG);
                     Log.e(TAG, e.getMessage());
                 }
@@ -77,7 +76,7 @@ public class GetSmsFromServerTimerTask extends TimerTask {
 
             @Override
             public void onFailure(Call<MessageWrapper> call, Throwable t) {
-                counter++;
+                systemErrorCounter++;
                 Log.e(TAG, "Something went wrong " + t.getMessage());
                 logService.appendLog(t.getMessage());
             }

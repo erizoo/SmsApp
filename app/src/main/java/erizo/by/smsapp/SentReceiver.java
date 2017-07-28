@@ -29,10 +29,10 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
     private Map<String, String> simSettings;
 
     private APIService service;
-    private Integer counter;
+    private Integer systemErrorCounter;
 
 
-    public SentReceiver(Queue<Message> messages, Map<String, String> simSettings, Integer counter) {
+    public SentReceiver(Queue<Message> messages, Map<String, String> simSettings, Integer systemErrorCounter) {
         this.messages = messages;
         this.simSettings = simSettings;
         Retrofit retrofit = new Retrofit.Builder()
@@ -40,6 +40,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                 .baseUrl(simSettings.get("url"))
                 .build();
         this.service = retrofit.create(APIService.class);
+        this.systemErrorCounter = systemErrorCounter;
     }
 
     @Override
@@ -65,13 +66,13 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                                         if (response.body() != null) {
                                             Log.d(TAG, "Message status: " + response.body().getStatus());
                                             logService.appendLog("Message status: " + response.body().getStatus() + TAG);
-                                            counter = 0;
+                                            systemErrorCounter = 0;
                                         }
                                     }
 
                                     @Override
                                     public void onFailure(Call<Status> call, Throwable t) {
-                                        counter++;
+                                        systemErrorCounter++;
                                         Log.d(TAG, "Error get status sent " + t.getMessage());
                                         logService.appendLog(t.getMessage());
                                     }
@@ -96,7 +97,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             @Override
                             public void onResponse(Call<Status> call, Response<Status> response) {
                                 if (response.body() != null) {
-                                    counter++;
+                                    systemErrorCounter++;
                                     logService.appendLog("Message status: " + response.body().getStatus() + TAG);
                                     Log.d(TAG, "Message status: " + response.body().getStatus());
                                 }
@@ -104,7 +105,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
 
                             @Override
                             public void onFailure(Call<Status> call, Throwable t) {
-                                counter++;
+                                systemErrorCounter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
                                 logService.appendLog(t.getMessage());
                             }
@@ -126,13 +127,13 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onResponse(Call<Status> call, Response<Status> response) {
                                 if (response.body() != null) {
                                     Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    counter++;
+                                    systemErrorCounter++;
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<Status> call, Throwable t) {
-                                counter++;
+                                systemErrorCounter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
                                 logService.appendLog(t.getMessage());
                             }
@@ -154,13 +155,13 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onResponse(Call<Status> call, Response<Status> response) {
                                 if (response.body() != null) {
                                     Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    counter++;
+                                    systemErrorCounter++;
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<Status> call, Throwable t) {
-                                counter++;
+                                systemErrorCounter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
                                 logService.appendLog(t.getMessage());
                             }
@@ -183,13 +184,13 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onResponse(Call<Status> call, Response<Status> response) {
                                 if (response.body() != null) {
                                     Log.d(TAG, "Message status: " + response.body().getStatus());
-                                    counter++;
+                                    systemErrorCounter++;
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<Status> call, Throwable t) {
-                                counter++;
+                                systemErrorCounter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
                                 logService.appendLog(t.getMessage());
                             }

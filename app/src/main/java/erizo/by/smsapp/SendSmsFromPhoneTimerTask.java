@@ -34,7 +34,7 @@ public class SendSmsFromPhoneTimerTask extends TimerTask implements SmsStatus {
     private Context context;
     private Intent sentIntent;
     private Intent deliverIntent;
-    private Integer counter;
+    private Integer systemErrorCounter;
 
     public SendSmsFromPhoneTimerTask(Queue<Message> smsList,
                                      int simSlot,
@@ -43,14 +43,14 @@ public class SendSmsFromPhoneTimerTask extends TimerTask implements SmsStatus {
                                      Context context,
                                      Intent sentIntent,
                                      Intent deliverIntent,
-                                     Integer counter) {
+                                     Integer systemErrorCounter) {
         this.messages = smsList;
         this.sentPi = sentPi;
         this.deliverPi = deliverPi;
         this.context = context;
         this.sentIntent = sentIntent;
         this.deliverIntent = deliverIntent;
-        this.counter = counter;
+        this.systemErrorCounter = systemErrorCounter;
         if (Build.VERSION.SDK_INT <= LOLLIPOP_MR1) {
             smsManager = SmsManager.getDefault();
         } else {

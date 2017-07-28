@@ -40,8 +40,9 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     private Retrofit retrofit;
     private APIService service;
+    private Integer systemErrorCounter;
 
-    public IncomeSmsSendTimerTask(Context context, Map<String, String> simSettings) {
+    public IncomeSmsSendTimerTask(Context context, Map<String, String> simSettings, Integer systemErrorCounter) {
         this.context = context;
         this.simSettings = simSettings;
         retrofit  = new Retrofit.Builder()
@@ -49,6 +50,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                 .baseUrl(simSettings.get("url"))
                 .build();
         service = retrofit.create(APIService.class);
+        this.systemErrorCounter = systemErrorCounter;
     }
 
     @Override
@@ -73,12 +75,13 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                             if (response.body() != null) {
                                 logService.appendLog("Message status: " + response.body().getStatus() + TAG);
                                 Log.d(TAG, "Message status: " + response.body().getStatus());
+                                systemErrorCounter = 0;
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Status> call, Throwable t) {
-//                            counter++;
+                            systemErrorCounter++;
                             Log.e(TAG, t.getMessage());
                             logService.appendLog(t.getMessage());
                             Log.e(TAG, "Error get status pending " + t.getMessage());

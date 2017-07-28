@@ -34,7 +34,7 @@ import static erizo.by.smsapp.App.secondSimSettings;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Integer counter;
+    private Integer systemErrorCounter;
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
     public static FileLogService logService = new FileLogService();
@@ -46,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
     private Button startButton, stopButton, settingsButton;
     private Queue<Message> firstSimMessageList = new ConcurrentLinkedQueue<>();
     private Queue<Message> secondSimMessageList = new ConcurrentLinkedQueue<>();
-    private BroadcastReceiver firstSimSentReceiver = new SentReceiver(firstSimMessageList, firstSimSettings, counter);
-    private BroadcastReceiver firstSimDeliverReceiver = new DeliverReceiver(firstSimMessageList, firstSimSettings, counter);
-    private BroadcastReceiver secondSimSentReceiver = new SentReceiver(secondSimMessageList, secondSimSettings, counter);
-    private BroadcastReceiver secondSimDeliverReceiver = new DeliverReceiver(secondSimMessageList, secondSimSettings, counter);
+    private BroadcastReceiver firstSimSentReceiver = new SentReceiver(firstSimMessageList, firstSimSettings, systemErrorCounter);
+    private BroadcastReceiver firstSimDeliverReceiver = new DeliverReceiver(firstSimMessageList, firstSimSettings, systemErrorCounter);
+    private BroadcastReceiver secondSimSentReceiver = new SentReceiver(secondSimMessageList, secondSimSettings, systemErrorCounter);
+    private BroadcastReceiver secondSimDeliverReceiver = new DeliverReceiver(secondSimMessageList, secondSimSettings, systemErrorCounter);
 
     @Override
     protected void onResume() {
@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false")) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
+                    systemErrorCounter = 0;
                     stopButton.setEnabled(true);
                     stopButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
                     settingsButton.setClickable(false);
@@ -138,13 +139,13 @@ public class MainActivity extends AppCompatActivity {
                         timers.add(getSmsFromServer_firstSim);
                         timers.add(sendSmsFromPhone_firstSim);
 
-                        sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings), 0L, 30L * 1000);
+                        sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings, systemErrorCounter), 0L, 30L * 1000);
                         Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
                         getSmsFromServer_firstSim.schedule(
                                 new GetSmsFromServerTimerTask(
                                         firstSimSettings,
                                         firstSimMessageList,
-                                        counter),
+                                        systemErrorCounter),
                                 0L,
                                 Long.parseLong(firstSimSettings.get("frequencyOfRequests"),
                                         10) * 1000);
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                                         getBaseContext(),
                                         sentIntent,
                                         deliverIntent,
-                                        counter),
+                                        systemErrorCounter),
                                 0L,
                                 Long.parseLong(firstSimSettings.get("frequencyOfSmsSending"),
                                         10) * 1000);
@@ -170,12 +171,12 @@ public class MainActivity extends AppCompatActivity {
                         timers.add(getSmsFromServer_secondSim);
                         timers.add(sendSmsFromPhone_secondSim);
 
-                        sendSecondSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, secondSimSettings), 0L, 30L * 1000);
+                        sendSecondSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, secondSimSettings, systemErrorCounter), 0L, 30L * 1000);
                         getSmsFromServer_secondSim.schedule(
                                 new GetSmsFromServerTimerTask(
                                         secondSimSettings,
                                         secondSimMessageList,
-                                        counter),
+                                        systemErrorCounter),
                                 0L,
                                 Long.parseLong(secondSimSettings.get("frequencyOfRequests"),
                                         10) * 1000);
@@ -188,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                                         getBaseContext(),
                                         sentIntent,
                                         deliverIntent,
-                                        counter),
+                                        systemErrorCounter),
                                 0L,
                                 Long.parseLong(secondSimSettings.get("frequencyOfSmsSending"),
                                         10) * 1000);
