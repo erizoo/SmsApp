@@ -2,10 +2,6 @@ package erizo.by.smsapp.model;
 
 import java.util.List;
 
-/**
- * Created by valera on 14.7.17.
- */
-
 public class MessageWrapper {
         private List<Message> messages;
 

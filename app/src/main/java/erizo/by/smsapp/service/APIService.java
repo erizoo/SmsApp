@@ -25,11 +25,11 @@ public interface APIService {
 
     @POST("index.php")
     Call<Status> sendSms(@Query("task") String task,
-                            @Query("deviceID") String deviceID,
-                            @Query("simID") String simID,
-                            @Query("secretKey") String secretKey,
-                            @Query("phone") String phone,
-                            @Query("message") String message,
-                            @Query("messageID") String messageId);
+                         @Query("deviceID") String deviceID,
+                         @Query("simID") String simID,
+                         @Query("secretKey") String secretKey,
+                         @Query("phone") String phone,
+                         @Query("message") String message,
+                         @Query("messageID") String messageId);
 }
 

@@ -1,21 +1,9 @@
 package erizo.by.smsapp.model;
 
-/**
- * Created by Erizo on 16.07.2017.
- */
-
 public class Status {
 
     private String messageID;
     private String status;
-
-    public Status() {
-    }
-
-    public Status(String messageID, String status) {
-        this.messageID = messageID;
-        this.status = status;
-    }
 
     public String getMessageID() {
         return messageID;
