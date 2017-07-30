@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
-import erizo.by.smsapp.service.FileLogService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,7 +29,7 @@ import static erizo.by.smsapp.activity.MainActivity.logService;
 public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     private static final String TAG = IncomeSmsSendTimerTask.class.getSimpleName();
-    private static final int SIM_SLOT_NUMBER = 27;
+    private static int SIM_SLOT_NUMBER ;
     private static final int PHONE = 2;
     private static final int MESSAGE = 12;
     private static final int P_ID = 1;
@@ -93,6 +92,8 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                 }
             }
             messages.clear();
+            logService.appendLog( "Messages list was clear "  + TAG);
+            Log.d(TAG, "Messages list was clear ");
         } else {
             logService.appendLog( "No new sms "  + TAG);
             Log.d(TAG, "No new sms ");
@@ -135,6 +136,9 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
             logService.appendLog( "Cursor : " + cursor.toString()  + TAG);
             for (int i = 0; i < cursor.getColumnNames().length; i++) {
                 Log.d(TAG, cursor.getColumnName(i) + ": " + cursor.getString(i));
+                if (cursor.getColumnName(i).equals("sim_id")){
+                    SIM_SLOT_NUMBER = i;
+                }
             }
             do {
                 if (cursor.getString(SIM_SLOT_NUMBER).equals(simSettings.get("android_sim_slot"))) {
