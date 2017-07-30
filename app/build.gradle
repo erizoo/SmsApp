@@ -10,7 +10,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
     buildTypes {
         release {
@@ -24,6 +23,7 @@ android {
         exclude 'META-INF/LICENSE'
 
     }
+
 }
 
 
@@ -35,4 +35,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'me.everything:providers-android:1.0.1'
     testCompile 'junit:junit:4.12'
+
+
 }

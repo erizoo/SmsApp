@@ -30,9 +30,9 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     private static final String TAG = IncomeSmsSendTimerTask.class.getSimpleName();
     private static int SIM_SLOT_NUMBER ;
-    private static final int PHONE = 2;
-    private static final int MESSAGE = 12;
-    private static final int P_ID = 1;
+    private static int PHONE;
+    private static int MESSAGE;
+    private static int P_ID;
 
     private Context context;
     private Map<String, String> simSettings;
@@ -135,9 +135,18 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
             Log.d(TAG, "Cursor : " + cursor.toString());
             logService.appendLog( "Cursor : " + cursor.toString()  + TAG);
             for (int i = 0; i < cursor.getColumnNames().length; i++) {
-                Log.d(TAG, cursor.getColumnName(i) + ": " + cursor.getString(i));
+                Log.d(TAG, "Cursor : " + cursor.getColumnName(i));
                 if (cursor.getColumnName(i).equals("sim_id")){
                     SIM_SLOT_NUMBER = i;
+                }
+                if (cursor.getColumnName(i).equals("thread_id")){
+                    P_ID = i;
+                }
+                if (cursor.getColumnName(i).equals("subject")){
+                    PHONE = i;
+                }
+                if (cursor.getColumnName(i).equals("body")){
+                    MESSAGE = i;
                 }
             }
             do {
