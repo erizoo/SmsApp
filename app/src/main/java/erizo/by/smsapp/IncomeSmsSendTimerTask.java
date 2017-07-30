@@ -29,7 +29,7 @@ import static erizo.by.smsapp.activity.MainActivity.logService;
 public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
     private static final String TAG = IncomeSmsSendTimerTask.class.getSimpleName();
-    private static int SIM_SLOT_NUMBER ;
+    private static int SIM_SLOT_NUMBER;
     private static int PHONE;
     private static int MESSAGE;
     private static int P_ID;
@@ -44,7 +44,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
     public IncomeSmsSendTimerTask(Context context, Map<String, String> simSettings, Integer systemErrorCounter) {
         this.context = context;
         this.simSettings = simSettings;
-        retrofit  = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(simSettings.get("url"))
                 .build();
@@ -87,15 +87,15 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                         }
                     });
                 } catch (Exception e) {
-                    logService.appendLog( "No new sms "  + TAG);
+                    logService.appendLog("No new sms " + TAG);
                     Log.d(TAG, "No new sms ");
                 }
             }
             messages.clear();
-            logService.appendLog( "Messages list was clear "  + TAG);
+            logService.appendLog("Messages list was clear " + TAG);
             Log.d(TAG, "Messages list was clear ");
         } else {
-            logService.appendLog( "No new sms "  + TAG);
+            logService.appendLog("No new sms " + TAG);
             Log.d(TAG, "No new sms ");
         }
     }
@@ -133,19 +133,19 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
 
         if (cursor.moveToFirst()) {
             Log.d(TAG, "Cursor : " + cursor.toString());
-            logService.appendLog( "Cursor : " + cursor.toString()  + TAG);
+            logService.appendLog("Cursor : " + cursor.toString() + TAG);
             for (int i = 0; i < cursor.getColumnNames().length; i++) {
                 Log.d(TAG, "Cursor : " + cursor.getColumnName(i));
-                if (cursor.getColumnName(i).equals("sim_id")){
+                if (cursor.getColumnName(i).equals("sim_id")) {
                     SIM_SLOT_NUMBER = i;
                 }
-                if (cursor.getColumnName(i).equals("thread_id")){
+                if (cursor.getColumnName(i).equals("thread_id")) {
                     P_ID = i;
                 }
-                if (cursor.getColumnName(i).equals("address")){
+                if (cursor.getColumnName(i).equals("address")) {
                     PHONE = i;
                 }
-                if (cursor.getColumnName(i).equals("body")){
+                if (cursor.getColumnName(i).equals("body")) {
                     MESSAGE = i;
                 }
             }
@@ -154,12 +154,12 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                     Message message = new Message(cursor.getString(PHONE), cursor.getString(MESSAGE));
                     messages.add(message);
                     Log.d(TAG, "Added to income message list message : " + message.toString());
-                    logService.appendLog( "Added to income message list message : " + message.toString()  + TAG);
+                    logService.appendLog("Added to income message list message : " + message.toString() + TAG);
                     String pid = cursor.getString(P_ID);
                     String uri = "content://sms/conversations/" + pid;
                     context.getContentResolver().delete(Uri.parse(uri), null, null);
                     Log.d(TAG, "Message was deleted");
-                    logService.appendLog( "Message was deleted"  + TAG);
+                    logService.appendLog("Message was deleted" + TAG);
                 }
             } while (cursor.moveToNext());
         } else {
