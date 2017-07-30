@@ -142,7 +142,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
                 if (cursor.getColumnName(i).equals("thread_id")){
                     P_ID = i;
                 }
-                if (cursor.getColumnName(i).equals("subject")){
+                if (cursor.getColumnName(i).equals("address")){
                     PHONE = i;
                 }
                 if (cursor.getColumnName(i).equals("body")){
