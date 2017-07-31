@@ -75,17 +75,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String permission = Manifest.permission.RECEIVE_SMS;
-        int grant = ContextCompat.checkSelfPermission(this, permission);
-        if ( grant != PackageManager.PERMISSION_GRANTED) {
-            String[] permission_list = new String[1];
-            permission_list[0] = permission;
-            ActivityCompat.requestPermissions(this, permission_list, 1);
-        }
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.RECEIVE_SMS},
-                MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 1);
+//        String permission = Manifest.permission.READ_PHONE_STATE;
+//        int grant = ContextCompat.checkSelfPermission(this, permission);
+//        if ( grant != PackageManager.PERMISSION_GRANTED) {
+//            String[] permission_list = new String[1];
+//            permission_list[0] = permission;
+//            ActivityCompat.requestPermissions(this, permission_list, 1);
+//        }
+//        ActivityCompat.requestPermissions(this,
+//                new String[]{Manifest.permission.RECEIVE_SMS},
+//                MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
+//        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 1);
         final List<Timer> timers = new ArrayList<>();
         sentPi = PendingIntent.getBroadcast(this, 0, sentIntent, 0);
         deliverPi = PendingIntent.getBroadcast(this, 0, deliverIntent, 0);
