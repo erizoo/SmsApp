@@ -74,7 +74,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                                     public void onFailure(Call<Status> call, Throwable t) {
                                         systemErrorCounter++;
                                         Log.d(TAG, "Error get status sent " + t.getMessage());
-                                        logService.appendLog(t.getMessage());
+                                        logService.appendLog(TAG + " " + t.getMessage());
                                     }
                                 });
                                 message.setStatus(SMS_SENT);
@@ -107,7 +107,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onFailure(Call<Status> call, Throwable t) {
                                 systemErrorCounter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
-                                logService.appendLog(t.getMessage());
+                                logService.appendLog(TAG + " " + TAG + " " + t.getMessage());
                             }
                         });
                     }
@@ -135,7 +135,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onFailure(Call<Status> call, Throwable t) {
                                 systemErrorCounter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
-                                logService.appendLog(t.getMessage());
+                                logService.appendLog(TAG + " " + t.getMessage());
                             }
                         });
                     }
@@ -163,7 +163,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onFailure(Call<Status> call, Throwable t) {
                                 systemErrorCounter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
-                                logService.appendLog(t.getMessage());
+                                logService.appendLog(TAG + " " + t.getMessage());
                             }
 
                         });
@@ -192,7 +192,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                             public void onFailure(Call<Status> call, Throwable t) {
                                 systemErrorCounter++;
                                 Log.d(TAG, "Error get status sent " + t.getMessage());
-                                logService.appendLog(t.getMessage());
+                                logService.appendLog(TAG + " " + t.getMessage());
                             }
                         });
                     }

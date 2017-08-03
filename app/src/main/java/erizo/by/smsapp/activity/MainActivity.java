@@ -75,13 +75,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        String permission = Manifest.permission.READ_PHONE_STATE;
-//        int grant = ContextCompat.checkSelfPermission(this, permission);
-//        if ( grant != PackageManager.PERMISSION_GRANTED) {
-//            String[] permission_list = new String[1];
-//            permission_list[0] = permission;
-//            ActivityCompat.requestPermissions(this, permission_list, 1);
-//        }
+        String permission = Manifest.permission.READ_PHONE_STATE;
+        int grant = ContextCompat.checkSelfPermission(this, permission);
+        if ( grant != PackageManager.PERMISSION_GRANTED) {
+            String[] permission_list = new String[1];
+            permission_list[0] = permission;
+            ActivityCompat.requestPermissions(this, permission_list, 1);
+        }
 //        ActivityCompat.requestPermissions(this,
 //                new String[]{Manifest.permission.RECEIVE_SMS},
 //                MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
@@ -128,81 +128,86 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false")) {
-                    Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
-                } else {
-                    systemErrorCounter = 0;
-                    stopButton.setEnabled(true);
-                    stopButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
-                    settingsButton.setClickable(false);
-                    settingsButton.setBackgroundColor(Color.GRAY);
-                    startButton.setClickable(false);
-                    startButton.setBackgroundColor(Color.GRAY);
-                    Log.d(TAG, "App started ");
-                    logService.appendLog("App started  :" + TAG);
-                    if (firstSimSettings.get("status").equals("true")) {
-                        Timer getSmsFromServer_firstSim = new Timer();
-                        Timer sendSmsFromPhone_firstSim = new Timer();
-                        Timer sendFirstSimInboxSms = new Timer();
-                        timers.add(sendFirstSimInboxSms);
-                        timers.add(getSmsFromServer_firstSim);
-                        timers.add(sendSmsFromPhone_firstSim);
+                try {
+                    if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false")) {
+                        Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
+                    } else {
+                        systemErrorCounter = 0;
+                        stopButton.setEnabled(true);
+                        stopButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
+                        settingsButton.setClickable(false);
+                        settingsButton.setBackgroundColor(Color.GRAY);
+                        startButton.setClickable(false);
+                        startButton.setBackgroundColor(Color.GRAY);
+                        Log.d(TAG, "App started ");
+                        logService.appendLog("App started  :" + TAG);
+                        if (firstSimSettings.get("status").equals("true")) {
+                            Timer getSmsFromServer_firstSim = new Timer();
+                            Timer sendSmsFromPhone_firstSim = new Timer();
+                            Timer sendFirstSimInboxSms = new Timer();
+                            timers.add(sendFirstSimInboxSms);
+                            timers.add(getSmsFromServer_firstSim);
+                            timers.add(sendSmsFromPhone_firstSim);
 
-                        sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings, systemErrorCounter), 0L, 30L * 1000);
-                        Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
-                        getSmsFromServer_firstSim.schedule(
-                                new GetSmsFromServerTimerTask(
-                                        firstSimSettings,
-                                        firstSimMessageList,
-                                        systemErrorCounter),
-                                0L,
-                                Long.parseLong(firstSimSettings.get("frequencyOfRequests"),
-                                        10) * 1000);
-                        sendSmsFromPhone_firstSim.schedule(
-                                new SendSmsFromPhoneTimerTask(
-                                        firstSimMessageList,
-                                        Integer.valueOf(firstSimSettings.get("simSlot")),
-                                        sentPi,
-                                        deliverPi,
-                                        getBaseContext(),
-                                        sentIntent,
-                                        deliverIntent,
-                                        systemErrorCounter),
-                                0L,
-                                Long.parseLong(firstSimSettings.get("frequencyOfSmsSending"),
-                                        10) * 1000);
-                    }
-                    if (secondSimSettings.get("status").equals("true")) {
-                        Timer getSmsFromServer_secondSim = new Timer();
-                        Timer sendSmsFromPhone_secondSim = new Timer();
-                        Timer sendSecondSimInboxSms = new Timer();
-                        timers.add(sendSecondSimInboxSms);
-                        timers.add(getSmsFromServer_secondSim);
-                        timers.add(sendSmsFromPhone_secondSim);
+                            sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings, systemErrorCounter), 0L, 30L * 1000);
+                            Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
+                            getSmsFromServer_firstSim.schedule(
+                                    new GetSmsFromServerTimerTask(
+                                            firstSimSettings,
+                                            firstSimMessageList,
+                                            systemErrorCounter),
+                                    0L,
+                                    Long.parseLong(firstSimSettings.get("frequencyOfRequests"),
+                                            10) * 1000);
+                            sendSmsFromPhone_firstSim.schedule(
+                                    new SendSmsFromPhoneTimerTask(
+                                            firstSimMessageList,
+                                            Integer.valueOf(firstSimSettings.get("simSlot")),
+                                            sentPi,
+                                            deliverPi,
+                                            getBaseContext(),
+                                            sentIntent,
+                                            deliverIntent,
+                                            systemErrorCounter),
+                                    0L,
+                                    Long.parseLong(firstSimSettings.get("frequencyOfSmsSending"),
+                                            10) * 1000);
+                        }
+                        if (secondSimSettings.get("status").equals("true")) {
+                            Timer getSmsFromServer_secondSim = new Timer();
+                            Timer sendSmsFromPhone_secondSim = new Timer();
+                            Timer sendSecondSimInboxSms = new Timer();
+                            timers.add(sendSecondSimInboxSms);
+                            timers.add(getSmsFromServer_secondSim);
+                            timers.add(sendSmsFromPhone_secondSim);
 
-                        sendSecondSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, secondSimSettings, systemErrorCounter), 0L, 30L * 1000);
-                        getSmsFromServer_secondSim.schedule(
-                                new GetSmsFromServerTimerTask(
-                                        secondSimSettings,
-                                        secondSimMessageList,
-                                        systemErrorCounter),
-                                0L,
-                                Long.parseLong(secondSimSettings.get("frequencyOfRequests"),
-                                        10) * 1000);
-                        sendSmsFromPhone_secondSim.schedule(
-                                new SendSmsFromPhoneTimerTask(
-                                        secondSimMessageList,
-                                        Integer.valueOf(secondSimSettings.get("simSlot")),
-                                        sentPi,
-                                        deliverPi,
-                                        getBaseContext(),
-                                        sentIntent,
-                                        deliverIntent,
-                                        systemErrorCounter),
-                                0L,
-                                Long.parseLong(secondSimSettings.get("frequencyOfSmsSending"),
-                                        10) * 1000);
+                            sendSecondSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, secondSimSettings, systemErrorCounter), 0L, 30L * 1000);
+                            getSmsFromServer_secondSim.schedule(
+                                    new GetSmsFromServerTimerTask(
+                                            secondSimSettings,
+                                            secondSimMessageList,
+                                            systemErrorCounter),
+                                    0L,
+                                    Long.parseLong(secondSimSettings.get("frequencyOfRequests"),
+                                            10) * 1000);
+                            sendSmsFromPhone_secondSim.schedule(
+                                    new SendSmsFromPhoneTimerTask(
+                                            secondSimMessageList,
+                                            Integer.valueOf(secondSimSettings.get("simSlot")),
+                                            sentPi,
+                                            deliverPi,
+                                            getBaseContext(),
+                                            sentIntent,
+                                            deliverIntent,
+                                            systemErrorCounter),
+                                    0L,
+                                    Long.parseLong(secondSimSettings.get("frequencyOfSmsSending"),
+                                            10) * 1000);
+                        }
                     }
+                } catch (Exception e) {
+                    Log.e("START_BUTTON_CRASH", e.getMessage());
+                    logService.appendLog("START_BUTTON_CRASH : " + e.getMessage());
                 }
             }
         });
