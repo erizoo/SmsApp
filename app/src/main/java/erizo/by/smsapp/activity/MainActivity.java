@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                             timers.add(getSmsFromServer_firstSim);
                             timers.add(sendSmsFromPhone_firstSim);
 
-                            sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings, systemErrorCounter), 0L, 30L * 1000);
+                            sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings, secondSimSettings, systemErrorCounter), 0L, 30L * 1000);
                             Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
                             getSmsFromServer_firstSim.schedule(
                                     new GetSmsFromServerTimerTask(
@@ -180,8 +180,6 @@ public class MainActivity extends AppCompatActivity {
                             timers.add(sendSecondSimInboxSms);
                             timers.add(getSmsFromServer_secondSim);
                             timers.add(sendSmsFromPhone_secondSim);
-
-                            sendSecondSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, secondSimSettings, systemErrorCounter), 0L, 30L * 1000);
                             getSmsFromServer_secondSim.schedule(
                                     new GetSmsFromServerTimerTask(
                                             secondSimSettings,
