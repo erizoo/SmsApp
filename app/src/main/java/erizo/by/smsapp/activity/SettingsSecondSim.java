@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import erizo.by.smsapp.R;
+import erizo.by.smsapp.service.InternalSimSlotIdCheckerService;
 import erizo.by.smsapp.service.TinyDb;
 
 import static android.os.Build.VERSION.SDK_INT;
@@ -107,6 +108,7 @@ public class SettingsSecondSim extends Activity {
                 Log.d(TAG, secondSimSettings.get("deviceId"));
                 secondSimSettings.put("simId", simId.getText().toString());
                 Log.d(TAG, secondSimSettings.get("simId"));
+                new Thread(new InternalSimSlotIdCheckerService(secondSimSettings.get("simSlot"), SettingsSecondSim.this)).start();
                 secondSimSettings.put("url", url.getText().toString());
                 Log.d(TAG, secondSimSettings.get("url"));
                 secondSimSettings.put("secretKey", secretKey.getText().toString());
