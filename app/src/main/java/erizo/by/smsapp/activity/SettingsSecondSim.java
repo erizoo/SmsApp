@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.view.View;
@@ -17,12 +16,10 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import erizo.by.smsapp.R;
-import erizo.by.smsapp.service.InternalSimSlotIdCheckerService;
 import erizo.by.smsapp.service.TinyDb;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
-import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
 
 public class SettingsSecondSim extends Activity {
@@ -30,6 +27,7 @@ public class SettingsSecondSim extends Activity {
     private static final String TAG = SettingsSecondSim.class.getSimpleName();
     private static final String SECOND_SIM_SLOT_NUMBER = "1";
     private static final String SETTINGS_SECOND_SIM = "second_sim_settings";
+
     private Switch aSwitch;
     private EditText deviceId,simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending,
             frequencyAlert, numbersAlerts, email, loginForEmail,
@@ -108,7 +106,6 @@ public class SettingsSecondSim extends Activity {
                 Log.d(TAG, secondSimSettings.get("deviceId"));
                 secondSimSettings.put("simId", simId.getText().toString());
                 Log.d(TAG, secondSimSettings.get("simId"));
-                new Thread(new InternalSimSlotIdCheckerService(secondSimSettings.get("simSlot"), SettingsSecondSim.this)).start();
                 secondSimSettings.put("url", url.getText().toString());
                 Log.d(TAG, secondSimSettings.get("url"));
                 secondSimSettings.put("secretKey", secretKey.getText().toString());

@@ -9,13 +9,15 @@ public class Message {
     private String expTime;
     private String simID;
     private String status;
+    private String internalSimIds;
 
     public Message() {
     }
 
-    public Message(String phone, String message) {
+    public Message(String phone, String message, String internalSimIds) {
         this.message = message;
         this.phone = phone;
+        this.internalSimIds = internalSimIds;
     }
 
     public String getMessageID() {
@@ -74,6 +76,14 @@ public class Message {
         this.status = status;
     }
 
+    public String getInternalSimIds() {
+        return internalSimIds;
+    }
+
+    public void setInternalSimIds(String internalSimIds) {
+        this.internalSimIds = internalSimIds;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
@@ -84,6 +94,7 @@ public class Message {
                 ", expTime='" + expTime + '\'' +
                 ", simID='" + simID + '\'' +
                 ", status='" + status + '\'' +
+                ", internalSimIds='" + internalSimIds + '\'' +
                 '}';
     }
 }

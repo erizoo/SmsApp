@@ -3,14 +3,19 @@ package erizo.by.smsapp.activity;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,38 +25,120 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import erizo.by.smsapp.DeliverReceiver;
 import erizo.by.smsapp.GetSmsFromServerTimerTask;
-import erizo.by.smsapp.IncomeSmsSendTimerTask;
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.SendSmsFromPhoneTimerTask;
 import erizo.by.smsapp.SentReceiver;
 import erizo.by.smsapp.model.Message;
+import erizo.by.smsapp.model.Status;
+import erizo.by.smsapp.service.APIService;
 import erizo.by.smsapp.service.FileLogService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
+import static erizo.by.smsapp.SmsStatus.NEW_INCOME_MESSAGE;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Integer systemErrorCounter;
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10;
+    private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String SENT_SMS = "SENT_SMS";
+    private static final String DELIVER_SMS = "DELIVER_SMS";
+
+    private Integer systemErrorCounter;
     public static FileLogService logService = new FileLogService();
-    private String SENT_SMS = "SENT_SMS";
-    private String DELIVER_SMS = "DELIVER_SMS";
     private Intent sentIntent = new Intent(SENT_SMS);
     private Intent deliverIntent = new Intent(DELIVER_SMS);
     private PendingIntent sentPi, deliverPi;
     private Button startButton, stopButton, settingsButton;
     private Queue<Message> firstSimMessageList = new ConcurrentLinkedQueue<>();
     private Queue<Message> secondSimMessageList = new ConcurrentLinkedQueue<>();
+    private Queue<Message> incomeMessages = new ConcurrentLinkedQueue<>();
     private BroadcastReceiver firstSimSentReceiver = new SentReceiver(firstSimMessageList, firstSimSettings, systemErrorCounter);
     private BroadcastReceiver firstSimDeliverReceiver = new DeliverReceiver(firstSimMessageList, firstSimSettings, systemErrorCounter);
     private BroadcastReceiver secondSimSentReceiver = new SentReceiver(secondSimMessageList, secondSimSettings, systemErrorCounter);
     private BroadcastReceiver secondSimDeliverReceiver = new DeliverReceiver(secondSimMessageList, secondSimSettings, systemErrorCounter);
+    private SmsListener smsListener = new SmsListener();
+
+    private class SmsListener extends BroadcastReceiver {
+
+        private final String TAG = SmsListener.class.getSimpleName();
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "got sms");
+            logService.appendLog(TAG + " " + "got sms");
+            if(intent.getAction().equals(SMS_RECEIVED)){
+                Bundle bundle = intent.getExtras();
+                SmsMessage[] msgs;
+                if (bundle != null) {
+                    try {
+                        Object[] pdus = (Object[]) bundle.get("pdus");
+                        msgs = new SmsMessage[pdus.length];
+                        for(int i=0; i<msgs.length; i++){
+                            msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
+                            String msgAddress = msgs[i].getOriginatingAddress();
+                            String msgBody = msgs[i].getMessageBody();
+                            String[] smsData = new String[]{msgAddress, msgBody};
+                            new IncomeSmsChecker().execute(smsData);
+                        }
+                    } catch(Exception e){
+//                            Log.d("Exception caught",e.getMessage());
+                    }
+
+                }
+            }
+        }
+    }
+
+    private  class IncomeSmsChecker extends AsyncTask<String, Void, Void> {
+
+        private final String TAG = IncomeSmsChecker.class.getSimpleName();
+
+        @Override
+        protected Void doInBackground(String... messageData) {
+            Log.d(TAG, "start checking income sms");
+            logService.appendLog(TAG + " " + "start checking income sms");
+            Uri uriSMSURI = Uri.parse("content://sms/inbox");
+            Cursor cur = getContext().getContentResolver().query(uriSMSURI, null, null, null, null);
+            if (cur != null) {
+                while (cur.moveToNext()) {
+                    String address = cur.getString(cur.getColumnIndex("address"));
+                    String body = cur.getString(cur.getColumnIndexOrThrow("body"));
+                    String simId = cur.getString(cur.getColumnIndexOrThrow("sub_id"));
+                    Log.d(TAG, "Body from cursor => " + cur.getString(cur.getColumnIndex("body")));
+                    Log.d(TAG, "SimId from cursor => " + cur.getString(cur.getColumnIndex("sub_id")));
+                    Log.d(TAG, "found sms : " + address + " " + body + " " + simId);
+                    logService.appendLog(TAG + " : " + address + " " + body + " " + simId);
+                    Log.d(TAG, "Address from cursor => " + cur.getString(cur.getColumnIndex("address")));
+                    if (isMessagesMatch(address, body, messageData[0], messageData[1])) {
+                        incomeMessages.add(new Message(address, body, simId));
+                        break;
+                        // TODO: 23.8.17 add income sms removing
+                    }
+                }
+                cur.close();
+            }
+            return null;
+        }
+
+        private boolean isMessagesMatch(String currentMessageAddress, String currentMessageBody, String incomeMessageAddress, String incomeMessageBody) {
+            return (currentMessageAddress.equals(incomeMessageAddress) && currentMessageBody.equals(incomeMessageBody));
+        }
+    }
+
+    private Context getContext() {
+        return this;
+    }
 
     @Override
     protected void onResume() {
@@ -60,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(firstSimDeliverReceiver, new IntentFilter(DELIVER_SMS));
         registerReceiver(secondSimSentReceiver, new IntentFilter(SENT_SMS));
         registerReceiver(secondSimDeliverReceiver, new IntentFilter(DELIVER_SMS));
+        registerReceiver(smsListener, new IntentFilter(SMS_RECEIVED));
     }
 
     @Override
@@ -69,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(firstSimDeliverReceiver);
         unregisterReceiver(secondSimSentReceiver);
         unregisterReceiver(secondSimDeliverReceiver);
+        unregisterReceiver(smsListener);
     }
 
     @Override
@@ -141,6 +230,48 @@ public class MainActivity extends AppCompatActivity {
                         startButton.setBackgroundColor(Color.GRAY);
                         Log.d(TAG, "App started ");
                         logService.appendLog("App started  :" + TAG);
+                        Timer sendIncomeSms = new Timer();
+                        timers.add(sendIncomeSms);
+                        sendIncomeSms.schedule(new TimerTask() {
+
+                            private Retrofit retrofit = new Retrofit.Builder()
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .baseUrl(firstSimSettings.get("url"))
+                                    .build();
+                            private APIService service = retrofit.create(APIService.class);
+
+                            @Override
+                            public void run() {
+                                while (!incomeMessages.isEmpty()) {
+                                    Message message = incomeMessages.poll();
+                                    service.sendSms(
+                                            NEW_INCOME_MESSAGE,
+                                            firstSimSettings.get("deviceId"),
+                                            message.getInternalSimIds(),
+                                            firstSimSettings.get("secretKey"),
+                                            message.getPhone(),
+                                            message.getMessage(),
+                                            "test message id").enqueue(new Callback<Status>() {
+                                        @Override
+                                        public void onResponse(Call<Status> call, Response<Status> response) {
+                                            if (response.body() != null) {
+                                                logService.appendLog("Message status: " + response.body().getStatus() + TAG);
+                                                Log.d(TAG, "Message status: " + response.body().getStatus());
+                                                systemErrorCounter = 0;
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Status> call, Throwable t) {
+                                            systemErrorCounter++;
+                                            Log.e(TAG, t.getMessage());
+                                            logService.appendLog(t.getMessage());
+                                            Log.e(TAG, "Error get status pending " + t.getMessage());
+                                        }
+                                    });
+                                }
+                            }
+                        }, 0L, 500L);
                         if (firstSimSettings.get("status").equals("true")) {
                             Timer getSmsFromServer_firstSim = new Timer();
                             Timer sendSmsFromPhone_firstSim = new Timer();
@@ -149,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                             timers.add(getSmsFromServer_firstSim);
                             timers.add(sendSmsFromPhone_firstSim);
 
-                            sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings, secondSimSettings, systemErrorCounter), 0L, 30L * 1000);
+//                            sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings, secondSimSettings, systemErrorCounter), 0L, 30L * 1000);
                             Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
                             getSmsFromServer_firstSim.schedule(
                                     new GetSmsFromServerTimerTask(

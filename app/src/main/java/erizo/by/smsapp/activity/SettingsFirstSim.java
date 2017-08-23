@@ -3,10 +3,7 @@ package erizo.by.smsapp.activity;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.telephony.SmsManager;
-import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.view.View;
@@ -18,17 +15,12 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import java.util.List;
-
 import erizo.by.smsapp.R;
-import erizo.by.smsapp.service.InternalSimSlotIdCheckerService;
 import erizo.by.smsapp.service.TinyDb;
 
-import static android.os.Build.VERSION.SDK;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import static erizo.by.smsapp.App.firstSimSettings;
-import static erizo.by.smsapp.App.secondSimSettings;
 
 
 public class SettingsFirstSim extends Activity {
@@ -36,6 +28,7 @@ public class SettingsFirstSim extends Activity {
     private static final String TAG = SettingsFirstSim.class.getSimpleName();
     private static final String FIRST_SIM_SLOT_NUMBER = "0";
     private static final String SETTINGS_FIRST_SIM = "first_sim_settings";
+
     private Switch aSwitch;
     private EditText deviceId, simId, url, secretKey, frequencyOfRequests, frequencyOfSmsSending,
             frequencyAlert, numbersAlerts, email, loginForEmail,
@@ -113,7 +106,6 @@ public class SettingsFirstSim extends Activity {
                 Log.d(TAG, firstSimSettings.get("deviceId"));
                 firstSimSettings.put("simId", simId.getText().toString());
                 Log.d(TAG, firstSimSettings.get("simId"));
-                new Thread(new InternalSimSlotIdCheckerService(firstSimSettings.get("simSlot"), SettingsFirstSim.this)).start();
                 firstSimSettings.put("url", url.getText().toString());
                 Log.d(TAG, firstSimSettings.get("url"));
                 firstSimSettings.put("secretKey", secretKey.getText().toString());
