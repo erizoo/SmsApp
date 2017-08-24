@@ -154,6 +154,7 @@ public class SettingsSecondSim extends Activity {
     @TargetApi(LOLLIPOP_MR1)
     private int getAndroidSecondSimSlotId() {
         if (SDK_INT >= LOLLIPOP_MR1) {
+            // TODO: 24.8.17 before setting check is second sim slot number bigger then first sim slot number
             return SubscriptionManager.from(this).getActiveSubscriptionInfoList().get(1).getSubscriptionId();
         }
         return Integer.valueOf(secondSimSettings.get("simSlot")) + 1;

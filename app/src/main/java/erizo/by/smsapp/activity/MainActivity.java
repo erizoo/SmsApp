@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                             new IncomeSmsChecker().execute(smsData);
                         }
                     } catch(Exception e){
-//                            Log.d("Exception caught",e.getMessage());
+//                            Log.d("Exception caught",e.getMessage()); // TODO: 24.8.17 add exception handler
                     }
 
                 }
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private  class IncomeSmsChecker extends AsyncTask<String, Void, Void> {
+    private  class IncomeSmsChecker extends AsyncTask<String, Void, Void> { // TODO: 24.8.17 move to class
 
         private final String TAG = IncomeSmsChecker.class.getSimpleName();
 
@@ -171,10 +171,6 @@ public class MainActivity extends AppCompatActivity {
             permission_list[0] = permission;
             ActivityCompat.requestPermissions(this, permission_list, 1);
         }
-//        ActivityCompat.requestPermissions(this,
-//                new String[]{Manifest.permission.RECEIVE_SMS},
-//                MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
-//        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 1);
         final List<Timer> timers = new ArrayList<>();
         sentPi = PendingIntent.getBroadcast(this, 0, sentIntent, 0);
         deliverPi = PendingIntent.getBroadcast(this, 0, deliverIntent, 0);
@@ -217,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
+                try { // TODO: 24.8.17 remove this try catch block
                     if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false")) {
                         Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                     } else {
@@ -232,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                         logService.appendLog("App started  :" + TAG);
                         Timer sendIncomeSms = new Timer();
                         timers.add(sendIncomeSms);
-                        sendIncomeSms.schedule(new TimerTask() {
+                        sendIncomeSms.schedule(new TimerTask() { /*todo move to class */
 
                             private Retrofit retrofit = new Retrofit.Builder()
                                     .addConverterFactory(GsonConverterFactory.create())
@@ -279,8 +275,6 @@ public class MainActivity extends AppCompatActivity {
                             timers.add(sendFirstSimInboxSms);
                             timers.add(getSmsFromServer_firstSim);
                             timers.add(sendSmsFromPhone_firstSim);
-
-//                            sendFirstSimInboxSms.schedule(new IncomeSmsSendTimerTask(MainActivity.this, firstSimSettings, secondSimSettings, systemErrorCounter), 0L, 30L * 1000);
                             Toast.makeText(getApplicationContext(), "App started ", Toast.LENGTH_SHORT).show();
                             getSmsFromServer_firstSim.schedule(
                                     new GetSmsFromServerTimerTask(
