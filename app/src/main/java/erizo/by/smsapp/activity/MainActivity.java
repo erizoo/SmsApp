@@ -92,8 +92,9 @@ public class MainActivity extends AppCompatActivity {
                             String[] smsData = new String[]{msgAddress, msgBody};
                             new IncomeSmsChecker().execute(smsData);
                         }
-                    } catch(Exception e){
-//                            Log.d("Exception caught",e.getMessage()); // TODO: 24.8.17 add exception handler
+                    } catch(Exception e) {
+                        Log.d("Exception caught", e.getMessage());
+                        logService.appendLog(TAG + " : " + "failed read sms. Catch exception : " + e.getMessage());
                     }
 
                 }
@@ -122,7 +123,10 @@ public class MainActivity extends AppCompatActivity {
                     logService.appendLog(TAG + " : " + address + " " + body + " " + simId);
                     Log.d(TAG, "Address from cursor => " + cur.getString(cur.getColumnIndex("address")));
                     if (isMessagesMatch(address, body, messageData[0], messageData[1])) {
-                        incomeMessages.add(new Message(address, body, simId));
+                        Message message = new Message(address, body, simId);
+                        incomeMessages.add(message);
+                        Log.d(TAG, "find message " + message);
+                        logService.appendLog(TAG + " : " + "find message " + message);
                         break;
                         // TODO: 23.8.17 add income sms removing
                     }
@@ -249,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 while (!incomeMessages.isEmpty()) {
+                                    Log.d(TAG, "starting send sms to server");
+                                    logService.appendLog(TAG + " : " + "starting send sms to server");
                                     Message message = incomeMessages.poll();
                                     service.sendSms(
                                             NEW_INCOME_MESSAGE,
