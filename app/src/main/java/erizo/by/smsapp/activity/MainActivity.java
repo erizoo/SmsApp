@@ -123,7 +123,13 @@ public class MainActivity extends AppCompatActivity {
                     logService.appendLog(TAG + " : " + address + " " + body + " " + simId);
                     Log.d(TAG, "Address from cursor => " + cur.getString(cur.getColumnIndex("address")));
                     if (isMessagesMatch(address, body, messageData[0], messageData[1])) {
-                        Message message = new Message(address, body, simId);
+                        String settingsSimId;
+                        if (simId.equals(firstSimSettings.get("android_sim_slot"))) {
+                            settingsSimId = firstSimSettings.get("simId");
+                        } else {
+                            settingsSimId = secondSimSettings.get("simId");
+                        }
+                        Message message = new Message(address, body, settingsSimId);
                         incomeMessages.add(message);
                         Log.d(TAG, "find message " + message);
                         logService.appendLog(TAG + " : " + "find message " + message);
@@ -283,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
                                     });
                                 }
                             }
-                        }, 0L, 500L);
+                        }, 0L, 1500L);
                         if (firstSimSettings.get("status").equals("true")) {
                             Timer getSmsFromServer_firstSim = new Timer();
                             Timer sendSmsFromPhone_firstSim = new Timer();

@@ -20,6 +20,7 @@ import erizo.by.smsapp.service.TinyDb;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
+import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
 
 public class SettingsSecondSim extends Activity {
@@ -154,7 +155,6 @@ public class SettingsSecondSim extends Activity {
     @TargetApi(LOLLIPOP_MR1)
     private int getAndroidSecondSimSlotId() {
         if (SDK_INT >= LOLLIPOP_MR1) {
-            // TODO: 24.8.17 before setting check is second sim slot number bigger then first sim slot number
             return SubscriptionManager.from(this).getActiveSubscriptionInfoList().get(1).getSubscriptionId();
         }
         return Integer.valueOf(secondSimSettings.get("simSlot")) + 1;
