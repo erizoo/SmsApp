@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -170,6 +171,15 @@ public class MainActivity extends AppCompatActivity {
             String[] permission_list = new String[1];
             permission_list[0] = permission;
             ActivityCompat.requestPermissions(this, permission_list, 1);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_NETWORK_STATE,
+                    Manifest.permission.READ_SMS,
+                    Manifest.permission.RECEIVE_SMS,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.SEND_SMS,
+                    Manifest.permission.READ_PHONE_STATE,
+            }, 6);
         }
         final List<Timer> timers = new ArrayList<>();
         sentPi = PendingIntent.getBroadcast(this, 0, sentIntent, 0);
