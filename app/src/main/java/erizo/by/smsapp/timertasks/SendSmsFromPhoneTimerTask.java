@@ -1,4 +1,4 @@
-package erizo.by.smsapp;
+package erizo.by.smsapp.timertasks;
 
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.TimerTask;
 
+import erizo.by.smsapp.SmsStatus;
 import erizo.by.smsapp.model.Message;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;

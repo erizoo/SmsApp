@@ -1,4 +1,4 @@
-package erizo.by.smsapp;
+package erizo.by.smsapp.timertasks;
 
 import android.util.Log;
 
