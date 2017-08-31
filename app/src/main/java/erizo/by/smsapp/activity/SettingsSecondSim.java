@@ -20,8 +20,25 @@ import erizo.by.smsapp.service.TinyDb;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
-import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
+import static erizo.by.smsapp.SimSettings.ANDROID_SIM_SLOT;
+import static erizo.by.smsapp.SimSettings.DEVICE_ID;
+import static erizo.by.smsapp.SimSettings.EMAIL;
+import static erizo.by.smsapp.SimSettings.FREQUENCY_ALERT;
+import static erizo.by.smsapp.SimSettings.FREQUENCY_OF_REQUESTS;
+import static erizo.by.smsapp.SimSettings.FREQUENCY_OF_SMS_SENDING;
+import static erizo.by.smsapp.SimSettings.LOGIN_FOR_EMAIL;
+import static erizo.by.smsapp.SimSettings.MAX_NUMBERS_MESSAGES;
+import static erizo.by.smsapp.SimSettings.MAX_NUMBER_ERROR;
+import static erizo.by.smsapp.SimSettings.NUMBERS_ALERTS;
+import static erizo.by.smsapp.SimSettings.PASSWORD_FOR_EMAIL;
+import static erizo.by.smsapp.SimSettings.PORT_FOR_EMAIL;
+import static erizo.by.smsapp.SimSettings.SECRET_KEY;
+import static erizo.by.smsapp.SimSettings.SIM_ID;
+import static erizo.by.smsapp.SimSettings.SIM_SLOT;
+import static erizo.by.smsapp.SimSettings.STATUS;
+import static erizo.by.smsapp.SimSettings.TIME_MESSAGES;
+import static erizo.by.smsapp.SimSettings.URL;
 
 public class SettingsSecondSim extends Activity {
 
@@ -61,35 +78,35 @@ public class SettingsSecondSim extends Activity {
         timeMessages = (EditText) findViewById(R.id.time_messages_second_sim_edit);
         saveSettings = (Button) findViewById(R.id.button_save_test_settings_second_sim);
 
-        deviceId.setText(secondSimSettings.get("deviceId"));
-        simId.setText(secondSimSettings.get("simId"));
-        url.setText(secondSimSettings.get("url"));
-        secretKey.setText(secondSimSettings.get("secretKey"));
-        frequencyOfRequests.setText(secondSimSettings.get("frequencyOfRequests"));
-        frequencyOfSmsSending.setText(secondSimSettings.get("frequencyOfSmsSending"));
-        frequencyAlert.setText(secondSimSettings.get("frequencyAlert"));
-        numbersAlerts.setText(secondSimSettings.get("numbersAlerts"));
-        email.setText(secondSimSettings.get("email"));
-        loginForEmail.setText(secondSimSettings.get("loginForEmail"));
-        passwordForEmail.setText(secondSimSettings.get("passwordForEmail"));
-        portForEmail.setText(secondSimSettings.get("portForEmail"));
-        maxNumberError.setText(secondSimSettings.get("maxNumberError"));
-        maxNumbersMessages.setText(secondSimSettings.get("maxNumbersMessages"));
-        timeMessages.setText(secondSimSettings.get("timeMessages"));
+        deviceId.setText(secondSimSettings.get(DEVICE_ID));
+        simId.setText(secondSimSettings.get(SIM_ID));
+        url.setText(secondSimSettings.get(URL));
+        secretKey.setText(secondSimSettings.get(SECRET_KEY));
+        frequencyOfRequests.setText(secondSimSettings.get(FREQUENCY_OF_REQUESTS));
+        frequencyOfSmsSending.setText(secondSimSettings.get(FREQUENCY_OF_SMS_SENDING));
+        frequencyAlert.setText(secondSimSettings.get(FREQUENCY_ALERT));
+        numbersAlerts.setText(secondSimSettings.get(NUMBERS_ALERTS));
+        email.setText(secondSimSettings.get(EMAIL));
+        loginForEmail.setText(secondSimSettings.get(LOGIN_FOR_EMAIL));
+        passwordForEmail.setText(secondSimSettings.get(PASSWORD_FOR_EMAIL));
+        portForEmail.setText(secondSimSettings.get(PORT_FOR_EMAIL));
+        maxNumberError.setText(secondSimSettings.get(MAX_NUMBER_ERROR));
+        maxNumbersMessages.setText(secondSimSettings.get(MAX_NUMBERS_MESSAGES));
+        timeMessages.setText(secondSimSettings.get(TIME_MESSAGES));
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    secondSimSettings.put("status", "true");
+                    secondSimSettings.put(STATUS, "true");
                     Toast.makeText(getApplicationContext(), "SET ON", Toast.LENGTH_SHORT).show();
                 } else {
-                    secondSimSettings.put("status", "false");
+                    secondSimSettings.put(STATUS, "false");
                     Toast.makeText(getApplicationContext(), "SET OFF", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         try {
-            if (secondSimSettings.get("status").equals("false")){
+            if (secondSimSettings.get(STATUS).equals("false")){
                 aSwitch.setChecked(false);
             } else {
                 aSwitch.setChecked(true);
@@ -101,46 +118,46 @@ public class SettingsSecondSim extends Activity {
         saveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                secondSimSettings.put("simSlot", SECOND_SIM_SLOT_NUMBER);
-                Log.d(TAG, secondSimSettings.get("simSlot"));
-                secondSimSettings.put("deviceId", deviceId.getText().toString());
-                Log.d(TAG, secondSimSettings.get("deviceId"));
-                secondSimSettings.put("simId", simId.getText().toString());
-                Log.d(TAG, secondSimSettings.get("simId"));
-                secondSimSettings.put("url", url.getText().toString());
-                Log.d(TAG, secondSimSettings.get("url"));
-                secondSimSettings.put("secretKey", secretKey.getText().toString());
-                Log.d(TAG, secondSimSettings.get("secretKey"));
-                secondSimSettings.put("frequencyOfRequests", frequencyOfRequests.getText().toString());
-                Log.d(TAG, secondSimSettings.get("frequencyOfRequests"));
-                secondSimSettings.put("frequencyOfSmsSending", frequencyOfSmsSending.getText().toString());
-                Log.d(TAG, secondSimSettings.get("frequencyOfSmsSending"));
-                if(frequencyOfRequests.getText().toString().equals("")) {
-                    secondSimSettings.put("frequencyOfRequests", "60");
+                secondSimSettings.put(SIM_SLOT, SECOND_SIM_SLOT_NUMBER);
+                Log.d(TAG, secondSimSettings.get(SIM_SLOT));
+                secondSimSettings.put(DEVICE_ID, deviceId.getText().toString());
+                Log.d(TAG, secondSimSettings.get(DEVICE_ID));
+                secondSimSettings.put(SIM_ID, simId.getText().toString());
+                Log.d(TAG, secondSimSettings.get(SIM_ID));
+                secondSimSettings.put(URL, url.getText().toString());
+                Log.d(TAG, secondSimSettings.get(URL));
+                secondSimSettings.put(SECRET_KEY, secretKey.getText().toString());
+                Log.d(TAG, secondSimSettings.get(SECRET_KEY));
+                secondSimSettings.put(FREQUENCY_OF_REQUESTS, frequencyOfRequests.getText().toString());
+                Log.d(TAG, secondSimSettings.get(FREQUENCY_OF_REQUESTS));
+                secondSimSettings.put(FREQUENCY_OF_SMS_SENDING, frequencyOfSmsSending.getText().toString());
+                Log.d(TAG, secondSimSettings.get(FREQUENCY_OF_SMS_SENDING));
+                if (frequencyOfRequests.getText().toString().equals("")) {
+                    secondSimSettings.put(FREQUENCY_OF_REQUESTS, "60");
                 }
-                if(frequencyOfSmsSending.getText().toString().equals("")) {
-                    secondSimSettings.put("frequencyOfSmsSending", "60");
+                if (frequencyOfSmsSending.getText().toString().equals("")) {
+                    secondSimSettings.put(FREQUENCY_OF_SMS_SENDING, "60");
                 }
-                secondSimSettings.put("frequencyAlert", frequencyAlert.getText().toString());
-                Log.d(TAG, secondSimSettings.get("frequencyAlert"));
-                secondSimSettings.put("numbersAlerts", numbersAlerts.getText().toString());
-                Log.d(TAG, secondSimSettings.get("numbersAlerts"));
-                secondSimSettings.put("email", email.getText().toString());
-                Log.d(TAG, secondSimSettings.get("email"));
-                secondSimSettings.put("loginForEmail", loginForEmail.getText().toString());
-                Log.d(TAG, secondSimSettings.get("loginForEmail"));
-                secondSimSettings.put("passwordForEmail", passwordForEmail.getText().toString());
-                Log.d(TAG, secondSimSettings.get("passwordForEmail"));
-                secondSimSettings.put("portForEmail", portForEmail.getText().toString());
-                Log.d(TAG, secondSimSettings.get("portForEmail"));
-                secondSimSettings.put("maxNumberError", maxNumberError.getText().toString());
-                Log.d(TAG, secondSimSettings.get("maxNumberError"));
-                secondSimSettings.put("maxNumbersMessages", maxNumbersMessages.getText().toString());
-                Log.d(TAG, secondSimSettings.get("maxNumbersMessages"));
-                secondSimSettings.put("timeMessages", timeMessages.getText().toString());
-                Log.d(TAG, secondSimSettings.get("timeMessages"));
-                secondSimSettings.put("android_sim_slot", String.valueOf(getAndroidSecondSimSlotId()));
-                Log.d(TAG, secondSimSettings.get("android_sim_slot"));
+                secondSimSettings.put(FREQUENCY_ALERT, frequencyAlert.getText().toString());
+                Log.d(TAG, secondSimSettings.get(FREQUENCY_ALERT));
+                secondSimSettings.put(NUMBERS_ALERTS, numbersAlerts.getText().toString());
+                Log.d(TAG, secondSimSettings.get(NUMBERS_ALERTS));
+                secondSimSettings.put(EMAIL, email.getText().toString());
+                Log.d(TAG, secondSimSettings.get(EMAIL));
+                secondSimSettings.put(LOGIN_FOR_EMAIL, loginForEmail.getText().toString());
+                Log.d(TAG, secondSimSettings.get(LOGIN_FOR_EMAIL));
+                secondSimSettings.put(PASSWORD_FOR_EMAIL, passwordForEmail.getText().toString());
+                Log.d(TAG, secondSimSettings.get(PASSWORD_FOR_EMAIL));
+                secondSimSettings.put(PORT_FOR_EMAIL, portForEmail.getText().toString());
+                Log.d(TAG, secondSimSettings.get(PORT_FOR_EMAIL));
+                secondSimSettings.put(MAX_NUMBER_ERROR, maxNumberError.getText().toString());
+                Log.d(TAG, secondSimSettings.get(MAX_NUMBER_ERROR));
+                secondSimSettings.put(MAX_NUMBERS_MESSAGES, maxNumbersMessages.getText().toString());
+                Log.d(TAG, secondSimSettings.get(MAX_NUMBERS_MESSAGES));
+                secondSimSettings.put(TIME_MESSAGES, timeMessages.getText().toString());
+                Log.d(TAG, secondSimSettings.get(TIME_MESSAGES));
+                secondSimSettings.put(ANDROID_SIM_SLOT, String.valueOf(getAndroidSecondSimSlotId()));
+                Log.d(TAG, secondSimSettings.get(ANDROID_SIM_SLOT));
 
                 Gson gson = new Gson();
                 String serializedSettings = gson.toJson(secondSimSettings);
@@ -157,6 +174,6 @@ public class SettingsSecondSim extends Activity {
         if (SDK_INT >= LOLLIPOP_MR1) {
             return SubscriptionManager.from(this).getActiveSubscriptionInfoList().get(1).getSubscriptionId();
         }
-        return Integer.valueOf(secondSimSettings.get("simSlot")) + 1;
+        return Integer.valueOf(secondSimSettings.get(SIM_SLOT)) + 1;
     }
 }

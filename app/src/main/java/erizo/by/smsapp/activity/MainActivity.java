@@ -37,6 +37,7 @@ import erizo.by.smsapp.timertasks.SendSmsFromPhoneTimerTask;
 
 import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
+import static erizo.by.smsapp.SimSettings.STATUS;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (firstSimSettings.get("status").equals("false") && secondSimSettings.get("status").equals("false")) {
+                if (firstSimSettings.get(STATUS).equals("false") && secondSimSettings.get(STATUS).equals("false")) {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
                     systemErrorCounter = 0;
@@ -193,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                     Timer sendIncomeSms = new Timer();
                     timers.add(sendIncomeSms);
                     sendIncomeSms.schedule(new IncomeSmsSendTimerTask(incomeMessages, systemErrorCounter), 0L, 1500L);
-                    if (firstSimSettings.get("status").equals("true")) {
+                    if (firstSimSettings.get(STATUS).equals("true")) {
                         Timer getSmsFromServer_firstSim = new Timer();
                         Timer sendSmsFromPhone_firstSim = new Timer();
                         Timer sendFirstSimInboxSms = new Timer();
@@ -223,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                                 Long.parseLong(firstSimSettings.get("frequencyOfSmsSending"),
                                         10) * 1000);
                     }
-                    if (secondSimSettings.get("status").equals("true")) {
+                    if (secondSimSettings.get(STATUS).equals("true")) {
                         Timer getSmsFromServer_secondSim = new Timer();
                         Timer sendSmsFromPhone_secondSim = new Timer();
                         Timer sendSecondSimInboxSms = new Timer();
