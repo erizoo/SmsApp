@@ -1,13 +1,17 @@
 package erizo.by.smsapp;
 import android.app.Application;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import erizo.by.smsapp.service.TinyDb;
 
 import static erizo.by.smsapp.SimSettings.SECRET_KEY;
+import static erizo.by.smsapp.SimSettings.SIM_IDENTIFIER;
 import static erizo.by.smsapp.SimSettings.STATUS;
 import static erizo.by.smsapp.SimSettings.URL;
 
@@ -43,8 +47,18 @@ public class App extends Application {
         } else {
             setDefaultSettings(secondSimSettings);
         }
-
-    }
+        List<SubscriptionInfo> infoList = SubscriptionManager.from(this).getActiveSubscriptionInfoList();
+        if (firstSimSettings.containsKey(SIM_IDENTIFIER)) {
+            if (!infoList.get(0).getIccId().equals(firstSimSettings.get(SIM_IDENTIFIER))) {
+                firstSimSettings.remove(SIM_IDENTIFIER);
+            }
+        }
+        if (secondSimSettings.containsKey(SIM_IDENTIFIER)) {
+            if (!infoList.get(1).getIccId().equals(secondSimSettings.get(SIM_IDENTIFIER))) {
+                secondSimSettings.remove(SIM_IDENTIFIER);
+            }
+        }
+     }
 
     private void setDefaultSettings(Map<String, String> settings) {
         settings = new HashMap<>();

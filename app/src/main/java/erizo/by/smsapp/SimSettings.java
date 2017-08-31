@@ -1,9 +1,5 @@
 package erizo.by.smsapp;
 
-/**
- * Created by valera on 31.8.17.
- */
-
 public class SimSettings {
     public static final String SIM_SLOT = "simSlot";
     public static final String DEVICE_ID = "deviceId";
@@ -23,4 +19,5 @@ public class SimSettings {
     public static final String TIME_MESSAGES = "timeMessages";
     public static final String ANDROID_SIM_SLOT = "android_sim_slot";
     public static final String STATUS = "status";
+    public static final String SIM_IDENTIFIER = "simIdentifier";
 }

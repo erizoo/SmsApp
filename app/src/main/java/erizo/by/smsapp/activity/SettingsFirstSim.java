@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+
+import java.util.List;
 
 import erizo.by.smsapp.R;
 import erizo.by.smsapp.service.TinyDb;
@@ -35,6 +38,7 @@ import static erizo.by.smsapp.SimSettings.PASSWORD_FOR_EMAIL;
 import static erizo.by.smsapp.SimSettings.PORT_FOR_EMAIL;
 import static erizo.by.smsapp.SimSettings.SECRET_KEY;
 import static erizo.by.smsapp.SimSettings.SIM_ID;
+import static erizo.by.smsapp.SimSettings.SIM_IDENTIFIER;
 import static erizo.by.smsapp.SimSettings.SIM_SLOT;
 import static erizo.by.smsapp.SimSettings.STATUS;
 import static erizo.by.smsapp.SimSettings.TIME_MESSAGES;
@@ -54,6 +58,8 @@ public class SettingsFirstSim extends Activity {
             timeMessages;
     private Button saveSettings;
     private TinyDb tinyDb;
+
+    private List<SubscriptionInfo> subscriptionInfoList = SubscriptionManager.from(this).getActiveSubscriptionInfoList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +164,8 @@ public class SettingsFirstSim extends Activity {
                 Log.d(TAG, firstSimSettings.get(TIME_MESSAGES));
                 firstSimSettings.put(ANDROID_SIM_SLOT, String.valueOf(getAndroidFirstSimSlotId()));
                 Log.d(TAG, firstSimSettings.get(ANDROID_SIM_SLOT));
+                firstSimSettings.put(SIM_IDENTIFIER, getSimIdentifier());
+                Log.d(TAG, firstSimSettings.get(SIM_IDENTIFIER));
 
                 Gson gson = new Gson();
                 String serializedSettings = gson.toJson(firstSimSettings);
@@ -172,9 +180,13 @@ public class SettingsFirstSim extends Activity {
     @TargetApi(LOLLIPOP_MR1)
     private int getAndroidFirstSimSlotId() {
         if (SDK_INT >= LOLLIPOP_MR1) {
-            return SubscriptionManager.from(this).getActiveSubscriptionInfoList().get(0).getSubscriptionId();
+            return subscriptionInfoList.get(0).getSubscriptionId();
         }
         return Integer.valueOf(firstSimSettings.get(SIM_SLOT)) + 1;
+    }
+
+    private String getSimIdentifier() {
+        return subscriptionInfoList.get(0).getIccId();
     }
 }
 

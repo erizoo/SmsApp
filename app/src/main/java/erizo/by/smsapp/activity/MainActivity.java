@@ -37,6 +37,7 @@ import erizo.by.smsapp.timertasks.SendSmsFromPhoneTimerTask;
 
 import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
+import static erizo.by.smsapp.SimSettings.SIM_IDENTIFIER;
 import static erizo.by.smsapp.SimSettings.STATUS;
 
 public class MainActivity extends AppCompatActivity {
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                     Timer sendIncomeSms = new Timer();
                     timers.add(sendIncomeSms);
                     sendIncomeSms.schedule(new IncomeSmsSendTimerTask(incomeMessages, systemErrorCounter), 0L, 1500L);
-                    if (firstSimSettings.get(STATUS).equals("true")) {
+                    if (firstSimSettings.get(STATUS).equals("true") && firstSimSettings.containsKey(SIM_IDENTIFIER)) {
                         Timer getSmsFromServer_firstSim = new Timer();
                         Timer sendSmsFromPhone_firstSim = new Timer();
                         Timer sendFirstSimInboxSms = new Timer();
@@ -223,8 +224,10 @@ public class MainActivity extends AppCompatActivity {
                                 0L,
                                 Long.parseLong(firstSimSettings.get("frequencyOfSmsSending"),
                                         10) * 1000);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Change first sim settings", Toast.LENGTH_SHORT).show();
                     }
-                    if (secondSimSettings.get(STATUS).equals("true")) {
+                    if (secondSimSettings.get(STATUS).equals("true") && secondSimSettings.containsKey(SIM_IDENTIFIER)) {
                         Timer getSmsFromServer_secondSim = new Timer();
                         Timer sendSmsFromPhone_secondSim = new Timer();
                         Timer sendSecondSimInboxSms = new Timer();
@@ -252,6 +255,8 @@ public class MainActivity extends AppCompatActivity {
                                 0L,
                                 Long.parseLong(secondSimSettings.get("frequencyOfSmsSending"),
                                         10) * 1000);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Change second sim settings", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
