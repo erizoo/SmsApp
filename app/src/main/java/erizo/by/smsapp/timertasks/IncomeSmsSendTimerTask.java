@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.Queue;
 import java.util.TimerTask;
 
-import erizo.by.smsapp.SmsStatus;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
@@ -22,9 +21,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
+import static erizo.by.smsapp.SimSettings.ANDROID_SIM_SLOT;
+import static erizo.by.smsapp.SmsStatus.NEW_INCOME_MESSAGE;
 import static erizo.by.smsapp.activity.MainActivity.logService;
 
-public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
+public class IncomeSmsSendTimerTask extends TimerTask {
 
     private static final String TAG = IncomeSmsSendTimerTask.class.getSimpleName();
 
@@ -48,7 +49,7 @@ public class IncomeSmsSendTimerTask extends TimerTask implements SmsStatus {
             logService.appendLog(TAG + " : " + "starting send sms to server");
             Message message = incomeMessages.poll();
             String messageId;
-            if (message.getInternalSimIds().equals(firstSimSettings.get("android_sim_slot"))) {
+            if (message.getInternalSimIds().equals(firstSimSettings.get(ANDROID_SIM_SLOT))) {
                 messageId = getMessageIdForSmsFirstSim(message.getPhone(), message.getMessage());
             } else {
                 messageId = getMessageIdForSmsSecondSim(message.getPhone(), message.getMessage());

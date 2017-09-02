@@ -1,4 +1,5 @@
 package erizo.by.smsapp;
+
 import android.app.Application;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;

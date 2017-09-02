@@ -1,6 +1,5 @@
 package erizo.by.smsapp.service;
 
-
 import android.os.Environment;
 
 import java.io.BufferedWriter;

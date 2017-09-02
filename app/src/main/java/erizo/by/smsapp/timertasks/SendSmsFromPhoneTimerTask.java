@@ -21,8 +21,9 @@ import erizo.by.smsapp.model.Message;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import static android.telephony.SmsManager.getDefault;
 import static android.telephony.SmsManager.getSmsManagerForSubscriptionId;
+import static erizo.by.smsapp.SmsStatus.SMS_PENDING;
 
-public class SendSmsFromPhoneTimerTask extends TimerTask implements SmsStatus {
+public class SendSmsFromPhoneTimerTask extends TimerTask {
 
     private static final String TAG = SendSmsFromPhoneTimerTask.class.getSimpleName();
 

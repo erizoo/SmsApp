@@ -1,4 +1,4 @@
-package erizo.by.smsapp;
+package erizo.by.smsapp.receivers;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -18,9 +18,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static erizo.by.smsapp.SmsStatus.SET_MESSAGES_STATUS;
+import static erizo.by.smsapp.SmsStatus.STATUS_DELIVERED;
+import static erizo.by.smsapp.SmsStatus.STATUS_UNDELIVERED;
 import static erizo.by.smsapp.activity.MainActivity.logService;
 
-public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
+public class DeliverReceiver extends BroadcastReceiver {
 
     private static final String TAG = DeliverReceiver.class.getSimpleName();
 
@@ -29,9 +32,10 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
 
     private APIService service;
     private Integer systemErrorCounter;
+    private Integer unsentMessageCounter;
 
 
-    public DeliverReceiver(Queue<Message> messages, Map<String, String> simSettings, Integer systemErrorCounter) {
+    public DeliverReceiver(Queue<Message> messages, Map<String, String> simSettings, Integer systemErrorCounter, Integer unsentMessageCounter) {
         this.messages = messages;
         this.simSettings = simSettings;
         Retrofit retrofit = new Retrofit.Builder()
@@ -40,6 +44,7 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                 .build();
         service = retrofit.create(APIService.class);
         this.systemErrorCounter = systemErrorCounter;
+        this.unsentMessageCounter = unsentMessageCounter;
     }
 
     @Override
@@ -77,6 +82,7 @@ public class DeliverReceiver extends BroadcastReceiver implements SmsStatus {
                     }
                     break;
                 case Activity.RESULT_CANCELED:
+                    unsentMessageCounter++;
                     if (messages.peek().getStatus() != null) {
                         logService.appendLog("message didn't delivered");
                         Message message = messages.poll();

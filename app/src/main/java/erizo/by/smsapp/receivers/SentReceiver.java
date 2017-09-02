@@ -1,4 +1,4 @@
-package erizo.by.smsapp;
+package erizo.by.smsapp.receivers;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -19,9 +19,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static erizo.by.smsapp.SmsStatus.SET_MESSAGES_STATUS;
+import static erizo.by.smsapp.SmsStatus.SMS_PENDING;
+import static erizo.by.smsapp.SmsStatus.SMS_SENT;
+import static erizo.by.smsapp.SmsStatus.STATUS_SENT;
+import static erizo.by.smsapp.SmsStatus.STATUS_UNSENT;
 import static erizo.by.smsapp.activity.MainActivity.logService;
 
-public class SentReceiver extends BroadcastReceiver implements SmsStatus {
+public class SentReceiver extends BroadcastReceiver {
 
     private static final String TAG = SentReceiver.class.getSimpleName();
 
@@ -30,9 +35,10 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
 
     private APIService service;
     private Integer systemErrorCounter;
+    private Integer unsentMessageCounter;
 
 
-    public SentReceiver(Queue<Message> messages, Map<String, String> simSettings, Integer systemErrorCounter) {
+    public SentReceiver(Queue<Message> messages, Map<String, String> simSettings, Integer systemErrorCounter, Integer unsentMessageCounter) {
         this.messages = messages;
         this.simSettings = simSettings;
         Retrofit retrofit = new Retrofit.Builder()
@@ -41,6 +47,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                 .build();
         this.service = retrofit.create(APIService.class);
         this.systemErrorCounter = systemErrorCounter;
+        this.unsentMessageCounter = unsentMessageCounter;
     }
 
     @Override
@@ -86,6 +93,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                     Log.d(TAG, "Generic failure ");
                     logService.appendLog("RESULT_ERROR_GENERIC_FAILURE");
+                    unsentMessageCounter++;
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -115,6 +123,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                 case SmsManager.RESULT_ERROR_NO_SERVICE:
                     Log.d(TAG, "No service ");
                     logService.appendLog("RESULT_ERROR_NO_SERVICE");
+                    unsentMessageCounter++;
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -143,6 +152,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                 case SmsManager.RESULT_ERROR_NULL_PDU:
                     Log.d(TAG, "Null PDU ");
                     logService.appendLog("RESULT_ERROR_NULL_PDU");
+                    unsentMessageCounter++;
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,
@@ -172,6 +182,7 @@ public class SentReceiver extends BroadcastReceiver implements SmsStatus {
                 case SmsManager.RESULT_ERROR_RADIO_OFF:
                     Log.d(TAG, "Radio off ");
                     logService.appendLog("RESULT_ERROR_RADIO_OFF");
+                    unsentMessageCounter++;
                     if (messages.peek().getStatus() != null) {
                         Message message = messages.poll();
                         service.sendStatus(SET_MESSAGES_STATUS,

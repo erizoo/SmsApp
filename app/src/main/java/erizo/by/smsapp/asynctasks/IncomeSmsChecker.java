@@ -8,7 +8,6 @@ import android.util.Log;
 
 import java.util.Queue;
 
-import erizo.by.smsapp.activity.MainActivity;
 import erizo.by.smsapp.model.Message;
 
 import static erizo.by.smsapp.App.firstSimSettings;

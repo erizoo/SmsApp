@@ -31,5 +31,13 @@ public interface APIService {
                          @Query("phone") String phone,
                          @Query("message") String message,
                          @Query("messageID") String messageId);
+
+    @GET("index.php")
+    Call<Status> sendAlert(@Query("task") String task,
+                           @Query("deviceID") String deviceID,
+                           @Query("simID") String simID,
+                           @Query("secretKey") String secretKey,
+                           @Query("unsent") String unsentMessages);
+
 }
 

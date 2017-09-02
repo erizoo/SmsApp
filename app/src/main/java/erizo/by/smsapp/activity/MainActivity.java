@@ -25,9 +25,10 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import erizo.by.smsapp.DeliverReceiver;
+import erizo.by.smsapp.receivers.DeliverReceiver;
 import erizo.by.smsapp.R;
-import erizo.by.smsapp.SentReceiver;
+import erizo.by.smsapp.receivers.SentReceiver;
+import erizo.by.smsapp.timertasks.SystemErrorCounterTestingTimerTask;
 import erizo.by.smsapp.asynctasks.IncomeSmsChecker;
 import erizo.by.smsapp.model.Message;
 import erizo.by.smsapp.service.FileLogService;
@@ -37,6 +38,7 @@ import erizo.by.smsapp.timertasks.SendSmsFromPhoneTimerTask;
 
 import static erizo.by.smsapp.App.firstSimSettings;
 import static erizo.by.smsapp.App.secondSimSettings;
+import static erizo.by.smsapp.SimSettings.ALERT_FREQUENCY;
 import static erizo.by.smsapp.SimSettings.SIM_IDENTIFIER;
 import static erizo.by.smsapp.SimSettings.STATUS;
 
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String DELIVER_SMS = "DELIVER_SMS";
 
     private Integer systemErrorCounter;
+    private Integer unsentMessgeCounter;
     public static FileLogService logService = new FileLogService();
     private Intent sentIntent = new Intent(SENT_SMS);
     private Intent deliverIntent = new Intent(DELIVER_SMS);
@@ -56,10 +59,10 @@ public class MainActivity extends AppCompatActivity {
     private Queue<Message> firstSimMessageList = new ConcurrentLinkedQueue<>();
     private Queue<Message> secondSimMessageList = new ConcurrentLinkedQueue<>();
     private Queue<Message> incomeMessages = new ConcurrentLinkedQueue<>();
-    private BroadcastReceiver firstSimSentReceiver = new SentReceiver(firstSimMessageList, firstSimSettings, systemErrorCounter);
-    private BroadcastReceiver firstSimDeliverReceiver = new DeliverReceiver(firstSimMessageList, firstSimSettings, systemErrorCounter);
-    private BroadcastReceiver secondSimSentReceiver = new SentReceiver(secondSimMessageList, secondSimSettings, systemErrorCounter);
-    private BroadcastReceiver secondSimDeliverReceiver = new DeliverReceiver(secondSimMessageList, secondSimSettings, systemErrorCounter);
+    private BroadcastReceiver firstSimSentReceiver = new SentReceiver(firstSimMessageList, firstSimSettings, systemErrorCounter, unsentMessgeCounter);
+    private BroadcastReceiver firstSimDeliverReceiver = new DeliverReceiver(firstSimMessageList, firstSimSettings, systemErrorCounter, unsentMessgeCounter);
+    private BroadcastReceiver secondSimSentReceiver = new SentReceiver(secondSimMessageList, secondSimSettings, systemErrorCounter, unsentMessgeCounter);
+    private BroadcastReceiver secondSimDeliverReceiver = new DeliverReceiver(secondSimMessageList, secondSimSettings, systemErrorCounter, unsentMessgeCounter);
     private SmsListener smsListener = new SmsListener();
 
     private class SmsListener extends BroadcastReceiver {
@@ -184,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Активируйте SIM ", Toast.LENGTH_SHORT).show();
                 } else {
                     systemErrorCounter = 0;
+                    unsentMessgeCounter = 0;
                     stopButton.setEnabled(true);
                     stopButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
                     settingsButton.setClickable(false);
@@ -193,8 +197,11 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "App started ");
                     logService.appendLog("App started  :" + TAG);
                     Timer sendIncomeSms = new Timer();
+                    Timer checkSystemErrorCounter = new Timer();
                     timers.add(sendIncomeSms);
+                    timers.add(checkSystemErrorCounter);
                     sendIncomeSms.schedule(new IncomeSmsSendTimerTask(incomeMessages, systemErrorCounter), 0L, 1500L);
+                    checkSystemErrorCounter.schedule(new SystemErrorCounterTestingTimerTask(systemErrorCounter, firstSimSettings), 0L, Long.valueOf(firstSimSettings.get(ALERT_FREQUENCY)));
                     if (firstSimSettings.get(STATUS).equals("true") && firstSimSettings.containsKey(SIM_IDENTIFIER)) {
                         Timer getSmsFromServer_firstSim = new Timer();
                         Timer sendSmsFromPhone_firstSim = new Timer();

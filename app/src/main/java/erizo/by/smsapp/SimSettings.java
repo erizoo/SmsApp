@@ -8,9 +8,9 @@ public class SimSettings {
     public static final String SECRET_KEY = "secretKey";
     public static final String FREQUENCY_OF_REQUESTS = "frequencyOfRequests";
     public static final String FREQUENCY_OF_SMS_SENDING = "frequencyOfSmsSending";
-    public static final String FREQUENCY_ALERT = "frequencyAlert";
-    public static final String NUMBERS_ALERTS = "numbersAlerts";
-    public static final String EMAIL = "email";
+    public static final String ALERT_FREQUENCY = "frequencyAlert";
+    public static final String ALERT_NUMBERS = "numbersAlerts";
+    public static final String EMAILS = "email";
     public static final String LOGIN_FOR_EMAIL = "loginForEmail";
     public static final String PASSWORD_FOR_EMAIL = "passwordForEmail";
     public static final String PORT_FOR_EMAIL = "portForEmail";
