@@ -7,6 +7,11 @@ import android.util.Log;
 import java.util.Map;
 import java.util.TimerTask;
 
+import javax.mail.AuthenticationFailedException;
+import javax.mail.MessagingException;
+
+import erizo.by.smsapp.asynctasks.SendEmailAsyncTask;
+import erizo.by.smsapp.model.Mail;
 import erizo.by.smsapp.model.Status;
 import erizo.by.smsapp.service.APIService;
 import retrofit2.Call;
@@ -19,7 +24,9 @@ import static erizo.by.smsapp.SimSettings.ALERT_NUMBERS;
 import static erizo.by.smsapp.SimSettings.ANDROID_SIM_SLOT;
 import static erizo.by.smsapp.SimSettings.DEVICE_ID;
 import static erizo.by.smsapp.SimSettings.EMAILS;
+import static erizo.by.smsapp.SimSettings.LOGIN_FOR_EMAIL;
 import static erizo.by.smsapp.SimSettings.MAX_NUMBER_ERROR;
+import static erizo.by.smsapp.SimSettings.PASSWORD_FOR_EMAIL;
 import static erizo.by.smsapp.SimSettings.SECRET_KEY;
 import static erizo.by.smsapp.SimSettings.SIM_ID;
 import static erizo.by.smsapp.SimSettings.URL;
@@ -79,6 +86,12 @@ public class SystemErrorCounterTestingTimerTask extends TimerTask {
                             Log.d(TAG, "message alert unsent");
                         }
                     });
+            String[] emails = settings.get(EMAILS).split(SPLITTER);
+            Mail mail = new Mail(settings.get(LOGIN_FOR_EMAIL), settings.get(PASSWORD_FOR_EMAIL));
+            mail.setSubject("error overflow");
+            mail.setBody("error overflow");
+            mail.setTo(emails);
+            new SendEmailAsyncTask(mail).execute();
         }
     }
 

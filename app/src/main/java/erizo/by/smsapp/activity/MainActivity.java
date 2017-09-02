@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
     private static final String SENT_SMS = "SENT_SMS";
     private static final String DELIVER_SMS = "DELIVER_SMS";
+    private static final long SECOND = 1000L;
+    private static final int DECIMAL = 10;
 
     private Integer systemErrorCounter;
     private Integer unsentMessgeCounter;
@@ -200,8 +202,8 @@ public class MainActivity extends AppCompatActivity {
                     Timer checkSystemErrorCounter = new Timer();
                     timers.add(sendIncomeSms);
                     timers.add(checkSystemErrorCounter);
-                    sendIncomeSms.schedule(new IncomeSmsSendTimerTask(incomeMessages, systemErrorCounter), 0L, 1500L);
-                    checkSystemErrorCounter.schedule(new SystemErrorCounterTestingTimerTask(systemErrorCounter, firstSimSettings), 0L, Long.valueOf(firstSimSettings.get(ALERT_FREQUENCY)));
+                    sendIncomeSms.schedule(new IncomeSmsSendTimerTask(incomeMessages, systemErrorCounter), /*offset*/ 0L, SECOND);
+                    checkSystemErrorCounter.schedule(new SystemErrorCounterTestingTimerTask(systemErrorCounter, firstSimSettings), /*offset*/ 0L, Long.valueOf(firstSimSettings.get(ALERT_FREQUENCY)) * SECOND);
                     if (firstSimSettings.get(STATUS).equals("true") && firstSimSettings.containsKey(SIM_IDENTIFIER)) {
                         Timer getSmsFromServer_firstSim = new Timer();
                         Timer sendSmsFromPhone_firstSim = new Timer();
@@ -215,9 +217,9 @@ public class MainActivity extends AppCompatActivity {
                                         firstSimSettings,
                                         firstSimMessageList,
                                         systemErrorCounter),
-                                0L,
+                                /*offset*/ 0L,
                                 Long.parseLong(firstSimSettings.get("frequencyOfRequests"),
-                                        10) * 1000);
+                                        DECIMAL) * SECOND);
                         sendSmsFromPhone_firstSim.schedule(
                                 new SendSmsFromPhoneTimerTask(
                                         firstSimMessageList,
@@ -228,9 +230,9 @@ public class MainActivity extends AppCompatActivity {
                                         sentIntent,
                                         deliverIntent,
                                         systemErrorCounter),
-                                0L,
+                                /*offset*/ 0L,
                                 Long.parseLong(firstSimSettings.get("frequencyOfSmsSending"),
-                                        10) * 1000);
+                                        DECIMAL) * SECOND);
                     } else {
                         Toast.makeText(getApplicationContext(), "Change first sim settings", Toast.LENGTH_SHORT).show();
                     }
@@ -246,9 +248,9 @@ public class MainActivity extends AppCompatActivity {
                                         secondSimSettings,
                                         secondSimMessageList,
                                         systemErrorCounter),
-                                0L,
+                                /*offset*/ 0L,
                                 Long.parseLong(secondSimSettings.get("frequencyOfRequests"),
-                                        10) * 1000);
+                                        DECIMAL) * SECOND);
                         sendSmsFromPhone_secondSim.schedule(
                                 new SendSmsFromPhoneTimerTask(
                                         secondSimMessageList,
@@ -259,9 +261,9 @@ public class MainActivity extends AppCompatActivity {
                                         sentIntent,
                                         deliverIntent,
                                         systemErrorCounter),
-                                0L,
+                                /*offset*/ 0L,
                                 Long.parseLong(secondSimSettings.get("frequencyOfSmsSending"),
-                                        10) * 1000);
+                                        DECIMAL) * SECOND);
                     } else {
                         Toast.makeText(getApplicationContext(), "Change second sim settings", Toast.LENGTH_SHORT).show();
                     }
