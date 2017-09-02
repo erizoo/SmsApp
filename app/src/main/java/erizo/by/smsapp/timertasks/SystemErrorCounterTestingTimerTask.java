@@ -20,6 +20,9 @@ import static erizo.by.smsapp.SimSettings.ANDROID_SIM_SLOT;
 import static erizo.by.smsapp.SimSettings.DEVICE_ID;
 import static erizo.by.smsapp.SimSettings.EMAILS;
 import static erizo.by.smsapp.SimSettings.MAX_NUMBER_ERROR;
+import static erizo.by.smsapp.SimSettings.SECRET_KEY;
+import static erizo.by.smsapp.SimSettings.SIM_ID;
+import static erizo.by.smsapp.SimSettings.URL;
 
 /**
  * Created by valera on 2.9.17.
@@ -34,11 +37,17 @@ public class SystemErrorCounterTestingTimerTask extends TimerTask {
     private Integer errorCounter;
     private Map<String, String> settings;
     private SmsManager smsManager;
+    private APIService service;
 
     public SystemErrorCounterTestingTimerTask(Integer errorCounter, Map<String, String> settings) {
         this.errorCounter = errorCounter;
         this.settings = settings;
         smsManager = SmsManager.getSmsManagerForSubscriptionId(Integer.valueOf(settings.get(ANDROID_SIM_SLOT)));
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(settings.get(URL))
+                .build();
+        service = retrofit.create(APIService.class);
     }
 
     @Override
@@ -54,29 +63,22 @@ public class SystemErrorCounterTestingTimerTask extends TimerTask {
                     return null;
                 }
             };
-            String[] urls = settings.get(EMAILS).split(SPLITTER);
-            for (String url : urls) {
-                Retrofit retrofit = new Retrofit.Builder()
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .baseUrl(url)
-                        .build();
-                retrofit.create(APIService.class).sendAlert("alert",
-                        settings.get(DEVICE_ID),
-                        settings.get("simId"),
-                        settings.get("secretKey"),
-                        "0")
-                        .enqueue(new Callback<Status>() {
-                            @Override
-                            public void onResponse(Call<Status> call, Response<Status> response) {
-                                Log.d(TAG, "sent alert message");
-                            }
+            service.sendAlert("alert",
+                    settings.get(DEVICE_ID),
+                    settings.get(SIM_ID),
+                    settings.get(SECRET_KEY),
+                    "0")
+                    .enqueue(new Callback<Status>() {
+                        @Override
+                        public void onResponse(Call<Status> call, Response<Status> response) {
+                            Log.d(TAG, "sent alert message");
+                        }
 
-                            @Override
-                            public void onFailure(Call<Status> call, Throwable t) {
-                                Log.d(TAG, "message alert unsent");
-                            }
-                        });
-            }
+                        @Override
+                        public void onFailure(Call<Status> call, Throwable t) {
+                            Log.d(TAG, "message alert unsent");
+                        }
+                    });
         }
     }
 
