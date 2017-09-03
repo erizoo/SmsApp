@@ -29,35 +29,35 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         tinyDbFirstSim = new TinyDb(this);
+        tinyDbSecondSim = new TinyDb(this);
+        List<SubscriptionInfo> infoList = SubscriptionManager.from(this).getActiveSubscriptionInfoList();
         if (tinyDbFirstSim.keyContaints(SETTINGS_FIRST_SIM)) {
             Log.d("App", "settings contains. set them to view");
             String serializedSettingsFirstSim = tinyDbFirstSim.getString(SETTINGS_FIRST_SIM);
             Gson gson = new Gson();
             firstSimSettings = gson.fromJson(serializedSettingsFirstSim, new TypeToken<Map<String, String>>() {
             }.getType());
+            if (firstSimSettings.containsKey(SIM_IDENTIFIER)) {
+                if (!infoList.get(0).getIccId().equals(firstSimSettings.get(SIM_IDENTIFIER))) {
+                    firstSimSettings.remove(SIM_IDENTIFIER);
+                }
+            }
         } else {
             firstSimSettings = getDefaultSettings();
         }
-        tinyDbSecondSim = new TinyDb(this);
         if (tinyDbSecondSim.keyContaints(SETTINGS_SECOND_SIM)) {
             Log.d("App", "settings contains. set them to view");
             String serializedSettingsSecondSim = tinyDbSecondSim.getString(SETTINGS_SECOND_SIM);
             Gson gson = new Gson();
             secondSimSettings = gson.fromJson(serializedSettingsSecondSim, new TypeToken<Map<String, String>>() {
             }.getType());
+            if (secondSimSettings.containsKey(SIM_IDENTIFIER)) {
+                if (!infoList.get(1).getIccId().equals(secondSimSettings.get(SIM_IDENTIFIER))) {
+                    secondSimSettings.remove(SIM_IDENTIFIER);
+                }
+            }
         } else {
             secondSimSettings = getDefaultSettings();
-        }
-        List<SubscriptionInfo> infoList = SubscriptionManager.from(this).getActiveSubscriptionInfoList();
-        if (firstSimSettings.containsKey(SIM_IDENTIFIER)) {
-            if (!infoList.get(0).getIccId().equals(firstSimSettings.get(SIM_IDENTIFIER))) {
-                firstSimSettings.remove(SIM_IDENTIFIER);
-            }
-        }
-        if (secondSimSettings.containsKey(SIM_IDENTIFIER)) {
-            if (!infoList.get(1).getIccId().equals(secondSimSettings.get(SIM_IDENTIFIER))) {
-                secondSimSettings.remove(SIM_IDENTIFIER);
-            }
         }
      }
 
