@@ -39,7 +39,7 @@
             android:layout_toEndOf="@+id/frequency_sent_sms_second_sim"
             android:layout_toRightOf="@+id/frequency_sent_sms_second_sim"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="number" />
 
         <TextView
             android:id="@+id/frequency_sent_sms_second_sim"
@@ -59,7 +59,7 @@
             android:layout_alignBottom="@+id/frequency_sent_sms_second_sim"
             android:layout_alignStart="@+id/frequency_requests_second_sim_edit_text"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="number" />
 
         <EditText
             android:id="@+id/sim_second_id_edit"
@@ -114,7 +114,7 @@
             android:layout_above="@+id/secret_key_second_sim_edit"
             android:layout_toEndOf="@+id/secret_key_second_sim"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="textUri" />
 
 
         <TextView
@@ -259,7 +259,7 @@
             android:layout_alignLeft="@+id/numbers_alerts_second_sim_edit"
             android:layout_alignStart="@+id/numbers_alerts_second_sim_edit"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="number" />
 
         <EditText
             android:id="@+id/numbers_alerts_second_sim_edit"
@@ -269,7 +269,7 @@
             android:layout_toEndOf="@+id/max_number_errors_second_sim"
             android:layout_toRightOf="@+id/max_number_errors_second_sim"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="number" />
 
         <EditText
             android:id="@+id/mail_second_sim_edit"
@@ -309,7 +309,7 @@
             android:layout_toEndOf="@+id/max_number_errors_second_sim"
             android:layout_toRightOf="@+id/max_number_errors_second_sim"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="number" />
 
         <EditText
             android:id="@+id/max_number_errors_second_sim_edit"
@@ -319,7 +319,7 @@
             android:layout_toEndOf="@+id/max_numbers_messages_second_sim"
             android:layout_toRightOf="@+id/max_numbers_messages_second_sim"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="number" />
 
         <EditText
             android:id="@+id/max_numbers_messages_second_sim_edit"
@@ -331,16 +331,16 @@
             android:layout_toEndOf="@+id/button_save_test_settings_second_sim"
             android:layout_toRightOf="@+id/button_save_test_settings_second_sim"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="number" />
 
         <EditText
             android:id="@+id/time_messages_second_sim_edit"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
             android:layout_alignBottom="@+id/time_messages_second_sim"
             android:layout_toRightOf="@+id/port_sim_second_edit"
-            android:layout_toEndOf="@+id/port_sim_second_edit" />
+            android:layout_toEndOf="@+id/port_sim_second_edit"
+            android:inputType="number" />
     </RelativeLayout>
 </ScrollView>
