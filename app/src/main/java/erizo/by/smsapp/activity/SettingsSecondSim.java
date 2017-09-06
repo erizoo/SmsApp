@@ -3,6 +3,7 @@ package erizo.by.smsapp.activity;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
@@ -55,9 +56,10 @@ public class SettingsSecondSim extends Activity {
             frequencyAlert, numbersAlerts, email, loginForEmail,
             passwordForEmail, portForEmail, maxNumberError, maxNumbersMessages,
             timeMessages;
-    private Button saveSettings;
+    private Button saveSettingsButton;
 
     private TinyDb tinyDbSecondSim;
+    private boolean isValid = true;
 
     private List<SubscriptionInfo> subscriptionInfoList;
 
@@ -83,7 +85,7 @@ public class SettingsSecondSim extends Activity {
         maxNumberError = (EditText) findViewById(R.id.max_number_errors_second_sim_edit);
         maxNumbersMessages = (EditText) findViewById(R.id.max_numbers_messages_second_sim_edit);
         timeMessages = (EditText) findViewById(R.id.time_messages_second_sim_edit);
-        saveSettings = (Button) findViewById(R.id.button_save_test_settings_second_sim);
+        saveSettingsButton = (Button) findViewById(R.id.button_save_test_settings_second_sim);
 
         deviceId.setText(secondSimSettings.get(DEVICE_ID));
         simId.setText(secondSimSettings.get(SIM_ID));
@@ -103,12 +105,55 @@ public class SettingsSecondSim extends Activity {
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    secondSimSettings.put(STATUS, "true");
-                    Toast.makeText(getApplicationContext(), "SET ON", Toast.LENGTH_SHORT).show();
+                if (isEmpty(deviceId)) {
+                    isValid = false;
+                } else if (isEmpty(simId)) {
+                    isValid = false;
+                } else if (isEmpty(url)) {
+                    isValid = false;
+                } else if (isEmpty(secretKey)) {
+                    isValid = false;
+                } else if (isEmpty(frequencyOfRequests)) {
+                    isValid = false;
+                } else if (isEmpty(frequencyOfSmsSending)) {
+                    isValid = false;
+                } else if (isEmpty(frequencyAlert)) {
+                    isValid = false;
+                } else if (isEmpty(numbersAlerts)) {
+                    isValid = false;
+                } else if (isEmpty(email)) {
+                    isValid = false;
+                } else if (isEmpty(loginForEmail)) {
+                    isValid = false;
+                } else if (isEmpty(passwordForEmail)) {
+                    isValid = false;
+                } else if (isEmpty(portForEmail)) {
+                    isValid = false;
+                } else if (isEmpty(maxNumberError)) {
+                    isValid = false;
+                } else if (isEmpty(maxNumbersMessages)) {
+                    isValid = false;
+                } else if (isEmpty(timeMessages)) {
+                    isValid = false;
                 } else {
-                    secondSimSettings.put(STATUS, "false");
-                    Toast.makeText(getApplicationContext(), "SET OFF", Toast.LENGTH_SHORT).show();
+                    isValid = true;
+                }
+                if (isValid) {
+                    saveSettingsButton.setClickable(true);
+                    saveSettingsButton.setBackgroundColor(Color.parseColor("#ff33b5e5"));
+                    if (isChecked) {
+                        secondSimSettings.put(STATUS, "true");
+                        Toast.makeText(getApplicationContext(), "Активированно", Toast.LENGTH_SHORT).show();
+                    } else {
+                        secondSimSettings.put(STATUS, "false");
+                        Toast.makeText(getApplicationContext(), "Деактивированно", Toast.LENGTH_SHORT).show();
+                        saveSettingsButton.setClickable(false);
+                        saveSettingsButton.setBackgroundColor(Color.GRAY);
+                    }
+                } else {
+                    saveSettingsButton.setClickable(false);
+                    saveSettingsButton.setBackgroundColor(Color.GRAY);
+                    Toast.makeText(getApplicationContext(), "Все настройки обязательны", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -122,7 +167,7 @@ public class SettingsSecondSim extends Activity {
             Log.e(TAG, e.getMessage());
         }
 
-        saveSettings.setOnClickListener(new View.OnClickListener() {
+        saveSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 secondSimSettings.put(SIM_SLOT, SECOND_SIM_SLOT_NUMBER);
@@ -184,6 +229,10 @@ public class SettingsSecondSim extends Activity {
             return subscriptionInfoList.get(1).getSubscriptionId();
         }
         return Integer.valueOf(secondSimSettings.get(SIM_SLOT)) + 1;
+    }
+
+    private boolean isEmpty(EditText element) {
+        return element.getText().toString().trim().isEmpty();
     }
 
     private String getSimIdentifier() {
