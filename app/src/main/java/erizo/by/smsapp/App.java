@@ -36,7 +36,7 @@ public class App extends Application {
             firstSimSettings = gson.fromJson(serializedSettingsFirstSim, new TypeToken<Map<String, String>>() {
             }.getType());
         } else {
-            setDefaultSettings(firstSimSettings);
+            firstSimSettings = getDefaultSettings();
         }
         tinyDbSecondSim = new TinyDb(this);
         if (tinyDbSecondSim.keyContaints(SETTINGS_SECOND_SIM)) {
@@ -46,7 +46,7 @@ public class App extends Application {
             secondSimSettings = gson.fromJson(serializedSettingsSecondSim, new TypeToken<Map<String, String>>() {
             }.getType());
         } else {
-            setDefaultSettings(secondSimSettings);
+            secondSimSettings = getDefaultSettings();
         }
         List<SubscriptionInfo> infoList = SubscriptionManager.from(this).getActiveSubscriptionInfoList();
         if (firstSimSettings.containsKey(SIM_IDENTIFIER)) {
@@ -61,11 +61,12 @@ public class App extends Application {
         }
      }
 
-    private void setDefaultSettings(Map<String, String> settings) {
-        settings = new HashMap<>();
+    private Map<String, String> getDefaultSettings() {
+        Map<String, String> settings = new HashMap<>();
         settings.put(STATUS, "false");
         settings.put(URL, "https://con24.ru/testapi/");
         settings.put(SECRET_KEY, "T687G798UHO786");
+        return settings;
     }
 
 }

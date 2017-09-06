@@ -59,12 +59,13 @@ public class SettingsFirstSim extends Activity {
     private Button saveSettings;
     private TinyDb tinyDb;
 
-    private List<SubscriptionInfo> subscriptionInfoList = SubscriptionManager.from(this).getActiveSubscriptionInfoList();
+    private List<SubscriptionInfo> subscriptionInfoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_first_sim_activity);
+        subscriptionInfoList = SubscriptionManager.from(this).getActiveSubscriptionInfoList();
         tinyDb = new TinyDb(this);
         aSwitch = (Switch) findViewById(R.id.switch_first_sim);
         deviceId = (EditText) findViewById(R.id.device_id_first_sim_edit);
